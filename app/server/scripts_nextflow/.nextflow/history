@@ -1,0 +1,9 @@
+2022-08-18 13:33:18	7m 26s	soggy_ritchie	ERR	fa80ba64226754ca4a88d80c67db7f4a	9187027d-4f51-4ffc-8e03-cb5558fd04f9	nextflow run new_np_pipe.nf -params-file /home/stefan/BigDisk/Work/Gerber_AG/config.yaml
+2022-08-18 13:47:57	51.9s	angry_feynman	ERR	480524a515a6611a17e15edfc1f2a59f	87d09f7a-5d84-422e-b261-cb165ca41222	nextflow run new_np_pipe.nf -params-file /home/stefan/BigDisk/Work/Gerber_AG/config.yaml
+2022-08-18 13:49:04	2m 53s	mad_gates	ERR	480524a515a6611a17e15edfc1f2a59f	935660f6-9ec6-4000-a32e-447349753125	nextflow run new_np_pipe.nf -params-file /home/stefan/BigDisk/Work/Gerber_AG/config.yaml
+2022-08-18 13:53:42	6m 27s	condescending_keller	ERR	ddd92f1f17d7374e475f6d2ab2e7eb42	600abf67-b60a-4df7-906e-b5d9c143f8a1	nextflow run new_np_pipe.nf -params-file /home/stefan/BigDisk/Work/Gerber_AG/config.yaml
+2022-08-18 14:00:55	14m 1s	soggy_ekeblad	ERR	ddd92f1f17d7374e475f6d2ab2e7eb42	c6386e91-5e09-41d2-8c20-e0d8df9a70bd	nextflow run new_np_pipe.nf -params-file /home/stefan/BigDisk/Work/Gerber_AG/config.yaml
+2022-08-18 14:25:29	1.6s	gloomy_raman	ERR	ca2ec8d073de19f7fc327d4baec01fa8	ba61deb0-eba1-4b5f-8e28-ea784272006e	nextflow run new_np_pipe.nf -params-file /home/stefan/BigDisk/Work/Gerber_AG/config.yaml
+2022-08-18 14:25:48	10m 59s	silly_archimedes	ERR	ca2ec8d073de19f7fc327d4baec01fa8	ca6c12e9-3146-4b52-80ef-9d3bc49ae91a	nextflow run new_np_pipe.nf -params-file /home/stefan/BigDisk/Work/Gerber_AG/config.yaml
+2022-08-18 14:39:56	20m 48s	reverent_ampere	ERR	b8031a2a4173b95503a5dfac91c5ab4a	f47e5193-0794-4e31-a0f1-4124d92a4fc4	nextflow run new_np_pipe.nf -params-file /home/stefan/BigDisk/Work/Gerber_AG/config.yaml
+2022-08-18 15:48:11	11m 24s	determined_mcclintock	ERR	b8031a2a4173b95503a5dfac91c5ab4a	6473d843-264b-4c0f-a12d-be97927f9d9b	nextflow run new_np_pipe.nf -params-file /home/stefan/BigDisk/Work/Gerber_AG/config.yaml

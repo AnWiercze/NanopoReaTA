@@ -1,0 +1,5 @@
+Samples	Condition	rep	run
+Sample1	Cell1	rep3	run1
+Sample2	Cell1	rep4	run2
+Sample3	Cell2	rep3	run1
+Sample4	Cell2	rep4	run2

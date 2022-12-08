@@ -1,0 +1,252 @@
+Aug-18 13:47:57.730 [main] DEBUG nextflow.cli.Launcher - $> nextflow run new_np_pipe.nf -params-file /home/stefan/BigDisk/Work/Gerber_AG/config.yaml
+Aug-18 13:47:57.765 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 22.04.5
+Aug-18 13:47:57.845 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=1 by probing script field
+Aug-18 13:47:57.863 [main] INFO  nextflow.cli.CmdRun - Launching `new_np_pipe.nf` [angry_feynman] DSL1 - revision: 480524a515
+Aug-18 13:47:57.871 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/home/stefan/.nextflow/plugins; core-plugins: nf-amazon@1.7.2,nf-azure@0.13.2,nf-console@1.0.3,nf-ga4gh@1.0.3,nf-google@1.1.4,nf-sqldb@0.4.0,nf-tower@1.4.0
+Aug-18 13:47:57.872 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Aug-18 13:47:57.878 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Aug-18 13:47:57.879 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Aug-18 13:47:57.881 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Aug-18 13:47:57.886 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Aug-18 13:47:57.920 [main] DEBUG nextflow.Session - Session uuid: 87d09f7a-5d84-422e-b261-cb165ca41222
+Aug-18 13:47:57.920 [main] DEBUG nextflow.Session - Run name: angry_feynman
+Aug-18 13:47:57.921 [main] DEBUG nextflow.Session - Executor pool size: 32
+Aug-18 13:47:57.943 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 22.04.5 build 5708
+  Created: 15-07-2022 16:09 UTC (18:09 CEST)
+  System: Linux 5.15.0-43-generic
+  Runtime: Groovy 3.0.10 on OpenJDK 64-Bit Server VM 11.0.13+7-b1751.21
+  Encoding: UTF-8 (ANSI_X3.4-1968)
+  Process: 2146974@stefan-System-Product-Name [127.0.1.1]
+  CPUs: 32 - Mem: 62.7 GB (10.4 GB) - Swap: 2 GB (28 KB)
+Aug-18 13:47:57.956 [main] DEBUG nextflow.Session - Work-dir: /home/stefan/testApp/app/server/scripts_nextflow/work [ext2/ext3]
+Aug-18 13:47:57.956 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /home/stefan/testApp/app/server/scripts_nextflow/bin
+Aug-18 13:47:57.961 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Aug-18 13:47:57.968 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Aug-18 13:47:57.985 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Aug-18 13:47:57.992 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 33; maxThreads: 1000
+Aug-18 13:47:58.034 [main] DEBUG nextflow.Session - Session start invoked
+Aug-18 13:47:59.185 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Aug-18 13:47:59.193 [main] INFO  nextflow.script.BaseScript - General folder: 
+Aug-18 13:47:59.193 [main] INFO  nextflow.script.BaseScript - /home/stefan/BigDisk/Work/Gerber_AG/test/
+Aug-18 13:47:59.193 [main] INFO  nextflow.script.BaseScript -  
+Aug-18 13:47:59.195 [main] WARN  nextflow.script.ScriptBinding - Access to undefined parameter `suffix` -- Initialise it to a default value eg. `params.suffix = some_value`
+Aug-18 13:47:59.195 [main] INFO  nextflow.script.BaseScript - Mapper
+Aug-18 13:47:59.196 [main] INFO  nextflow.script.BaseScript - minimap2
+Aug-18 13:47:59.196 [main] INFO  nextflow.script.BaseScript - Genome Fasta chosen: 
+Aug-18 13:47:59.196 [main] INFO  nextflow.script.BaseScript - /home/stefan/BigDisk/Work/Gerber_AG/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+Aug-18 13:47:59.196 [main] INFO  nextflow.script.BaseScript -  
+Aug-18 13:47:59.196 [main] INFO  nextflow.script.BaseScript - Transcriptome Fasta chosen: 
+Aug-18 13:47:59.196 [main] INFO  nextflow.script.BaseScript - /home/stefan/BigDisk/Work/Gerber_AG/gencode.v40.transcripts.fa
+Aug-18 13:47:59.196 [main] INFO  nextflow.script.BaseScript -  
+Aug-18 13:47:59.196 [main] INFO  nextflow.script.BaseScript - Gtf File chosen: 
+Aug-18 13:47:59.196 [main] INFO  nextflow.script.BaseScript - /home/stefan/BigDisk/Work/Gerber_AG/gencode.v40.primary_assembly.annotation.gtf
+Aug-18 13:47:59.197 [main] INFO  nextflow.script.BaseScript -  
+Aug-18 13:47:59.197 [main] INFO  nextflow.script.BaseScript - Script directory: 
+Aug-18 13:47:59.197 [main] INFO  nextflow.script.BaseScript - /home/stefan/testApp/app/server/scripts_nextflow
+Aug-18 13:47:59.197 [main] INFO  nextflow.script.BaseScript -  
+Aug-18 13:47:59.197 [main] INFO  nextflow.script.BaseScript - Run directory: 
+Aug-18 13:47:59.197 [main] INFO  nextflow.script.BaseScript - /home/stefan/BigDisk/Work/Gerber_AG/run_dir_not_barcoded_18_08_22/
+Aug-18 13:47:59.197 [main] INFO  nextflow.script.BaseScript -  
+Aug-18 13:47:59.198 [main] INFO  nextflow.script.BaseScript - Conditions compared: 
+Aug-18 13:47:59.198 [main] INFO  nextflow.script.BaseScript - [[Condition, Hct116, MCF7]]
+Aug-18 13:47:59.198 [main] INFO  nextflow.script.BaseScript -  
+Aug-18 13:47:59.198 [main] INFO  nextflow.script.BaseScript - Barcoded: 
+Aug-18 13:47:59.198 [main] INFO  nextflow.script.BaseScript - 0
+Aug-18 13:47:59.198 [main] INFO  nextflow.script.BaseScript -  
+Aug-18 13:47:59.198 [main] INFO  nextflow.script.BaseScript - Metadata: 
+Aug-18 13:47:59.198 [main] INFO  nextflow.script.BaseScript - /home/stefan/BigDisk/Work/Gerber_AG/nextflow_dRNA_seq/metadata_test.txt
+Aug-18 13:47:59.198 [main] INFO  nextflow.script.BaseScript -  
+Aug-18 13:47:59.237 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.237 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.240 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Aug-18 13:47:59.243 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=32; memory=62.7 GB; capacity=32; pollInterval=100ms; dumpInterval=5m
+Aug-18 13:47:59.307 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.307 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.315 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.315 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.323 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.323 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.326 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.326 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.331 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.331 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.333 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.334 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.338 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.338 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.343 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.344 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.348 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.348 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.353 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.353 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.357 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.357 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.362 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.362 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.366 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.366 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.370 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.370 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.375 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.376 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.383 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.383 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.386 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.386 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.389 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.389 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.392 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.392 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.393 [Task submitter] INFO  nextflow.Session - [58/9679eb] Submitted process > find_data_folders
+Aug-18 13:47:59.395 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.395 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.399 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.399 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.402 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.402 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.404 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-18 13:47:59.404 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-18 13:47:59.406 [main] DEBUG nextflow.Session - Workflow process names [dsl1]: infer_experiment, see_progress, salmon_annotation_done, merge_salmon_annotation, salmon_annotation, minimap_alignment, moving_done, reawake_next_round, minimap_transcript_alignment, move_transcript_files, name_trascripts_genome, count_features, fc_merging_done, sleep, find_data_folders, fromPath_data, merge_featureTable, merge_table_of_all_folders, salmon_add_gene_names, readlength_check, convert_gtf_to_df, data_alignment_prep, make_directories, activate_channels
+Aug-18 13:47:59.406 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Aug-18 13:47:59.406 [main] DEBUG nextflow.Session - Session await
+Aug-18 13:47:59.406 [pool-2-thread-1] INFO  nextflow.script.BaseScript - [ERR6053055, ERR6053098, ERR6053056, ERR6053097]
+Aug-18 13:47:59.408 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: find_data_folders; status: COMPLETED; exit: -; error: -; workDir: /home/stefan/testApp/app/server/scripts_nextflow/work/58/9679eb45ed56bb5d0dab57d95ca52c]
+Aug-18 13:47:59.429 [Actor Thread 31] INFO  nextflow.script.BaseScript - Make directories in /home/stefan/BigDisk/Work/Gerber_AG/run_dir_not_barcoded_18_08_22/ERR6053055/ /home/stefan/BigDisk/Work/Gerber_AG/run_dir_not_barcoded_18_08_22/ERR6053098/ /home/stefan/BigDisk/Work/Gerber_AG/run_dir_not_barcoded_18_08_22/ERR6053056/ /home/stefan/BigDisk/Work/Gerber_AG/run_dir_not_barcoded_18_08_22/ERR6053097/ 
+Aug-18 13:47:59.476 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-18 13:47:59.478 [Task submitter] INFO  nextflow.Session - [3c/d0587b] Submitted process > make_directories
+Aug-18 13:48:48.788 [SIGINT handler] DEBUG nextflow.Session - Session aborted -- Cause: SIGINT
+Aug-18 13:48:48.804 [SIGINT handler] DEBUG nextflow.Session - The following nodes are still active:
+[process] convert_gtf_to_df
+  status=ACTIVE
+  port 0: (value) OPEN  ; channel: finished
+  port 1: (cntrl) -     ; channel: $
+
+[process] see_progress
+  status=ACTIVE
+  port 0: (value) OPEN  ; channel: finished
+  port 1: (cntrl) -     ; channel: $
+
+[process] activate_channels
+  status=ACTIVE
+  port 0: (value) OPEN  ; channel: done
+  port 1: (cntrl) -     ; channel: $
+
+[process] fromPath_data
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: check
+  port 1: (cntrl) -     ; channel: $
+
+[process] sleep
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: done
+  port 1: (cntrl) -     ; channel: $
+
+[process] data_alignment_prep
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: files
+  port 1: (cntrl) -     ; channel: $
+
+[process] readlength_check
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] minimap_alignment
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] minimap_transcript_alignment
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] move_transcript_files
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: bam_string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] moving_done
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: bam_full_string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] count_features
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: bam_string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] merge_featureTable
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: fc_string
+  port 1: (queue) OPEN  ; channel: fc_string_splice
+  port 2: (queue) OPEN  ; channel: string_array
+  port 3: (cntrl) -     ; channel: $
+
+[process] merge_table_of_all_folders
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: fc_string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] name_trascripts_genome
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: fc_string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] fc_merging_done
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: fc_string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] infer_experiment
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: fc_string
+  port 1: (cntrl) -     ; channel: $
+
+[process] salmon_annotation
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] merge_salmon_annotation
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] salmon_add_gene_names
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] salmon_annotation_done
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: string
+  port 1: (queue) OPEN  ; channel: string_array
+  port 2: (cntrl) -     ; channel: $
+
+[process] reawake_next_round
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: fc
+  port 1: (queue) OPEN  ; channel: salmon
+  port 2: (cntrl) -     ; channel: $
+
+Aug-18 13:48:48.805 [main] DEBUG nextflow.Session - Session await > all process finished
+Aug-18 13:48:48.805 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Aug-18 13:48:48.808 [main] WARN  n.processor.TaskPollingMonitor - Killing running tasks (1)
+Aug-18 13:48:48.813 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=1; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=1; succeedDuration=1ms; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=1; peakMemory=0; ]
+Aug-18 13:48:48.895 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Aug-18 13:48:48.901 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

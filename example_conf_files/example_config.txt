@@ -1,0 +1,18 @@
+metadata: /home/media/csg/nanoporeata_files/metadata.txt
+general_folder: /home/media/csg/MinKNOW_output_folder/
+genome_fasta: /home/media/csg/nanoporeata_output/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+transcriptome_fasta: /home/media/csg/nanoporeata_output/gencode.v40.transcripts.fa
+genome_gtf: /home/media/csg/nanoporeata_output/gencode.v40.primary_assembly.annotation.gtf
+mapper: minimap2
+gene_count_tool: featureCounts
+transcript_count_tool: salmon
+run_dir: /home/media/csg/NanopoReaTA_output_folder/
+conditions:
+- - Condition
+  - Cell1
+  - Cell2
+pvalue: '0.05'
+script_dir: /home/media/csg/NanopoReaTA/app/server/scripts_nextflow/
+barcoded: 0
+bed_file: /home/stefan/BigDisk/Work/Gerber_AG/hg38_GENCODE.v38.bed
+cleanup: true
