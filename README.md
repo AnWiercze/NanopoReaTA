@@ -223,5 +223,5 @@ bioRxiv, doi: https://doi.org/10.1101/2021.04.21.440736.
 
 ## Contact
 
-Please open an [issue](https://github.com/csg/NanopoReaTA/issues) if you encounter any issues/troubles. 
+Please open an [issue](https://github.com/AnWiercze/NanopoReaTA/issues) if you encounter any issues/troubles. 
 However, please go over the previous issues (including closed issues) before opening a new issue, as your same exact question might have been already answered previously. Thank you!
