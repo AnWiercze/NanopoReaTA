@@ -820,9 +820,6 @@ server <- function(input, output, session) {
     if (is.null(overview_variables_infer$inner_var_sample.table())){ 
       inner_var_plot_per_sample(data.frame())
     }
-    else if (nrow(overview_variables_infer$inner_var_sample.table()) < 2) {
-      inner_var_plot_per_sample(data.frame())
-    }
     else{
     inner_var_plot_per_sample(overview_variables_infer$inner_var_sample.table())
     }
@@ -833,9 +830,6 @@ server <- function(input, output, session) {
     if (is.null(overview_variables_infer$inner_var_sample.table())){
         inner_var_plot_per_condition(data.frame(), metadata(), c(input$color_A, input$color_B))
     } 
-    else if (nrow(overview_variables_infer$inner_var_sample.table()) < 2) {
-      inner_var_plot_per_condition(data.frame(), metadata(), c(input$color_A, input$color_B))
-    }
     else{
     inner_var_plot_per_condition(overview_variables_infer$inner_var_sample.table(), metadata(), c(input$color_A, input$color_B))
     }
@@ -847,9 +841,6 @@ server <- function(input, output, session) {
     if (is.null(overview_variables_infer$expGenes_counted.table())){
         total_genes_counted_plot_per_sample(data.frame())
       }
-    else if (nrow(overview_variables_infer$expGenes_counted.table()) < 2){
-      total_genes_counted_plot_per_sample(data.frame())
-    }
     else{
       total_genes_counted_plot_per_sample(overview_variables_infer$expGenes_counted.table())
     }
@@ -858,9 +849,6 @@ server <- function(input, output, session) {
   output$total_genes_condition.out <- renderPlot({
     req(metadata())
     if(is.null(overview_variables_infer$expGenes_counted.table())){
-      total_genes_counted_plot_per_condition(data.frame(), metadata(), c(input$color_A, input$color_B))
-    }
-    else if (nrow(overview_variables_infer$expGenes_counted.table()) < 2){
       total_genes_counted_plot_per_condition(data.frame(), metadata(), c(input$color_A, input$color_B))
     }
     else{
@@ -2166,6 +2154,7 @@ server <- function(input, output, session) {
                                     process_run = paste0(input$run.dir, "process_running.txt")
                                     if (dir.exists(input$run.dir)){
                                       if (file.exists(process_run)){
+                                        print("Reading process x")
                                         print(read.table(process_run, header = F)[1,1])
                                         read.table(process_run, header = F)[1,1]
                                       }
@@ -2178,17 +2167,23 @@ server <- function(input, output, session) {
 
   observeEvent(input$preprocessing_B, {
     req(process_running$x())
-    output$stop_preprocessing <- renderUI({
       print("Here process running: ")
-        req(process_running$x())
-        print(process_running$x())
-        if(process_running$x() == 1){
-              actionButton(inputId = "stop_process" , label = "Stop preprocessing", class = "btn btn-primary",
-                                    style='font-size:100%; color: white;
-                                          background-color: #e76f51; 
-                                          border-radius: 5px')
+      print(process_running$x())
+      if(process_running$x() == 1){
+              output$stop_preprocessing <- renderUI({
+                        actionButton(inputId = "stop_process" , label = "Stop preprocessing", class = "btn btn-primary",
+                        style='font-size:100%; color: white;
+                        background-color: #e76f51; 
+                        border-radius: 5px')
+                  })
+              output$resume_preprocessing <- renderUI({
+                    actionButton(inputId = "resume_process_disabled" , label = "Resume preprocessing", class = "btn btn-primary",
+                    style='font-size:100%; color: white;
+                            background-color: gray; 
+                            border-radius: 5px')
+              })
         } 
-        })
+
   })
   
 
@@ -2214,18 +2209,24 @@ server <- function(input, output, session) {
   }, priority = 0)
 
 ### Resume preprocessing
-
-  output$resume_preprocessing <- renderUI({
+  autoInvalidate <- reactiveTimer(4000)
+  observe({
+  autoInvalidate()
     req(input$preprocessing_B)
     req(process_running$x())
-    if (!is.null(input$preprocessing_B) & process_running$x() == 2){
+    if (file.exists(paste0(input$run.dir, "process_running.txt"))){
+      restart = read.table(paste0(input$run.dir, "process_running.txt"), header = F)[1,1]
+    }
+    if (!is.null(input$preprocessing_B) & as.integer(restart) == 2){
       if (input$preprocessing_B > 0){
+        output$resume_preprocessing <- renderUI({
           actionButton(inputId = "resume_process" , label = "Resume preprocessing", class = "btn btn-primary",
                                 style='font-size:100%; color: white;
                                       background-color: #e76f51; 
                                       border-radius: 5px')
+        })
+        }
       }
-    }
   })
 
   observeEvent(input$resume_process, {
