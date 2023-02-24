@@ -708,13 +708,55 @@ process data_alignment_prep{
             fi
         }
         export -f samtoolsParallelAll
+        function fastqmergeParallel {
+        par_basis=\$1
+        run_dir=\$2
+        data_to_process=""
+        for ((i=1; i<=\$(cat ${params.run_dir}data_seen_tmp_processed.txt | wc -l); i++))
+        do
+            I=\$(sed -n \$((\$i))p ${params.run_dir}data_seen_tmp_processed.txt)
+            if [ ${params.barcoded} -eq 1 ]
+            then
+            basis=\$(basename \$(dirname \$I))
+            else
+            basis=\$(basename \$(dirname \$(dirname \$(dirname \$I))))
+            fi
+            if [ \${basis} == \${par_basis} ]
+            then
+                data_to_process=\$data_to_process\$I" "
+            fi
+        done
+        if [ ${params.barcoded} -eq 0 ]
+        then
+            if [ ! \$(ls ${params.general_folder}\${par_basis}/*/fastq_pass/*.fastq.gz | wc -l) -eq 0 ]
+                then
+                zcat \${data_to_process} | gzip > \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq.gz
+                fi
+            if [ ! \$(ls ${params.general_folder}\${par_basis}/*/fastq_pass/*.fastq | wc -l) -eq 0 ]
+                then
+                cat \${data_to_process} > \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq
+                fi
+        else
+            if [ ! \$(ls ${params.general_folder}*/*/fastq_pass/\${par_basis}/*.fastq.gz | wc -l) -eq 0 ]
+            then
+            zcat \${data_to_process} | gzip > \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq.gz
+            fi
+            if [ ! \$(ls ${params.general_folder}*/*/fastq_pass/\${par_basis}/*.fastq | wc -l) -eq 0 ]
+            then
+            cat \${data_to_process} > \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq
+            fi
+        fi      
+        }
+        export -f fastqmergeParallel 
+       
+
         if [ -f ${params.run_dir}corruption_cleanup.txt ]
         then
             cleanup=\$(cat ${params.run_dir}corruption_cleanup.txt)
             if [ \$cleanup -eq 1 ]
             then 
             parallel -v -u --env samtoolsParallelAll --no-notice -j ${params.threads} samtoolsParallelAll ::: ${data_string} ::: ${params.run_dir}
-            echo "0" > ${params.run_dir}corruption_cleanup.txt
+            parallel -v -u --env fastqmergeParallel --no-notice -j ${params.threads} fastqmergeParallel ::: ${data_string} ::: ${params.run_dir}
             fi
         fi
         if [ ! -f ${params.run_dir}processing_time_table.csv ]
@@ -755,9 +797,11 @@ process merge_fastq{
         par_basis=\$1
         run_dir=\$2
         data_to_process=""
-        for ((i=1; i<=\$(cat ${params.run_dir}data_seen_tmp_processed.txt | wc -l); i++))
+        for i in ${string}
+        #for ((i=1; i<=\$(cat ${params.run_dir}data_seen_tmp_processed.txt | wc -l); i++))
         do
-            I=\$(sed -n \$((\$i))p ${params.run_dir}data_seen_tmp_processed.txt)
+            I=\$i
+            #I=\$(sed -n \$((\$i))p ${params.run_dir}data_seen_tmp_processed.txt)
             if [ ${params.barcoded} -eq 1 ]
             then
             basis=\$(basename \$(dirname \$I))
@@ -773,27 +817,37 @@ process merge_fastq{
         then
             if [ ! \$(ls ${params.general_folder}\${par_basis}/*/fastq_pass/*.fastq.gz | wc -l) -eq 0 ]
                 then
-                zcat \${data_to_process} | gzip >> \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq.gz
+                zcat \${data_to_process} | gzip -c >> \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq.gz
                 fi
             if [ ! \$(ls ${params.general_folder}\${par_basis}/*/fastq_pass/*.fastq | wc -l) -eq 0 ]
                 then
-                cat \${data_to_process} > \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq
+                cat \${data_to_process} >> \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq
                 fi
         else
-            #echo "IM HERE10" >> \${run_dir}error_logs/merge_fastq.txt
             if [ ! \$(ls ${params.general_folder}*/*/fastq_pass/\${par_basis}/*.fastq.gz | wc -l) -eq 0 ]
             then
-            zcat \${data_to_process} | gzip > \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq.gz
+            zcat \${data_to_process} | gzip -c >> \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq.gz
             fi
             if [ ! \$(ls ${params.general_folder}*/*/fastq_pass/\${par_basis}/*.fastq | wc -l) -eq 0 ]
             then
-            cat \${data_to_process} > \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq
+            cat \${data_to_process} >> \${run_dir}\${par_basis}/merged_fastq/\${par_basis}.fastq
             fi
         fi      
     }
     export -f fastqmergeParallel 
     start=\$(date +%s)
-    parallel -v -u --env fastqmergeParallel --no-notice -j ${params.threads} fastqmergeParallel ::: ${data_string} ::: ${params.run_dir}
+    if [ -f ${params.run_dir}corruption_cleanup.txt ]
+    then
+        cleanup=\$(cat ${params.run_dir}corruption_cleanup.txt)
+        if [ \$cleanup -eq 1 ]
+        then
+            echo "0" > ${params.run_dir}corruption_cleanup.txt
+        else
+            parallel -v -u --env fastqmergeParallel --no-notice -j ${params.threads} fastqmergeParallel ::: ${data_string} ::: ${params.run_dir}
+        fi
+    else
+        parallel -v -u --env fastqmergeParallel --no-notice -j ${params.threads} fastqmergeParallel ::: ${data_string} ::: ${params.run_dir}
+    fi
     end=\$(date +%s)
     time=\$(echo "\$((\$end-\$start))")
     echo "fastq_merge,${iteration.value},\$time" >> ${params.run_dir}processing_time_table.csv
