@@ -12,6 +12,9 @@
 
 options(repos = list(CRAN="http://cran.rstudio.com/"))
 
+library(devtools)
+devtools::install_github("eddelbuettel/rcpptoml")
+
 R_min_version = "4.1.2"
 R_version = paste0(R.Version()$major, ".", R.Version()$minor)
 if(compareVersion(R_version, R_min_version) == -1){
