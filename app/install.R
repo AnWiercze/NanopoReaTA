@@ -12,8 +12,6 @@
 
 options(repos = list(CRAN="http://cran.rstudio.com/"))
 
-library(devtools)
-devtools::install_github("eddelbuettel/rcpptoml")
 
 R_min_version = "4.1.2"
 R_version = paste0(R.Version()$major, ".", R.Version()$minor)
@@ -22,6 +20,7 @@ if(compareVersion(R_version, R_min_version) == -1){
       "Launch should fail.\n",
       "Go to http://cran.r-project.org/ and install version 4.1.3 of R or higher.")
 }
+
 
 #Check if BiocManager is installed and install otherwise
 availpacks = .packages(all.available = TRUE)
