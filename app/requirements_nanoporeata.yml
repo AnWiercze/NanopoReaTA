@@ -321,6 +321,7 @@ dependencies:
   - r-rappdirs=0.3.3
   - r-rbokeh=0.5.2
   - r-rcmdcheck=1.4.0
+  - r-rcpptoml=0.1.7
   - r-rcolorbrewer=1.1_3
   - r-rcpp=1.0.9
   - r-readr=2.1.2
