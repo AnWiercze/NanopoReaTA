@@ -44,7 +44,7 @@ source("server/server.R", local = TRUE)
 
 # ______________________________________________________________________________
 # LAUNCH APP
-APP <- shinyApp(ui, server)
-runApp(APP,port=8080)
+shinyApp(ui, server)
+
 
 
