@@ -38,5 +38,5 @@ ENV PORT=8080
 
 EXPOSE 8080
 
-ENTRYPOINT ["conda", "run", "-n", "nanoporeata", "Rscript", "app.R"]
+ENTRYPOINT ["conda", "run", "-n", "nanoporeata", "Rscript", "app_docker.R"]
 
