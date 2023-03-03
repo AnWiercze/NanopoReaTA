@@ -7,6 +7,7 @@ RUN apt-get install -y build-essential autoconf libtool
 RUN apt-get install -y wget
 RUN apt-get install -y zip 
 RUN apt-get install -y apt-utils
+RUN apt-get install -y firefox
 RUN apt-get update
 RUN apt-get install -y gcc-12 gcc-12-base gcc-12-doc g++-12
 RUN apt-get install -y libstdc++-12-dev libstdc++-12-doc
@@ -38,5 +39,8 @@ ENV PORT=8080
 
 EXPOSE 8080
 
-ENTRYPOINT ["conda", "run", "-n", "nanoporeata", "Rscript", "app_docker.R"]
+ENV SHINY_LOG_STDERR=1
+
+ENTRYPOINT ["conda","run", "--no-capture-output","-n","nanoporeata", "Rscript", "app_docker.R"]
+
 
