@@ -45,6 +45,5 @@ source("server/server.R", local = TRUE)
 # ______________________________________________________________________________
 # LAUNCH APP
 APP <- shinyApp(ui, server)
-options(browser="firefox")
-runApp(APP,host = '0.0.0.0',port=8080,launch.browser=TRUE)
+runApp(APP,host = '0.0.0.0',port=8080)
 
