@@ -40,7 +40,7 @@ source("server/R_scripts/infer_experiment_plots.R", local = TRUE)
 source("ui/ui.R", local = TRUE)
 # ______________________________________________________________________________
 # BACKEND
-source("server/server.R", local = TRUE)
+source("server/server_docker.R", local = TRUE)
 
 # ______________________________________________________________________________
 # LAUNCH APP
