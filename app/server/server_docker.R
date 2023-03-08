@@ -194,6 +194,11 @@ server <- function(input, output, session) {
        return(0)
      } else {
        table_of_settings_old <<- read_yaml(file = input$config_file$datapath)
+<<<<<<< HEAD
+=======
+       print(table_of_settings_old)
+       table_of_settings_old = lapply(table_of_settings_old, function(y) paste0("/data", y))
+>>>>>>> 0c8c3d4c014ab978a5fbbb624b696110f3f10e3b
        return(1)
      }
     
@@ -203,6 +208,10 @@ server <- function(input, output, session) {
   observe({
     req(config_loaded())
     if (config_loaded() == 1){
+<<<<<<< HEAD
+=======
+      print(table_of_settings_old)
+>>>>>>> 0c8c3d4c014ab978a5fbbb624b696110f3f10e3b
     # display message, when something is wrong with the parameters or fix simple things directly
    
     if (!is.null(table_of_settings_old$metadata) | length(table_of_settings_old$metadata != 0)){
@@ -358,7 +367,6 @@ server <- function(input, output, session) {
              "gtf.file" =  paste0("/data",input$gtf.file),
              "bed.file" =  paste0("/data",input$bed.file),
              "run.dir" =  paste0("/data",input$run.dir))
-    # cat(unlist(x))
     x
   })
   
