@@ -574,7 +574,7 @@ server <- function(input, output, session) {
   ##### Load gtf file ####
   observeEvent({input$tabs}, {
     # Load gtf file
-    req(input$gtf.file)
+    req(docker()$gtf.file)
     req(docker())
     if (is.null(table_of_genes())){
       if(input$tabs == "run_overview"){
@@ -582,7 +582,7 @@ server <- function(input, output, session) {
         if (file.exists(paste0(docker()$run.dir, "converted_gtf.csv"))){
           g = read.csv(paste0(docker()$run.dir, "converted_gtf.csv"), header = T)
         } else {
-          g = getGeneSymbolFromGTF(input$gtf.file, ".")
+          g = getGeneSymbolFromGTF(docker()$gtf.file, ".")
         }
         table_of_genes(unique(g[,c("gene_id", "gene_name")]))
         
@@ -1575,7 +1575,7 @@ server <- function(input, output, session) {
                                     first.level = input$feature_A, 
                                     ref.level = input$feature_B, 
                                     samps = metadata(), 
-                                    gtf_file = input$gtf.file,
+                                    gtf_file = docker()$gtf.file,
                                     cores = 4
       )
       print(names(preProcTrans$pre_list))
@@ -1659,7 +1659,7 @@ server <- function(input, output, session) {
     req(table_of_settings())
     req(countsfile$df)
     req(table_of_genes())
-    req(input$gtf.file)
+    req(docker()$gtf.file)
 
     if (is.null(countsfile$df)){
       showModal(modalDialog(size = "l",
