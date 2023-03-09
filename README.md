@@ -29,7 +29,11 @@ R >= 4.1.2 |
 python packages (provided via conda environment) |
 R packages (installation is automatized via R shiny) 
 
+
+
+
 ## Installation
+
 
 ### Installation via conda 
 
@@ -62,6 +66,9 @@ cd /path/to/NanopoReaTA/app
 Rscript app.R
 ```
 All R packages that have not been installed yet will be downloaded and installed into your conda environment automatically, when starting NanopoReaTA the first time. This can take up to ~ 30 min. After the installation of packages is finished, **a browser link** will appear. Copy and paste the link shown in your terminal into a browser window, in case the app does not open automatically.  
+
+
+
 
 ### Installation via docker
 
