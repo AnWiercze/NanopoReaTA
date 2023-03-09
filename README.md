@@ -14,8 +14,7 @@ NanopoReaTA - Nanopore Real Time Analysis Pipeline
 2. [Gene-wise analysis](#gene-wise-analysis) - Gene-wise analysis of expression (Gene counts, Gene body coverage)
 3. [Differential expression analysis](#differential-expression-analysis) - Differential expression and/or usage analysis of genes (DEA) and transcripts (DTE + DTU)
 
-## Install
-### Requirements
+## Requirements
  Hardware |
  :---: 
 RAM: 64GB |
@@ -30,6 +29,10 @@ R >= 4.1.2 |
 python packages (provided via conda environment) |
 R packages (installation is automatized via R shiny) 
 
+## Installation
+
+### Installation via conda 
+
 R can be installed from CRAN (https://cran.r-project.org/). Anaconda can be downloaded with the follwing steps:
 
 ```bash
@@ -39,7 +42,6 @@ bash ~/Anaconda3-2022.05-Linux-x86_64.sh
 source ~/.bashrc
 ```
 
-### Installation steps
 #### Create a conda enviroment and install packages from requirements_NanopoReaTA.yml by following the steps below (~ 6 min):
 ```bash
 git clone git@github.com:AnWiercze/NanopoReaTA.git
@@ -51,14 +53,7 @@ conda env create -f /path/to/NanopoReaTA/app/requirements_nanoporeata.yml
 conda activate nanoporeata
 ```
 
-#### The following libraries are required and needs to be installed first:
-```bash
-conda install -c conda-forge r-devtools
-conda install -c conda-forge cxx-compiler
-conda install -c anaconda cmake
-```
-
-## Start NanopoReaTA
+#### Start NanopoReaTA via conda
 NanopoReaTA will be started executing the following command within the conda environment: 
 
 ```bash
@@ -66,8 +61,32 @@ conda activate nanoporeata
 cd /path/to/NanopoReaTA/app
 Rscript app.R
 ```
-
 All R packages that have not been installed yet will be downloaded and installed into your conda environment automatically, when starting NanopoReaTA the first time. This can take up to ~ 30 min. After the installation of packages is finished, **a browser link** will appear. Copy and paste the link shown in your terminal into a browser window, in case the app does not open automatically.  
+
+### Installation via docker
+
+#### Installation on Linux based systems
+
+Open a bash shell Ctrl + Alt + T. Type the following command to install docker and build a docker image:
+
+```bash
+sudo apt-get install -y docker.io
+cd ~/NanopoReaTA/app
+sudo docker build -t nanoporeata ./
+```
+A docker image must be build only once and might take around half an hour. Once the image is build a docker container can be run with the following command:  
+
+```bash
+sudo docker run -it -p 8080:8080 -v /:/data nanoporeata
+```
+
+The docker container setup will be finished when the following line occurs:
+Listening on http://0.0.0.0:8080
+
+You can now navigate to a browser of your choice on your local machine and type in the following URL:
+http://localhost:8080/
+
+NanopoReaTA should now appear on the browser window. 
 
 
 ## Usage
