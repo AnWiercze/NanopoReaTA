@@ -291,7 +291,7 @@ process make_directories{
 
 	done
     echo 1 > ${params.run_dir}process_running.txt
-    minimap2 --MD -ax map-ont -uf -k14 -d ${params.run_dir}MT-human_ont.mmi $params.genome_fasta || echo "Indiexing genome failed" >> ${params.run_dir}error_logs/index_genome.log
+    minimap2 --MD -ax splice -uf -k14 -d ${params.run_dir}MT-human_ont.mmi $params.genome_fasta || echo "Indiexing genome failed" >> ${params.run_dir}error_logs/index_genome.log
     minimap2 --MD -ax map-ont -uf -k14 -d ${params.run_dir}MT-human_transcript_ont.mmi $params.transcriptome_fasta || echo "Indexing transcriptome failed" >> ${params.run_dir}error_logs/index_transcriptome.log
     """
 }
