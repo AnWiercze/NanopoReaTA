@@ -73,7 +73,6 @@ createPCA<- function(rld, first.level, ref.level, condi_col){
 
 createVolcano <- function(res_df, condi_col){
   flog.info("########## Create volcano plot ###########")
-
   res_df$Significance_reg = ifelse(res_df$Significance, 
                                    ifelse(res_df$log2FoldChange > 0, "Up", "Down"), 
                                    "Not sig.")
@@ -101,7 +100,7 @@ createVolcano <- function(res_df, condi_col){
     #scale_color_manual(values = colorCode) +
     geom_point(size=1.75) +
     xlab("log2 fold change") + ylab("-log10 p-adjusted")+
-    ggtitle("Volcano Plot")+
+    ggtitle(paste0("Volcano Plot (", names(condi_col)[1], " vs. ", names(condi_col)[2], ")")) + # add conditions to title
     scale_color_manual(values = color_code) +
     theme_bw() +
     guides(colour = guide_legend(override.aes = list(size=5))) +
@@ -116,7 +115,8 @@ createVolcano <- function(res_df, condi_col){
       # panel.grid.minor = element_blank(), # get rid of minor grid
       legend.background = element_rect(fill = "transparent"), # get rid of legend bg
       #legend.box.background = element_rect(fill = "transparent"), # get rid of legend panel bg
-      legend.title = element_text(size = 20, color = "white"),
+      #legend.title = element_text(size = 20, color = "white"),
+      legend.title = element_blank(), # remove legend title
       legend.key = element_rect(colour = "transparent", fill = "transparent"),
       legend.text = element_text(size = 20, color = "white"),
       axis.text = element_text(angle = 45, hjust = 1, size = 17, color = "white"),
@@ -135,13 +135,20 @@ createHeatmap <- function(dds, rld, condi_col, main_color = "RdBu", gtf_file = N
   heat_input = assay(rld)[select,]
   row.names(heat_input) = genes[, "names"]
 
-  ha = HeatmapAnnotation(condition = df$conditions,
-                        col = list(condition = condi_col),
+  ha = HeatmapAnnotation(Condition = df$conditions,
+                        col = list(Condition = condi_col),
+                        name = "Condition",
                         show_annotation_name = F,
-                        annotation_label = gt_render(c("<span style='color:red'>condition</span>")))
+                        annotation_height = 2,
+                        annotation_width = 2,
+                        annotation_legend_param = list(
+                          title_gp = gpar(fontsize = 18, col = "white"),
+                          labels_gp = gpar(fontsize = 16, col = "white"),
+                          title_position = "lefttop-rot"
+                        )) # changed from annotation_label = gt_render(c("<span style='color:red'>condition</span>"))
   g = ComplexHeatmap::Heatmap(
     heat_input, 
-    name = "norm. counts",  
+    name = "Norm. counts",  
     col = hcl.colors(50, main_color),
     cluster_rows = T, 
     cluster_columns = T, 
@@ -154,21 +161,37 @@ createHeatmap <- function(dds, rld, condi_col, main_color = "RdBu", gtf_file = N
     row_dend_gp = gpar(col = "white"),
     row_names_side = "right", 
     row_names_gp = gpar(fontsize = 15, col = "white"),
-    column_names_gp = gpar(fontsize = 15, col = "white"),
+    column_names_gp = gpar(fontsize = 20, col = "white"),
     heatmap_legend_param = list(
-              title_gp = gpar(fontsize = 13, fontface = "bold", col = "white"),
-              labels_gp = gpar(fontsize = 13, col = "white"))
+              title_gp = gpar(fontsize = 18, col = "white"),
+              labels_gp = gpar(fontsize = 16, col = "white"),
+              legend_height = unit(6, "cm"), 
+              grid_width = unit(0.5, "cm"),
+              title_position = "lefttop-rot"
+              )
   )
   g_draw = draw(g, background = "transparent")
 
+  ha2 = HeatmapAnnotation(Condition = df$conditions,
+                         col = list(Condition = condi_col),
+                         name = "Condition",
+                         show_annotation_name = F,
+                         annotation_height = 2,
+                         annotation_width = 2,
+                         annotation_legend_param = list(
+                           title_gp = gpar(fontsize = 18, col = "black"),
+                           labels_gp = gpar(fontsize = 16, col = "black"),
+                           title_position = "lefttop-rot"
+                         )) # changed from annotation_label = gt_render(c("<span style='color:red'>condition</span>"))
+  
   g2 = ComplexHeatmap::Heatmap(
     heat_input, 
-    name = "norm. counts",  
+    name = "Norm. counts",  
     col = hcl.colors(50, main_color),
     cluster_rows = T, 
     cluster_columns = T, 
     show_column_dend = F, 
-    top_annotation = ha, 
+    top_annotation = ha2, 
     show_row_dend = T,
     show_column_names=T,
     column_title = NULL, 
@@ -177,10 +200,14 @@ createHeatmap <- function(dds, rld, condi_col, main_color = "RdBu", gtf_file = N
     row_names_gp = gpar(fontsize = 15, col = "black"),
     column_names_gp = gpar(fontsize = 15, col = "black"),
     heatmap_legend_param = list(
-              title_gp = gpar(fontsize = 13, fontface = "bold", col = "black"),
-              labels_gp = gpar(fontsize = 13, col = "black"))
+              title_gp = gpar(fontsize = 18, col = "black"),
+              labels_gp = gpar(fontsize = 16, col = "black"),
+              legend_height = unit(6, "cm"), 
+              grid_width = unit(0.5, "cm"),
+              title_position = "lefttop-rot"
+              )
   )
-  g_draw = draw(g, background = "transparent")
+
   g_draw2 = draw(g2, background = "transparent")
 
   return(list("heat" = g_draw, "heat.down" = g_draw2))
@@ -196,7 +223,7 @@ createSam2Sam <- function(rld){
   colors <- colorRampPalette( rev(brewer.pal(9, "Blues")))(255)
 
    g = ComplexHeatmap::Heatmap(sampleDistMatrix, 
-    name = "distance", 
+    name = "Distance", 
                 cluster_rows = T, 
                 cluster_columns = T, 
                 show_column_dend = F,
@@ -205,14 +232,20 @@ createSam2Sam <- function(rld){
                 column_title = NULL, 
                 row_names_side = "right", 
                 heatmap_legend_param = list(
-                title_gp = gpar(fontsize = 10, fontface = "bold", col = "white"),
-                labels_gp = gpar(fontsize = 10, col = "white")),
-                row_names_gp = gpar(fontsize = 20, col = "white"),
+                  title_gp = gpar(fontsize = 22, col = "white"),
+                  labels_gp = gpar(fontsize = 20, col = "white"),
+                  legend_direction = "horizontal", 
+                  legend_width = unit(8, "cm"), 
+                  grid_height = unit(1, "cm"),
+                  title_position = "lefttop"),
+                row_names_gp = gpar(fontsize = 22, col = "white"),
                 row_dend_gp = gpar(col = "white"))
-  g_draw = draw(g, background = "transparent")
+  g_draw = draw(g, background = "transparent", 
+                heatmap_legend_side = "bottom", 
+                padding = unit(c(2, 2, 2, 30), "mm"))
 
   g2 = ComplexHeatmap::Heatmap(sampleDistMatrix, 
-    name = "distance", 
+    name = "Distance", 
                 cluster_rows = T, 
                 cluster_columns = T, 
                 show_column_dend = F,
@@ -221,11 +254,17 @@ createSam2Sam <- function(rld){
                 column_title = NULL, 
                 row_names_side = "right", 
                 heatmap_legend_param = list(
-                title_gp = gpar(fontsize = 10, fontface = "bold", col = "black"),
-                labels_gp = gpar(fontsize = 10, col = "black")),
-                row_names_gp = gpar(fontsize = 20, col = "black"),
+                  title_gp = gpar(fontsize = 12, col = "black"),
+                  labels_gp = gpar(fontsize = 10, col = "black"),
+                  legend_direction = "horizontal",
+                  legend_width = unit(4, "cm"),
+                  grid_height = unit(0.5, "cm"),
+                  title_position = "lefttop"),
+                row_names_gp = gpar(fontsize = 12, col = "black"),
                 row_dend_gp = gpar(col = "black"))
-  g_draw2 = draw(g2, background = "transparent")
+  g_draw2 = draw(g2, background = "transparent", 
+                 heatmap_legend_side = "bottom", 
+                 padding = unit(c(2, 2, 2, 2), "mm"))
 
   return(list(g_draw, g_draw2))
 }

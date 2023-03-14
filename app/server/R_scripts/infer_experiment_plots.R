@@ -16,6 +16,7 @@ inner_var_plot_per_sample <- function(table = data.frame()){
             data
             if ((nrow(data) / length(samples)) < 20) {
                 p = ggline(data,x="Iteration",y="Difference_of_ratios", color="Sample") +
+                    ylab("Change in gene composition") +
                     theme(
                         # rect = element_rect(fill = "transparent"),
                          panel.background = element_rect(fill = 'transparent', color = "white"), # bg of the panel
@@ -33,6 +34,7 @@ inner_var_plot_per_sample <- function(table = data.frame()){
                   scale_x_discrete(limits = as.character(seq(1, 20)))
             } else {
                 p = ggline(data,x="Iteration",y="Difference_of_ratios", color="Sample") +
+                    ylab("Change in gene composition") +
                     theme(
                         # rect = element_rect(fill = "transparent"),
                         panel.background = element_rect(fill = 'transparent', color = "white"), # bg of the panel
@@ -79,6 +81,7 @@ inner_var_plot_per_condition <- function(table = data.frame(), metadata_table, c
             
             if ((nrow(data) / length(tmp_metadata$Samples)) < 20){
                 p = ggline(data,x="Iteration",y="Difference_of_ratios", color="Condition", palette=colors) +
+                    ylab("Change in gene composition") +
                     theme(
                         panel.background = element_rect(fill = "transparent"), # bg of the panel
                         plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
@@ -94,6 +97,7 @@ inner_var_plot_per_condition <- function(table = data.frame(), metadata_table, c
                     scale_x_discrete(limits = as.character(seq(1, 20)))
             } else {
                 p = ggline(data,x="Iteration",y="Difference_of_ratios", color="Condition", palette=colors) +
+                    ylab("Change in gene composition") +
                     theme(
                         panel.background = element_rect(fill = "transparent"), # bg of the panel
                         plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
@@ -130,6 +134,7 @@ total_genes_counted_plot_per_sample <- function(table = data.frame()){
             }
             if ((nrow(data) / length(samples)) < 20){
             q = ggline(data,x="Iteration",y="Counts", color="Sample") + 
+                ylab("Number of identified genes") +
                 theme(
                     panel.background = element_rect(fill = "transparent"), # bg of the panel
                     plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
@@ -145,6 +150,7 @@ total_genes_counted_plot_per_sample <- function(table = data.frame()){
                 scale_x_discrete(limits = as.character(seq(1, 20)))
             } else {
                 q = ggline(data,x="Iteration",y="Counts", color="Sample") + 
+                    ylab("Number of identified genes") +
                     theme(
                         panel.background = element_rect(fill = "transparent"), # bg of the panel
                         plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
@@ -196,6 +202,7 @@ total_genes_counted_plot_per_condition <- function(table = data.frame(), metadat
             # print(data)
             if ((nrow(data) / length(tmp_metadata$Samples)) < 20){
                 p = ggline(data,x="Iteration",y="Counts", color="Condition", palette=colors) + 
+                      ylab("Number of identified genes") +
                       theme(
                         panel.background = element_rect(fill = "transparent"), # bg of the panel
                         plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
@@ -211,6 +218,7 @@ total_genes_counted_plot_per_condition <- function(table = data.frame(), metadat
                     scale_x_discrete(limits = as.character(seq(1, 20)))
             } else {
                 p = ggline(data,x="Iteration",y="Counts", color="Condition", palette=colors) + 
+                    ylab("Number of identified genes") +
                     theme(
                         panel.background = element_rect(fill = "transparent"), # bg of the panel
                         plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
@@ -247,6 +255,7 @@ inner_var_plot_per_sample.download <- function(table = data.frame()){
     }
     data
     p = ggline(data,x="Iteration",y="Difference_of_ratios", color="Sample") +
+        ylab("Change in gene composition") +
         theme(
             legend.title = element_text(size = 16, color = "black"),
             legend.text = element_text(size = 14, color = "black"),
@@ -285,6 +294,7 @@ inner_var_plot_per_condition.download <- function(table = data.frame(), metadata
     }
     
     p = ggline(data,x="Iteration",y="Difference_of_ratios", color="Condition", palette=colors) +
+        ylab("Change in gene composition") +
         theme(
              legend.title = element_text(size = 16, color = "black"),
             legend.text = element_text(size = 14, color = "black"),
@@ -314,7 +324,8 @@ total_genes_counted_plot_per_sample.download <- function(table = data.frame()){
         data = rbind(data,tmp_data)
     }
     
-    q = ggline(data,x="Iteration",y="Counts", color="Sample") + 
+    q = ggline(data,x="Iteration",y="Counts", color="Sample") +
+        ylab("Number of identified genes") +
         theme(
             legend.title = element_text(size = 16, color = "black"),
             legend.text = element_text(size = 14, color = "black"),
@@ -352,7 +363,8 @@ total_genes_counted_plot_per_condition.download <- function(table = data.frame()
         data = rbind(data,tmp_data)
     }
     
-    p = ggline(data,x="Iteration",y="Counts", color="Condition", palette=colors) + 
+    p = ggline(data,x="Iteration",y="Counts", color="Condition", palette=colors) +
+        ylab("Number of identified genes") +
         theme(
             legend.title = element_text(size = 16, color = "black"),
             legend.text = element_text(size = 14, color = "black"),

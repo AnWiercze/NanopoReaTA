@@ -64,7 +64,7 @@ createDDS <- function(counts.file, meta.file, condition.col, first.level, ref.le
   
   return(list(counts, norm_counts, metadata))
 }
-createCountsPlot <- function(normCounts, genes, metaTab, genes.tab, gtitle, outName, outDir = ".", condi_cols, download = F){
+createCountsPlot <- function(normCounts, genes, metaTab, genes.tab, gtitle, outName, outDir = ".", condi_cols, download = F, ylabel = "Counts"){
   print("########## Create counts plots ###########")
   
   normmutGenes <- normCounts
@@ -83,7 +83,7 @@ createCountsPlot <- function(normCounts, genes, metaTab, genes.tab, gtitle, outN
       scale_y_log10(oob = scales::squish_infinite) +
       scale_fill_manual(values = condi_cols) +
       
-      ylab("Counts") +
+      ylab(ylabel) +
       xlab("Genes") +
       ggtitle(gtitle) +
       theme_bw() +
@@ -109,7 +109,7 @@ createCountsPlot <- function(normCounts, genes, metaTab, genes.tab, gtitle, outN
       scale_color_manual(values = condi_cols) +
       #scale_fill_manual(values = safe_colorblind_palette[c(3,11)]) +
       
-      ylab("Counts") +
+      ylab(ylabel) +
       xlab("Genes") +
       ggtitle(gtitle) +
       theme_bw() +
@@ -133,7 +133,7 @@ createCountsPlot <- function(normCounts, genes, metaTab, genes.tab, gtitle, outN
       scale_y_log10(oob = scales::squish_infinite) +
       scale_fill_manual(values = condi_cols) +
       
-      ylab("Counts") +
+      ylab(ylabel) +
       xlab("Genes") +
       ggtitle(gtitle) +
       theme_bw() +
@@ -148,7 +148,7 @@ createCountsPlot <- function(normCounts, genes, metaTab, genes.tab, gtitle, outN
       geom_point(aes(x = gene_name, y = normalized_counts, color = conditions), position = position_jitter(w=0.1, h=0), size=4)+
       scale_y_log10(oob = scales::squish_infinite) +
       scale_color_manual(values = condi_cols) +
-      ylab("Counts") +
+      ylab(ylabel) +
       xlab("Genes") +
       ggtitle(gtitle) +
       theme_bw() +
@@ -172,7 +172,8 @@ TEA <- function(counts, norm_counts, genes.list, metadata, pvalue, output.dir, c
     metaTab = metadata, 
     gtitle = "Normalized counts", 
     outName = "normalized", 
-    outDir = output.dir, condi_cols = condi_cols)
+    outDir = output.dir, condi_cols = condi_cols, 
+    ylabel = "Normalized read counts")
 
   norm_counts_plot.download = createCountsPlot(
     normCounts = norm_counts, 
@@ -180,7 +181,8 @@ TEA <- function(counts, norm_counts, genes.list, metadata, pvalue, output.dir, c
     metaTab = metadata, 
     gtitle = "Normalized counts", 
     outName = "normalized", 
-    outDir = output.dir, condi_cols = condi_cols, download = T)
+    outDir = output.dir, condi_cols = condi_cols, download = T,
+    ylabel = "Normalized read counts")
   
   counts_plot = createCountsPlot(
     normCounts = counts, 
@@ -188,7 +190,8 @@ TEA <- function(counts, norm_counts, genes.list, metadata, pvalue, output.dir, c
     metaTab = metadata, 
     gtitle = "Raw counts", 
     outName = "raw", 
-    outDir = output.dir, condi_cols = condi_cols)
+    outDir = output.dir, condi_cols = condi_cols,
+    ylabel = "Raw read counts")
 
   counts_plot.download = createCountsPlot(
     normCounts = counts, 
@@ -196,7 +199,8 @@ TEA <- function(counts, norm_counts, genes.list, metadata, pvalue, output.dir, c
     metaTab = metadata, 
     gtitle = "Raw counts", 
     outName = "raw", 
-    outDir = output.dir, condi_cols = condi_cols, download = T)
+    outDir = output.dir, condi_cols = condi_cols, download = T,
+    ylabel = "Raw read counts")
 
 
   p1 = ggarrange(plotlist = list(counts_plot[["Points"]], norm_counts_plot[["Points"]]), nrow = 1, ncol = 2, common.legend = TRUE)
@@ -224,7 +228,10 @@ geneBodyCov.plot <- function(gB_results, geneOfInterest_in, metadata, condi_cols
     ylim(0,max(geneBodyCov$PercVal)) +
     ggtitle(geneOfInterest) +
     scale_color_manual("Samples", values = safe_colorblind_palette[c(1:n_samples)]) +
+    scale_x_continuous(breaks = c(0, 50, 100), labels = c("3'", "mid gene", "5'")) + # change position labels from 0 to 100 to 3' to 5'
+    ylab("Relative Coverage (%)") +
     theme(
+    panel.grid.minor.x = element_blank(), # remove minor grid lines from plot
     panel.background = element_rect(fill = "transparent"), # bg of the panel
     plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
     # panel.grid.major = element_blank(), # get rid of major grid
@@ -234,9 +241,11 @@ geneBodyCov.plot <- function(gB_results, geneOfInterest_in, metadata, condi_cols
     legend.title = element_text(size = 20, color = "white"),
     legend.key = element_rect(colour = "transparent", fill = "transparent"),
     legend.text = element_text(size = 20, color = "white"),
-    axis.text = element_text(angle = 45, hjust = 1, size = 17, color = "white"),
+    axis.text.y = element_text(angle = 45, hjust = 1, size = 17, color = "white"),
+    axis.text.x = element_text(size = 17, color = "white"), # removed: angle = 45, hjust = 1, due to the new discrete axis labels
     plot.title = element_text(hjust = 0.5, face = "bold", size = 23, color = "white"),
-    axis.title = element_text(size = 23, color = "white"))
+    axis.title = element_text(size = 23, color = "white"),
+    )
 
   geneBodyCov = geneBodyCov %>% 
     left_join(metadata, by = c("Percentile" = "Samples"))
@@ -246,7 +255,10 @@ geneBodyCov.plot <- function(gB_results, geneOfInterest_in, metadata, condi_cols
     ylim(0,max(geneBodyCov$PercVal)) +
     ggtitle(geneOfInterest) +
     scale_color_manual("Condition", values = condi_cols) +
+    scale_x_continuous(breaks = c(0, 50, 100), labels = c("3'", "mid gene", "5'")) + # change position labels from 0 to 100 to 3' to 5'
+    ylab("Relative Coverage (%)") +
     theme(
+      panel.grid.minor.x = element_blank(), # remove minor grid lines from plot
       panel.background = element_rect(fill = "transparent", color = "white"), # bg of the panel
       plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
       panel.grid.major = element_line(size = 0.2, linetype = 'solid',
@@ -257,7 +269,8 @@ geneBodyCov.plot <- function(gB_results, geneOfInterest_in, metadata, condi_cols
       legend.title = element_text(size = 20, color = "white"),
       legend.key = element_rect(colour = "transparent", fill = "transparent"),
       legend.text = element_text(size = 20, color = "white"),
-      axis.text = element_text(angle = 45, hjust = 1, size = 17, color = "white"),
+      axis.text.y = element_text(angle = 45, hjust = 1, size = 17, color = "white"),
+      axis.text.x = element_text(size = 17, color = "white"),  # removed: angle = 45, hjust = 1, due to the new discrete axis labels
       plot.title = element_text(hjust = 0.5, face = "bold", size = 23, color = "white"),
       axis.title = element_text(size = 23, color = "white"))
 

@@ -121,7 +121,7 @@ server <- function(input, output, session) {
     if (is.null(table_of_settings())){
       return()
     } else {
-      actionButton(inputId = "preprocessing_B" , label = "Start preprocessing", class = "btn btn-primary", 
+      actionButton(inputId = "preprocessing_B" , label = "Start", class = "btn btn-primary", 
                    style='padding:20px; 
                    font-size:200%; 
                    color: white; 
@@ -801,7 +801,10 @@ server <- function(input, output, session) {
           geom_bar(stat = "identity") +
           theme_bw() +
           scale_fill_manual(values = c("#CC6677", "#d8c66c", "#117733", "#88CCEE", "#AA4499", "#24011e","#092a36")) +
+          scale_x_continuous(breaks = 1:max(x$Iteration)) + # label each x tick individually
+          ylab("Time [s]") + # add [s] to y-axis label
           theme(
+          panel.grid.minor.x = element_blank(), # remove minor grid lines
           legend.title = element_text(size = 20),
           legend.text = element_text(size = 20),
           axis.text = element_text(angle = 45, hjust = 1, size = 17),
@@ -1349,7 +1352,8 @@ server <- function(input, output, session) {
           theme(
         legend.title = element_text(size = 20, color = "black"),
         legend.text = element_text(size = 20, color = "black"),
-        axis.text = element_text(angle = 45, hjust = 1, size = 17, color = "black"),
+        axis.text.y = element_text(angle = 45, hjust = 1, size = 17, color = "black"),
+        axis.text.x = element_text(size = 17, color = "black"), # remove rotation from x tick labels
         plot.title = element_text(hjust = 0.5, face = "bold", size = 23, color = "black"),
         axis.title = element_text(size = 23, color = "black"))
 
@@ -1357,7 +1361,8 @@ server <- function(input, output, session) {
           theme(
         legend.title = element_text(size = 20, color = "black"),
         legend.text = element_text(size = 20, color = "black"),
-        axis.text = element_text(angle = 45, hjust = 1, size = 17, color = "black"),
+        axis.text.y = element_text(angle = 45, hjust = 1, size = 17, color = "black"),
+        axis.text.x = element_text(size = 17, color = "black"), # remove rotation from x tick labels
         plot.title = element_text(hjust = 0.5, face = "bold", size = 23, color = "black"),
         axis.title = element_text(size = 23, color = "black"))
 
@@ -1752,7 +1757,8 @@ server <- function(input, output, session) {
     content = function(file) {
       req(dea_res_preprocess$df_res)
       plot <- createVolcano(dea_res_preprocess$df_res$res_df, condi_cols()) + theme_bw() +
-              theme(legend.title = element_text(size = 20),
+              theme(#legend.title = element_text(size = 20),
+                legend.title = element_blank(), # remove legend title
                 legend.text = element_text(size = 20),
                 axis.text = element_text(angle = 45, hjust = 1, size = 17),
                 plot.title = element_text(hjust = 0.5, face = "bold", size = 23),
@@ -1820,7 +1826,7 @@ server <- function(input, output, session) {
       req(DTE_run$df_res_dte$volcano_plot)
       plot = DTE_run$df_res_dte$volcano_plot + 
         theme_bw() +
-        theme(legend.title = element_text(size = 20),
+        theme(legend.title = element_blank(),
                 legend.text = element_text(size = 20),
                 axis.text = element_text(angle = 45, hjust = 1, size = 17),
                 plot.title = element_text(hjust = 0.5, face = "bold", size = 23),
@@ -1959,7 +1965,10 @@ server <- function(input, output, session) {
         geom_bar(stat = "identity") +
         theme_bw() +
         scale_fill_manual(values = c("#CC6677", "#d8c66c", "#117733", "#88CCEE", "#AA4499", "#24011e","#092a36")) +
+        scale_x_continuous(breaks = 1:max(x$Iteration)) + # label each x tick individually
+        ylab("Time [s]") + # add [s] to y-axis label
         theme(
+        panel.grid.minor.x = element_blank(), # remove minor grid lines
         panel.background = element_rect(fill = "transparent"), # bg of the panel
         plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
         # panel.grid.major = element_blank(), # get rid of major grid

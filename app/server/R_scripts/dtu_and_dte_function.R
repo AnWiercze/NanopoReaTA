@@ -174,13 +174,26 @@ DTU_special <- function(d_list = tryout, condition_col = "Condition", first.leve
     #plot_dataframe_d  
   
     if(dim(plot_dataframe_d)[1] > 0){
+      
+    # get coordinates to draw significance bars
+    sig_bar_coord = data.frame(id = unique(plot_dataframe_d$feature_id)) # create a new dataframe containing the unique IDs from plot_dataframe_d (in the same order as they occur in the ordiginal data)
+    sig_bar_coord$y = apply(sig_bar_coord, MARGIN = 1, FUN = function(row) max(plot_dataframe_d[plot_dataframe_d$feature_id == row, "percentage"]) + 0.03) # for each ID get the maximum percentage value and add 0.01 => y value for the significance bars
+    sig_bar_coord$x_center = as.numeric(rownames(sig_bar_coord)) # extract the rownames and transform these to numeric types => x positions in the middle between each boxplot pair (since the initial order (that the ggboxplot function also uses) is kept, the index can be used as x position)
+    sig_bar_coord$x_1 = sig_bar_coord$x_center - 0.25 # starting position of the line
+    sig_bar_coord$x_2 = sig_bar_coord$x_center + 0.25 # end position of the line 
+    sig_bar_coord$significant = apply(sig_bar_coord, MARGIN = 1, FUN = function(row) plot_dataframe_d[plot_dataframe_d$feature_id == row["id"], "Significance"][1]) # for each ID extract the corresponding significane value (TRUE/FALSE) 
+    sig_bar_coord = sig_bar_coord[sig_bar_coord$significant == TRUE,] # keep only significant IDs; the x and y values are used to draw the line below
+      
     bp <- ggboxplot(plot_dataframe_d, "feature_id", "percentage",
-                  color = "Condition", fill = "Significance", add = "jitter", add.params = list(size = 3, alpha = 1)) +
+                  color = "Condition", add = "jitter", add.params = list(size = 3, alpha = 1)) + # removed:
     color_palette(palette = "jco")+
-    fill_palette(palette =  c("steelblue4","indianred3"))+
+    #fill_palette(palette =  c("steelblue4","indianred3"))+
     xlab("Feature ID") +
-    ylab("Percentage") +
+    ylab("Transcript expression (%)") +
     ggtitle(goi_name) +
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+    geom_segment(data = sig_bar_coord, aes(x = x_1, y = y, xend = x_2, yend = y), color = "indianred3") + # draw significance bars
+    geom_text(data = sig_bar_coord, aes(x = x_center, y = y+0.02), label = "sign.", color = "indianred3") + # add "sign." label anove each bar
     theme(
       panel.background = element_rect(fill = "transparent"), # bg of the panel
       plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
@@ -190,11 +203,12 @@ DTU_special <- function(d_list = tryout, condition_col = "Condition", first.leve
       #legend.box.background = element_rect(fill = "transparent"), # get rid of legend panel bg
       legend.title = element_text(size = 20, color = "white"),
       legend.key = element_rect(colour = "transparent", fill = "transparent"),
-      legend.text = element_text("Condition",size = 8, color = "white"),
+      legend.text = element_text("Condition", size = 8, color = "white"),
       axis.line = element_line(color = "white"),
       axis.text = element_text(angle = 45, hjust = 1, size = 10, color = "white"),
       plot.title = element_text(hjust = 0.5, face = "bold", size = 14, color = "white"),
-      axis.title = element_text(size = 14, color = "white"))
+      axis.title = element_text(size = 14, color = "white")
+      )
   
   bp <- ggpar(bp,legend = "right",
               font.legend = c(14))
@@ -209,11 +223,6 @@ DTU_special <- function(d_list = tryout, condition_col = "Condition", first.leve
     return(output_list)
   }
 }
-
-  
-
-
-
 
 
 
@@ -324,8 +333,10 @@ DTE_general <- function(d_list, condition_col = "Condition", first.level = "Hct1
 
   volcano_plot_dex <- ggplot(dxr_df,mapping = aes(x = log_2_fold_Change, y=-log10(padj),color = Significance_reg)) +
     geom_point(size=1.75) + 
-    xlab("Log 2 fold change") +
+    ggtitle(paste0("Volcano Plot (", first.level, " vs. ", ref.level, ")")) + # add conditions to title
+    xlab("log2 fold change") +
     ylab("-log10( p-adjusted )") +
+    guides(colour = guide_legend(override.aes = list(size=5))) + # increase the size of the dots in the legend
     geom_text(data = dxr_df %>% filter(label == TRUE) , 
               mapping = aes(label = rownames(dxr_df)[which(dxr_df$label == TRUE)]), size = 6, nudge_y = 0.4, check_overlap = T) + 
     
@@ -337,12 +348,13 @@ DTE_general <- function(d_list, condition_col = "Condition", first.level = "Hct1
       #panel.grid.minor = element_blank(), # get rid of minor grid
       legend.background = element_rect(fill = "transparent"), # get rid of legend bg
       #legend.box.background = element_rect(fill = "transparent"), # get rid of legend panel bg
-      legend.title = element_text(size = 20, color = "white"),
+      #legend.title = element_text(size = 20, color = "white"),
+      legend.title = element_blank(), # remove legend title
       legend.key = element_rect(colour = "transparent", fill = "transparent"),
       legend.text = element_text(size = 20, color = "white"),
       axis.line = element_line(color = "white"),
       axis.text = element_text(angle = 45, hjust = 1, size = 17, color = "white"),
-      plot.title = element_text(hjust = 0.5, face = "bold", size = 14, color = "white"),
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 23, color = "white"),
       axis.title = element_text(size = 23, color = "white"))
   output_list$dxr_df = dxr_df
   output_list$volcano_plot = volcano_plot_dex 
