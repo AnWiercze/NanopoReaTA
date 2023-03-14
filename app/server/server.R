@@ -1796,7 +1796,7 @@ server <- function(input, output, session) {
         theme_bw() +
         theme(legend.title = element_text(size = 20),
                 legend.text = element_text(size = 20),
-                axis.text = element_text(angle = 45, hjust = 1, size = 17),
+                axis.text = element_text(angle = 45, hjust = 1, size = 8),
                 plot.title = element_text(hjust = 0.5, face = "bold", size = 23),
                 axis.title = element_text(size = 23))
 
