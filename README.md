@@ -111,7 +111,7 @@ The following parameters have to be set by the user:
  Parameter | Datatype | Comments 
  :---: | :---: | :---:
  Number of threads | integer | Can be adjusted on the interactive scale bar 
- Run preprocessing | bool | Select yes or no (Yes if you want to run the nxtflow pipeline, no if your data is already preprocessed)
+ Run preprocessing | bool | Select yes or no (Yes if you want to run the Nextflow pipeline, no if your data is already preprocessed)
  Barcoded | bool | Select yes or no (Yes if your dataset is multiplexed, no if it is not multiplexed)
  Path to main directory | string | Please insert the experiment directory created by MinKnow when the sequencing is started; Do not forget the "/" at the end of the directory path
  Path to a metadata/description file  | string | Please insert the filepath to the created metadata file
