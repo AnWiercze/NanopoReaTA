@@ -127,6 +127,32 @@ createCountsPlot <- function(normCounts, genes, metaTab, genes.tab, gtitle, outN
         axis.text = element_text(angle = 45, hjust = 1, size = 17, color = "white"),
         plot.title = element_text(hjust = 0.5, face = "bold", size = 23, color = "white"),
         axis.title = element_text(size = 23, color = "white"))
+    
+    x3 <- ggplot(meltedmutGenes_all) +
+      geom_violin(aes(x = gene_name, y = normalized_counts, fill = conditions), color = "white") +
+      #geom_point(aes(x = gene_name, y = normalized_counts, color = conditions), position = position_jitter(w=0.1, h=0), size=4)+
+      scale_y_log10(oob = scales::squish_infinite) +
+      scale_fill_manual(values = condi_cols) +
+      
+      ylab(ylabel) +
+      xlab("Genes") +
+      ggtitle(gtitle) +
+      theme_bw() +
+      theme(
+        panel.background = element_rect(fill = "transparent", color = "white"), # bg of the panel
+        plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+        panel.grid.major = element_line(size = 0.2, linetype = 'solid',
+                                        colour = "white"), # get rid of major grid
+        panel.grid.minor = element_line(size = 0.2, linetype = 'solid', colour = "white"), # get rid of minor grid
+        legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+        legend.box.background = element_rect(fill = "transparent"), # get rid of legend panel bg
+        legend.title = element_text(size = 20, color = "white"),
+        legend.key = element_rect(colour = "transparent", fill = "transparent"),
+        legend.text = element_text(size = 20, color = "white"),
+        axis.text = element_text(angle = 45, hjust = 1, size = 17, color = "white"),
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 23, color = "white"),
+        axis.title = element_text(size = 23, color = "white"))
+    
   } else {
        x1 = ggplot(meltedmutGenes_all) +
       geom_boxplot(aes(x = gene_name, y = normalized_counts, fill = conditions), color = "black") +
@@ -158,9 +184,25 @@ createCountsPlot <- function(normCounts, genes, metaTab, genes.tab, gtitle, outN
         axis.text = element_text(angle = 45, hjust = 1, size = 17, color = "black"),
         plot.title = element_text(hjust = 0.5, face = "bold", size = 23, color = "black"),
         axis.title = element_text(size = 23, color = "black"))
+    
+    x3 <- ggplot(meltedmutGenes_all) +
+      geom_violin(aes(x = gene_name, y = normalized_counts, fill = conditions), color = "black") +
+      scale_y_log10(oob = scales::squish_infinite) +
+      scale_fill_manual(values = condi_cols) +
+      
+      ylab(ylabel) +
+      xlab("Genes") +
+      ggtitle(gtitle) +
+      theme_bw() +
+      theme(
+        legend.title = element_text(size = 20, color = "black"),
+        legend.text = element_text(size = 20, color = "black"),
+        axis.text = element_text(angle = 45, hjust = 1, size = 17, color = "black"),
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 23, color = "black"),
+        axis.title = element_text(size = 23, color = "black"))
 
   }
-  return(list("Points" = x2, "Boxplot" = x1))
+  return(list("Points" = x2, "Boxplot" = x1, "Violinplot" = x3))
 }
 TEA <- function(counts, norm_counts, genes.list, metadata, pvalue, output.dir, condi_cols){
   print("###################################")
@@ -205,11 +247,13 @@ TEA <- function(counts, norm_counts, genes.list, metadata, pvalue, output.dir, c
 
   p1 = ggarrange(plotlist = list(counts_plot[["Points"]], norm_counts_plot[["Points"]]), nrow = 1, ncol = 2, common.legend = TRUE)
   p2 = ggarrange(plotlist = list(counts_plot[["Boxplot"]], norm_counts_plot[["Boxplot"]]), nrow = 1, ncol = 2, common.legend = TRUE)
+  p3 = ggarrange(plotlist = list(counts_plot[["Violinplot"]], norm_counts_plot[["Violinplot"]]), nrow = 1, ncol = 2, common.legend = TRUE)
   
   p1.download = ggarrange(plotlist = list(counts_plot.download[["Points"]], norm_counts_plot.download[["Points"]]), nrow = 1, ncol = 2, common.legend = TRUE)
   p2.download = ggarrange(plotlist = list(counts_plot.download[["Boxplot"]], norm_counts_plot.download[["Boxplot"]]), nrow = 1, ncol = 2, common.legend = TRUE)
-
-  return(list("Dotplot" = p1, "Boxplot" = p2, "Dotplot.down" = p1.download, "Boxplot.down" = p2.download))
+  p3.download = ggarrange(plotlist = list(counts_plot.download[["Violinplot"]], norm_counts_plot.download[["Violinplot"]]), nrow = 1, ncol = 2, common.legend = TRUE)
+  
+  return(list("Dotplot" = p1, "Boxplot" = p2, "Violinplot" = p3, "Dotplot.down" = p1.download, "Boxplot.down" = p2.download, "Violinplot.down" = p3.download))
 }
 geneBodyCov.plot <- function(gB_results, geneOfInterest_in, metadata, condi_cols){
   

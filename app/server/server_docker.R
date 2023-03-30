@@ -804,14 +804,18 @@ server <- function(input, output, session) {
         # get the x-tick interval based on the number of iterations in the data
         max_it <- max(x$Iteration)
         xticks <- 1:max_it
-        if (max_it <= 5) { # every tick
+        if (max_it <= 10) { # every tick
           xticks <- xticks
-        } else if (max_it <= 10) { # every other tick
-          xticks <- xticks[xticks %% 2 == 0]
         } else if (max_it <= 50) { # every 5th tick
           xticks <- xticks[xticks %% 5 == 0]
-        } else { # every 10th tick
+        } else if (max_it <= 100) { # every 10th tick
           xticks <- xticks[xticks %% 10 == 0]
+        } else if (max_it <= 1000) { # every 50th tick
+          xticks <- xticks[xticks %% 50 == 0]
+        } else if (max_it <= 10000) { # every 100th tick
+          xticks <- xticks[xticks %% 100 == 0]
+        } else { # every 1000th tick
+          xticks <- xticks[xticks %% 1000 == 0]
         }
         
         plot = ggplot(x, aes(x = Iteration, y = Time, fill = Tool)) +
@@ -1184,6 +1188,9 @@ server <- function(input, output, session) {
     if (input$disp == "dotplot"){
       return(tea_res$df_res[["Dotplot"]])
     }
+    if (input$disp == "violinplot"){
+      return(tea_res$df_res[["Violinplot"]])
+    }
   }, bg="transparent")
   
   # Save button for TEA plot
@@ -1214,6 +1221,20 @@ server <- function(input, output, session) {
         }
       )
     }
+    if (input$disp == "violinplot"){
+      output$down_tea = downloadHandler(
+        filename = function() {
+          
+          paste0("Gene_counts_violinplot_", Sys.Date(), ".", input$tea_down.type)
+          
+        },
+        content = function(file) {
+          plot <- tea_res$df_res[["Violinplot.down"]]
+          ggsave(file, plot, device = input$tea_down.type, bg="white", height = 8, width = 20, units = "in")
+        }
+      )
+    }
+    
   })
 
   ## Gene Body Coverage ####
@@ -1986,14 +2007,18 @@ server <- function(input, output, session) {
       # get the x-tick interval based on the number of iterations in the data
       max_it <- max(x$Iteration)
       xticks <- 1:max_it
-      if (max_it <= 5) { # every tick
+      if (max_it <= 10) { # every tick
         xticks <- xticks
-      } else if (max_it <= 10) { # every other tick
-        xticks <- xticks[xticks %% 2 == 0]
       } else if (max_it <= 50) { # every 5th tick
         xticks <- xticks[xticks %% 5 == 0]
-      } else { # every 10th tick
+      } else if (max_it <= 100) { # every 10th tick
         xticks <- xticks[xticks %% 10 == 0]
+      } else if (max_it <= 1000) { # every 50th tick
+        xticks <- xticks[xticks %% 50 == 0]
+      } else if (max_it <= 10000) { # every 100th tick
+        xticks <- xticks[xticks %% 100 == 0]
+      } else { # every 1000th tick
+        xticks <- xticks[xticks %% 1000 == 0]
       }
       
       ggplot(x, aes(x = Iteration, y = Time, fill = Tool)) +
