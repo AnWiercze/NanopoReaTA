@@ -89,6 +89,11 @@ println params.batchsize
 println " "
 //Channels are important for Activating and reactivating Processes at a given timepoint
 
+params.DRS = 1
+println "Type of Sample:"
+println params.DRS
+println " "
+
 checkup = Channel.create()
 //checkup2 = Channel.create()
 //checkup3 = Channel.create()
@@ -291,8 +296,15 @@ process make_directories{
 
 	done
     echo 1 > ${params.run_dir}process_running.txt
-    minimap2 --MD -ax splice -uf -k14 -d ${params.run_dir}MT-human_ont.mmi $params.genome_fasta || echo "Indiexing genome failed" >> ${params.run_dir}error_logs/index_genome.log
-    minimap2 --MD -ax map-ont -uf -k14 -d ${params.run_dir}MT-human_transcript_ont.mmi $params.transcriptome_fasta || echo "Indexing transcriptome failed" >> ${params.run_dir}error_logs/index_transcriptome.log
+
+    if [ ${params.DRS} -eq 1 ]
+    then
+        minimap2 --MD -ax splice -uf -k14 -d ${params.run_dir}MT-human_ont.mmi $params.genome_fasta || echo "Indiexing genome failed" >> ${params.run_dir}error_logs/index_genome.log
+        minimap2 --MD -ax map-ont -uf -k14 -d ${params.run_dir}MT-human_transcript_ont.mmi $params.transcriptome_fasta || echo "Indexing transcriptome failed" >> ${params.run_dir}error_logs/index_transcriptome.log
+    else
+        minimap2 --MD -ax splice -d ${params.run_dir}MT-human_ont.mmi $params.genome_fasta || echo "Indiexing genome failed" >> ${params.run_dir}error_logs/index_genome.log
+        minimap2 --MD -ax map-ont -d ${params.run_dir}MT-human_transcript_ont.mmi $params.transcriptome_fasta || echo "Indexing transcriptome failed" >> ${params.run_dir}error_logs/index_transcriptome.log
+    fi
     """
 }
 
@@ -972,7 +984,12 @@ process minimap_alignment{
                 converted_filename=\${filename/${params.suffix}/bam}
                 outname=${params.run_dir}\${basis}/bam_files/\${converted_filename}
             fi
+            if [ ${params.DRS} -eq 1 ]
+            then
             minimap2 --MD -ax splice -uf -k14 -t ${params.threads} ${params.run_dir}MT-human_ont.mmi \$i | samtools view -hbS -F 3844 | samtools sort > \${outname} || echo "\$i " >> ${params.run_dir}error_logs/minimap2_genome_failed.log
+            else
+            minimap2 --MD -ax splice -t ${params.threads} ${params.run_dir}MT-human_ont.mmi \$i | samtools view -hbS -F 3844 | samtools sort > \${outname} || echo "\$i " >> ${params.run_dir}error_logs/minimap2_genome_failed.log 
+            fi
         done
         end=\$(date +%s)
         time=\$(echo "\$((\$end-\$start))")
@@ -1108,7 +1125,12 @@ process minimap_transcript_alignment{
                 converted_filename=\${filename/${params.suffix}/bam}
                 outname=${params.run_dir}\${basis}/bam_files_transcripts/\${converted_filename}
             fi
-            minimap2 --MD -ax splice -uf -k14 -t ${params.threads} ${params.run_dir}MT-human_transcript_ont.mmi ${params.run_dir} \$i | samtools view -hbS -F 3844 | samtools sort > \${outname} || echo "\$i " >> ${params.run_dir}error_logs/minimap2_transcript_failed.log
+            if [ ${params.DRS} -eq 1 ]
+            then
+            minimap2 --MD -ax map-ont -uf -k14 -t ${params.threads} ${params.run_dir}MT-human_transcript_ont.mmi ${params.run_dir} \$i | samtools view -hbS -F 3844 | samtools sort > \${outname} || echo "\$i " >> ${params.run_dir}error_logs/minimap2_transcript_failed.log
+            else
+            minimap2 --MD -ax map-ont -t ${params.threads} ${params.run_dir}MT-human_transcript_ont.mmi ${params.run_dir} \$i | samtools view -hbS -F 3844 | samtools sort > \${outname} || echo "\$i " >> ${params.run_dir}error_logs/minimap2_transcript_failed.log
+            fi
         done
         end=\$(date +%s)
         time=\$(echo "\$((\$end-\$start))")
