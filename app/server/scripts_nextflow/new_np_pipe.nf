@@ -17,7 +17,7 @@ import java.io.File;
 //Variables will be needed for configuration of the programm, maybe a switch to configuration file coming soon  
 //Folders of interest, annotation and alignment files
 println "General Threads: "
-params.threads = 30
+//params.threads = 30
 println params.threads
 println " "
 
@@ -89,7 +89,7 @@ println params.batchsize
 println " "
 //Channels are important for Activating and reactivating Processes at a given timepoint
 
-params.DRS = 1
+//params.DRS = 1
 println "Type of Sample:"
 println params.DRS
 println " "
@@ -711,10 +711,12 @@ process data_alignment_prep{
                 sample=\${run_dir}\${par_basis}/bam_files/
                 echo "Running samtoolsParallelAll" >> ${params.run_dir}error_logs/samtoolsParallelall_running.log
                 sample_transcripts=\${run_dir}\${par_basis}/bam_files_transcripts/
-                samtools merge \${run_dir}\${par_basis}/all_gene.bam \${sample}*.bam -f -h \${sample}*.bam --threads ${params.threads} -c -p || echo "\${sample}" >> \${run_dir}error_logs/bam_file_genome_merge_after_corruption_error.log
+                #samtools merge \${run_dir}\${par_basis}/all_gene.bam \${sample}*.bam -f -h \${sample}*.bam --threads ${params.threads} -c -p || echo "\${sample}" >> \${run_dir}error_logs/bam_file_genome_merge_after_corruption_error.log
+                samtools merge \${run_dir}\${par_basis}/all_gene.bam \${sample}*.bam -f --threads ${params.threads} -c -p || echo "\${sample}" >> \${run_dir}error_logs/bam_file_genome_merge_after_corruption_error.log
                 cp \${run_dir}\${par_basis}/all_gene.bam \${run_dir}bam_genome_merged/\${par_basis}.bam
                 samtools index \${run_dir}bam_genome_merged/\${par_basis}.bam --threads ${params.threads}
-                samtools merge \${run_dir}\${par_basis}/salmon/all.bam \${sample_transcripts}*.bam -f -h \${sample_transcripts}*.bam --threads ${params.threads} -c -p  || echo "\${sample_transcripts}" >> \${run_dir}error_logs/bam_file_transcriptome_merge_after_corruption_error.log
+                #samtools merge \${run_dir}\${par_basis}/salmon/all.bam \${sample_transcripts}*.bam -f -h \${sample_transcripts}*.bam --threads ${params.threads} -c -p || echo "\${sample_transcripts}" >> \${run_dir}error_logs/bam_file_transcriptome_merge_after_corruption_error.log
+                samtools merge \${run_dir}\${par_basis}/salmon/all.bam \${sample_transcripts}*.bam -f --threads ${params.threads} -c -p || echo "\${sample_transcripts}" >> \${run_dir}error_logs/bam_file_transcriptome_merge_after_corruption_error.log
                 cp \${run_dir}\${par_basis}/salmon/all.bam \${run_dir}bam_transcriptome_merged/\${par_basis}.bam
                 samtools index \${run_dir}bam_transcriptome_merged/\${par_basis}.bam --threads ${params.threads}
             fi
@@ -1002,7 +1004,8 @@ process minimap_alignment{
             par_basis=\$(basename \$(dirname \${sample}))
             if [ ! -f \${run_dir}bam_genome_merged/\${par_basis}.bam ]
             then
-                samtools merge \${run_dir}\${par_basis}/all_gene.bam \${sample}*.bam -f -h \${sample}*.bam --threads ${params.threads} -c -p || echo "\${sample}" >> \${run_dir}error_logs/merge_genome_all_error.log
+                #samtools merge \${run_dir}\${par_basis}/all_gene.bam \${sample}*.bam -f -h \${sample}*.bam --threads ${params.threads} -c -p || echo "\${sample}" >> \${run_dir}error_logs/merge_genome_all_error.log
+                samtools merge \${run_dir}\${par_basis}/all_gene.bam \${sample}*.bam -f --threads ${params.threads} -c -p || echo "\${sample}" >> \${run_dir}error_logs/merge_genome_all_error.log
                 cp \${run_dir}\${par_basis}/all_gene.bam \${run_dir}bam_genome_merged/\${par_basis}.bam 
                 samtools index \${run_dir}bam_genome_merged/\${par_basis}.bam --threads ${params.threads} || echo "Indexing failed" >> \${run_dir}/error_logs/indexing_genome_all_error.log
             else
@@ -1015,7 +1018,8 @@ process minimap_alignment{
                 fi
             done
             #echo \$bam_files_to_merge >> \${run_dir}/error_logs/bam_files_to_merge.txt
-            samtools merge \${run_dir}bam_genome_merged/\${par_basis}.bam \${bam_files_to_merge} -f -h \${bam_files_to_merge} --threads ${params.threads} -c -p || echo "\${bam_files_to_merge}" >> \${run_dir}error_logs/merge_genome_few_error.log
+            #samtools merge \${run_dir}bam_genome_merged/\${par_basis}.bam \${bam_files_to_merge} -f -h \${bam_files_to_merge} --threads ${params.threads} -c -p || echo "\${bam_files_to_merge}" >> \${run_dir}error_logs/merge_genome_few_error.log
+            samtools merge \${run_dir}bam_genome_merged/\${par_basis}.bam \${bam_files_to_merge} -f --threads ${params.threads} -c -p || echo "\${bam_files_to_merge}" >> \${run_dir}error_logs/merge_genome_few_error.log
             cp \${run_dir}bam_genome_merged/\${par_basis}.bam \${run_dir}\${par_basis}/all_gene.bam
             samtools index \${run_dir}bam_genome_merged/\${par_basis}.bam --threads ${params.threads} || echo "Indexing failed" >> \${run_dir}/error_logs/indexing_genome_few_error.log
             fi 
@@ -1408,7 +1412,8 @@ process salmon_annotation{
                 par_basis=\$(basename \$(dirname \$(dirname \${sample})))
                 if [ ! -f \${run_dir}bam_transcriptome_merged/\${par_basis}.bam ]
                 then
-                    samtools merge \${run_dir}\${par_basis}/salmon/all.bam \${sample}*.bam -f -h \${sample}*.bam --threads ${params.threads} -c -p || echo "\${sample}" >> \${run_dir}/error_logs/merge_transcriptome_all_samtools_error.log
+                    #samtools merge \${run_dir}\${par_basis}/salmon/all.bam \${sample}*.bam -f -h \${sample}*.bam --threads ${params.threads} -c -p || echo "\${sample}" >> \${run_dir}/error_logs/merge_transcriptome_all_samtools_error.log
+                    samtools merge \${run_dir}\${par_basis}/salmon/all.bam \${sample}*.bam -f --threads ${params.threads} -c -p || echo "\${sample}" >> \${run_dir}/error_logs/merge_transcriptome_all_samtools_error.log
                     cp \${run_dir}\${par_basis}/salmon/all.bam \${run_dir}bam_transcriptome_merged/\${par_basis}.bam 
                     samtools index \${run_dir}bam_transcriptome_merged/\${par_basis}.bam --threads ${params.threads} || echo "Indexing failed" >> \${run_dir}/error_logs/indexing_transcriptome_all_error.log
                 else
@@ -1421,7 +1426,8 @@ process salmon_annotation{
                     fi
                 done
                 echo \$bam_files_to_merge >> \${run_dir}/error_logs/bam_files_to_merge_transcripts.txt
-                samtools merge \${run_dir}bam_transcriptome_merged/\${par_basis}.bam \${bam_files_to_merge} -f -h \${bam_files_to_merge} --threads ${params.threads} -c -p || echo "\${bam_files_to_merge}" >> \${run_dir}/error_logs/merge_transcriptome_few_error.log
+                #samtools merge \${run_dir}bam_transcriptome_merged/\${par_basis}.bam \${bam_files_to_merge} -f -h \${bam_files_to_merge} --threads ${params.threads} -c -p || echo "\${bam_files_to_merge}" >> \${run_dir}/error_logs/merge_transcriptome_few_error.log
+                samtools merge \${run_dir}bam_transcriptome_merged/\${par_basis}.bam \${bam_files_to_merge} -f --threads ${params.threads} -c -p || echo "\${bam_files_to_merge}" >> \${run_dir}/error_logs/merge_transcriptome_few_error.log
                 cp \${run_dir}bam_transcriptome_merged/\${par_basis}.bam \${run_dir}\${par_basis}/salmon/all.bam
                 samtools index \${run_dir}bam_transcriptome_merged/\${par_basis}.bam --threads ${params.threads} || echo "Indexing failed" >> \${run_dir}/error_logs/indexing_transcriptome_few_error.log
                 fi
