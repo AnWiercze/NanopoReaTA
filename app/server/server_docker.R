@@ -151,7 +151,7 @@ server <- function(input, output, session) {
   observeEvent(listenChangedInput(), {
     #input$preprocess <- 0
     enable("preprocessing_B")
-    updateActionButton(session, "preprocessing_B", "Start preprocessing")
+    updateActionButton(session, "preprocessing_B", "Start")
   })
 
   docker <- reactive({
@@ -797,14 +797,32 @@ server <- function(input, output, session) {
       if (!is.null(process_time$df())){
         print(head(process_time$df()))
         x = process_time$df()
+        
+        # replace _ with whitespace in tool names for a cleaner legend
+        x = x %>% mutate(Tool = gsub("_", " ", Tool))
+        
+        # get the x-tick interval based on the number of iterations in the data
+        max_it <- max(x$Iteration)
+        xticks <- 1:max_it
+        if (max_it <= 5) { # every tick
+          xticks <- xticks
+        } else if (max_it <= 10) { # every other tick
+          xticks <- xticks[xticks %% 2 == 0]
+        } else if (max_it <= 50) { # every 5th tick
+          xticks <- xticks[xticks %% 5 == 0]
+        } else { # every 10th tick
+          xticks <- xticks[xticks %% 10 == 0]
+        }
+        
         plot = ggplot(x, aes(x = Iteration, y = Time, fill = Tool)) +
           geom_bar(stat = "identity") +
           theme_bw() +
-          scale_fill_manual(values = c("#CC6677", "#d8c66c", "#117733", "#88CCEE", "#AA4499", "#24011e","#092a36")) +
-          scale_x_continuous(breaks = 1:max(x$Iteration)) + # label each x tick individually
+          scale_fill_manual("Preprocessing steps", values = c("#CC6677", "#d8c66c", "#117733", "#88CCEE", "#AA4499", "#24011e","#092a36")) +
+          scale_x_continuous(breaks = xticks) + # label each x tick individually
           ylab("Time [s]") + # add [s] to y-axis label
           theme(
-          panel.grid.minor.x = element_blank(), # remove minor grid lines
+          panel.grid.minor = element_blank(), # remove minor grid lines
+          panel.grid.major.x = element_blank(),
           legend.title = element_text(size = 20),
           legend.text = element_text(size = 20),
           axis.text = element_text(angle = 45, hjust = 1, size = 17),
@@ -1961,14 +1979,32 @@ server <- function(input, output, session) {
     if (!is.null(process_time$df())){
       print(head(process_time$df()))
       x = process_time$df()
+      
+      # replace _ with whitespace in tool names for a cleaner legend
+      x = x %>% mutate(Tool = gsub("_", " ", Tool))
+      
+      # get the x-tick interval based on the number of iterations in the data
+      max_it <- max(x$Iteration)
+      xticks <- 1:max_it
+      if (max_it <= 5) { # every tick
+        xticks <- xticks
+      } else if (max_it <= 10) { # every other tick
+        xticks <- xticks[xticks %% 2 == 0]
+      } else if (max_it <= 50) { # every 5th tick
+        xticks <- xticks[xticks %% 5 == 0]
+      } else { # every 10th tick
+        xticks <- xticks[xticks %% 10 == 0]
+      }
+      
       ggplot(x, aes(x = Iteration, y = Time, fill = Tool)) +
         geom_bar(stat = "identity") +
         theme_bw() +
-        scale_fill_manual(values = c("#CC6677", "#d8c66c", "#117733", "#88CCEE", "#AA4499", "#24011e","#092a36")) +
-        scale_x_continuous(breaks = 1:max(x$Iteration)) + # label each x tick individually
+        scale_fill_manual("Preprocessing steps", values = c("#CC6677", "#d8c66c", "#117733", "#88CCEE", "#AA4499", "#24011e","#092a36")) +
+        scale_x_continuous(breaks = xticks) + # label each x tick individually
         ylab("Time [s]") + # add [s] to y-axis label
         theme(
-        panel.grid.minor.x = element_blank(), # remove minor grid lines
+        panel.grid.minor = element_blank(), # remove minor grid lines
+        panel.grid.major.x = element_blank(),        
         panel.background = element_rect(fill = "transparent"), # bg of the panel
         plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
         # panel.grid.major = element_blank(), # get rid of major grid

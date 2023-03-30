@@ -100,7 +100,7 @@ createVolcano <- function(res_df, condi_col){
     #scale_color_manual(values = colorCode) +
     geom_point(size=1.75) +
     xlab("log2 fold change") + ylab("-log10 p-adjusted")+
-    ggtitle(paste0("Volcano Plot (", names(condi_col)[1], " vs. ", names(condi_col)[2], ")")) + # add conditions to title
+    ggtitle(paste0("Differential Expression (", names(condi_col)[1], " vs. ", names(condi_col)[2], ")")) + # add conditions to title
     scale_color_manual(values = color_code) +
     theme_bw() +
     guides(colour = guide_legend(override.aes = list(size=5))) +
@@ -137,7 +137,7 @@ createHeatmap <- function(dds, rld, condi_col, main_color = "RdBu", gtf_file = N
 
   ha = HeatmapAnnotation(Condition = df$conditions,
                         col = list(Condition = condi_col),
-                        name = "Condition",
+                        name = "Condition   ",
                         show_annotation_name = F,
                         annotation_height = 2,
                         annotation_width = 2,
@@ -174,7 +174,7 @@ createHeatmap <- function(dds, rld, condi_col, main_color = "RdBu", gtf_file = N
 
   ha2 = HeatmapAnnotation(Condition = df$conditions,
                          col = list(Condition = condi_col),
-                         name = "Condition",
+                         name = "Condition   ",
                          show_annotation_name = F,
                          annotation_height = 2,
                          annotation_width = 2,
