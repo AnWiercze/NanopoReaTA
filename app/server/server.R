@@ -18,10 +18,11 @@ names_colorblind_palette <- c("light blue", "light red", "mustard", "green", "vi
 server <- function(input, output, session) {
   ## 0. Server settings ####
   nextflow_script_dir = paste0(normalizePath("./server/scripts_nextflow/"), "/") # will be shifted to another place soon
-
-  observeEvent(input$run.dir, {
-    if (dir.exists(input$run.dir)){
-      if (dir.exists(paste0(input$run.dir, "bam_merged_files"))){
+  
+  observeEvent(run_dir_selected(), {
+    print(run_dir_selected())
+    if (dir.exists(run_dir_selected())){
+      if (dir.exists(paste0(run_dir_selected(), "bam_merged_files"))){
         showModal(modalDialog(size = "l",
                               title = "Output directory is already present",
                               "The preprocessing of sequencing has started. Please go to next tab to select the analysis type of choice!",
@@ -32,19 +33,23 @@ server <- function(input, output, session) {
     }
   })
   
+  ## 0.1 Volumes
+  # Extract volumes for file choose function
+  volumes = getVolumes()()
+  
   
   ### 0.2 Cores for DEA ####
   # Set number of cores of default cores used for R process (from input in DEA tab)
   observe({register(MulticoreParam(input$cores))})
-
+  
   
   ## RAM in use (currently not embedded into ui)
   output$memuse.out <- renderText({
     invalidateLater(5000, session)
     as.character(Sys.meminfo()[[2]])
   })
-
-
+  
+  
   ## 1. Preprocessing #######
   # Process variable for background processes executed with processx
   myProcess <- NULL
@@ -118,7 +123,7 @@ server <- function(input, output, session) {
   
   # Confirm whole config 
   output$confirm_preprocess_settings <- renderUI({
-    if (is.null(table_of_settings())){
+    if (is.null(table_of_settings_transformed())){
       return()
     } else {
       actionButton(inputId = "preprocessing_B" , label = "Start", class = "btn btn-primary", 
@@ -127,7 +132,7 @@ server <- function(input, output, session) {
                    color: white; 
                    background-color: #d64045; 
                    border-radius: 5px;')
-   
+      
     }
   })
   
@@ -137,12 +142,13 @@ server <- function(input, output, session) {
     list(input$cores,
          input$config_file,
          input$preprocess,
-         input$barcoded, 
-         input$fastq.files, 
-         input$metadata.file, 
-         input$genome.fasta.file, 
-         input$transcriptome.fasta.file, 
-         input$gtf.file, input$run.dir, 
+         input$barcoded,
+         input$DRS,
+         input$fastq_files, 
+         input$metadata_file, 
+         input$genome_fasta_file, 
+         input$transcriptome_fasta_file, 
+         input$gtf_file, input$run_dir, input$bed_file,
          input$design_column, input$feature_A, input$feature_B, 
          input$input_data)
   })
@@ -152,213 +158,417 @@ server <- function(input, output, session) {
     enable("preprocessing_B")
     updateActionButton(session, "preprocessing_B", "Start")
   })
+
+  transform_path <- function(path){
+    if (dir.exists("/NanopoReaTA_linux_docker")){
+      if (!startsWith(path,"/NanopoReaTA_linux_docker")){
+      transformed_path = paste0("/NanopoReaTA_linux_docker",path)
+      }
+      else{
+        transformed_path=path
+      }
+    }
+    else if (dir.exists("/NanopoReaTA_windows_docker")){
+      if (!startsWith(path,"/NanopoReaTA_windows_docker")){ 
+        transformed_path = gsub("\\\\", "/", as.character(path)) 
+        transformed_path = sub(".*?\\/","",transformed_path)
+        transformed_path = paste0("/NanopoReaTA_windows_docker/",transformed_path)
+      }
+      else{
+        transformed_path = path
+      }
+    }
+    else {
+    transformed_path = path
+    }
+    return(transformed_path)
+  }
+
+  metadata_file_selected <- reactiveVal(NULL)
+  fastq_files_selected <- reactiveVal(NULL)
+  genome_fasta_file_selected <- reactiveVal(NULL)
+  transcriptome_fasta_file_selected <- reactiveVal(NULL)
+  bed_file_selected <- reactiveVal(NULL)
+  gtf_file_selected <- reactiveVal(NULL)
+  run_dir_selected <- reactiveVal(NULL)
+  
+
+  docker <- reactive({
+    req(run_dir_selected())
+    req(metadata_file_selected())
+    req(fastq_files_selected())
+    req(genome_fasta_file_selected())
+    req(transcriptome_fasta_file_selected())
+    req(gtf_file_selected())
+    req(bed_file_selected())
+    req(run_dir_selected())
+    #if (run_dir_selected() != "" | metadata_file_selected() != "" |  fastq_files_selected() != "" | genome_fasta_file_selected() != "" | transcriptome_fasta_file_selected() != "" | gtf_file_selected() != "" | run_dir_selected() != "" | bed_file_selected() != ""){
+    list(metadata_file = transform_path(metadata_file_selected()),
+    fastq_files = transform_path(fastq_files_selected()),
+    genome_fasta_file = transform_path(genome_fasta_file_selected()),
+    transcriptome_fasta_file = transform_path(transcriptome_fasta_file_selected()),
+    gtf_file = transform_path(gtf_file_selected()),
+    bed_file = transform_path(bed_file_selected()),
+    run_dir = transform_path(run_dir_selected())
+    )
+    #}
+  })
   
   
-  # Create button to confirm preprocessing config 
+  
+  #Create button to confirm preprocessing config
   output$jump2overview_B.out <- renderUI({
-    if (is.null(input$metadata.file)){
+    if (is.null(metadata_file_selected())){
       return()
     } else {
-      #print(input$metadata.file)
-      if (input$run.dir == "" | input$metadata.file == "" |  input$fastq.files == "" | input$run.dir == ""){
+      #print(metadata_file_selected())
+      if (run_dir_selected() == "" | metadata_file_selected() == "" |  fastq_files_selected() == ""){
         actionButton(inputId = "missing_values_B" ,
-                     label = "", 
-                     icon = icon("arrow-alt-circle-right"), 
+                     label = "",
+                     icon = icon("arrow-alt-circle-right"),
                      class = "btn btn-primary",
                      style='font-size:200%; color: white; background-color: #gray; border-radius: 10px')
       } else {
-        actionButton(inputId = "jump2overview_B", 
-                     label = "", 
-                     icon = icon("arrow-alt-circle-right"), 
+        actionButton(inputId = "jump2overview_B",
+                     label = "",
+                     icon = icon("arrow-alt-circle-right"),
                      class = "btn btn-primary",
                      style='font-size:200%; color: white; background-color: #83c5be; border-radius: 10px')
       }
     }
   })
   
+  ## INPUT FILES
   
-  # Load yaml file into R
-  # Loaded this way to get values, that can be changed and saved 
-  table_of_settings_old <- reactiveValues()
+  shinyFileChoose(input, "config_file", roots = volumes, session = session)
+  shinyFileChoose(input, "metadata_file", roots = volumes, session = session)
+  shinyDirChoose(input, "fastq_files", roots = volumes, session = session)
+  shinyFileChoose(input, "genome_fasta_file", roots = volumes, session = session)
+  shinyFileChoose(input, "transcriptome_fasta_file", roots = volumes, session = session)
+  shinyFileChoose(input, "gtf_file", roots = volumes, session = session)
+  shinyFileChoose(input, "bed_file", roots = volumes, session = session)
+  shinyDirChoose(input, "run_dir", roots = volumes, session = session)
   
-  config_loaded <- eventReactive(input$config_file, {
+  config_selected <- eventReactive(input$config_file, {
     req(input$config_file)
     print(input$config_file)
-    if (is.null(input$config_file$datapath) & !(input$config_file$datapath == "")){
-       showModal(modalDialog(size = "l",
-                            title = "Configuration file not loaded!",
-                             "Please load a configuration file or fill out open fields manually!",
-                             easyClose = TRUE,
-                             footer = NULL
-       ))
-       return(0)
-     } else {
-       table_of_settings_old <<- read_yaml(file = input$config_file$datapath)
-       return(1)
-     }
-    
+    y = parseFilePaths(volumes, input$config_file)
+    gsub("\\/\\/", "\\/", as.character(y$datapath))
   })
   
-  # Create interactive config table with config information
-  observe({
+  observeEvent(input$metadata_file, {
+    req(input$metadata_file)
+    print(input$metadata_file)
+    y = parseFilePaths(volumes, input$metadata_file)
+    metadata_file_selected(gsub("\\/\\/", "\\/", as.character(y$datapath)))
+  })
+  
+  observeEvent(input$fastq_files, {
+    req(input$fastq_files)
+    print(input$fastq_files)
+    y = parseDirPath(getVolumes(), input$fastq_files)
+    print(as.character(y))
+    fastq_files_selected(paste0(gsub("\\/\\/", "\\/", as.character(y)), "/"))
+  })
+  
+  observeEvent(input$genome_fasta_file, {
+    req(input$genome_fasta_file)
+    print(input$genome_fasta_file)
+    y = parseFilePaths(volumes, input$genome_fasta_file)
+    print(as.character(y))
+    
+    genome_fasta_file_selected(gsub("\\/\\/", "\\/", as.character(y$datapath)))
+  })
+  
+  observeEvent(input$transcriptome_fasta_file, {
+    req(input$transcriptome_fasta_file)
+    print(input$transcriptome_fasta_file)
+    y = parseFilePaths(volumes, input$transcriptome_fasta_file)
+    transcriptome_fasta_file_selected(gsub("\\/\\/", "\\/", as.character(y$datapath)))
+  })
+  
+  observeEvent(input$gtf_file, {
+    req(input$gtf_file)
+    print(input$gtf_file)
+    y = parseFilePaths(volumes, input$gtf_file)
+    gtf_file_selected(gsub("\\/\\/", "\\/", as.character(y$datapath)))
+  })
+  
+  observeEvent(input$bed_file, {
+    req(input$bed_file)
+    print(input$bed_file)
+    y = parseFilePaths(volumes, input$bed_file)
+    print(y)
+    bed_file_selected(gsub("\\/\\/", "\\/", as.character(y$datapath)))
+  })
+  
+  observeEvent(input$run_dir, {
+    req(input$run_dir)
+    print(input$run_dir)
+    y = parseDirPath(getVolumes(), input$run_dir)
+    print(as.character(y))
+    run_dir_selected(paste0(gsub("\\/\\/", "\\/", as.character(y)), "/"))
+  })
+  
+  output$conig_file_out <- renderText({
+    if(is.null(config_selected())){
+      x = "No file loaded"
+    } else {
+      x = config_selected()
+    }
+    x
+  })
+  
+  output$metadata_file_out <- renderText({
+    metadata_file_selected()
+  })
+  
+  output$fastq_file_out <- renderText({
+    fastq_files_selected()
+  })
+  
+  output$genome_fasta_file_out <- renderText({
+    genome_fasta_file_selected()
+  })
+  
+  output$transcriptome_fasta_file_out <- renderText({
+    transcriptome_fasta_file_selected()
+  })
+  
+  output$gtf_file_out <- renderText({
+    gtf_file_selected()
+  })
+  
+  output$bed_file_out <- renderText({
+    req(bed_file_selected())
+    bed_file_selected()
+  })
+  
+  output$run_dir_out <- renderText({
+    req(run_dir_selected())
+    run_dir_selected()
+  })
+  
+  
+  # Load yaml file into R
+  # Loaded this way to get values, that can be changed and saved
+  table_of_settings_old <- reactiveValues()
+  config_loaded <- eventReactive(input$config_file, {
+    req(config_selected())
+    print("Looks fine")
+    print(config_selected())
+    if (!is.null(config_selected())){
+      table_of_settings_old <<- read_yaml(file = config_selected())
+      return(1)
+    } else {
+      showModal(modalDialog(size = "l",
+                            title = "Configuration file not loaded!",
+                            "Please load a configuration file or fill out open fields manually!",
+                            easyClose = TRUE,
+                            footer = NULL
+      ))
+      return(0)
+    }
+  })
+  
+
+  
+  observeEvent(config_loaded(), {
     req(config_loaded())
     if (config_loaded() == 1){
-    # display message, when something is wrong with the parameters or fix simple things directly
-   
-    if (!is.null(table_of_settings_old$metadata) | length(table_of_settings_old$metadata != 0)){
-      if (!file.exists(table_of_settings_old$metadata)){
-        showModal(modalDialog(size = "l",
-                              title = "File not found!", 
-                              "Please make sure the metadata file exists and is of type 'txt' or 'tsv'", 
-                              easyClose = T, 
-                              footer = NULL))
-        updateTextInput(session, "metadata.file", value = "") 
-      } else if (!endsWith(table_of_settings_old$metadata, ".txt") & !endsWith(table_of_settings_old$metadata, ".tsv")){
-      showModal(modalDialog(size = "l",
-                            title = "Wrong file type!", 
-                            "Please make sure the metadata file is of type 'txt' or 'tsv'", 
-                            easyClose = T, 
-                            footer = NULL))
-      updateTextInput(session, "metadata.file", value = "")  # activates placeholder again
-      
-      } else {
-        updateTextInput(session, 'metadata.file', value = table_of_settings_old$metadata)
-      }
-    }
-      
-    if (!is.null(table_of_settings_old$barcoded) | length(table_of_settings_old$barcoded) != 0){
-       updateRadioButtons(session, 'barcoded', selected = table_of_settings_old$barcoded)
-    } else {
-       updateRadioButtons(session, "barcoded", selected = 1)
-    }
-    
-    
-    if (!is.null(table_of_settings_old$general_folder)){
-      if (!file.exists(table_of_settings_old$general_folder)){
-        showModal(modalDialog(size = "l",
-                              title = "Folder not found!", 
-                              "Please make sure the path to the main directory exists and contains the specified folder.", 
-                              easyClose = T, 
-                              footer = NULL))
-        updateTextInput(session, "fastq.files", value = "")}
-      else if (length(table_of_settings_old$general_folder) != 0 ){
-        if (!endsWith(table_of_settings_old$general_folder, "/")) {
-        table_of_settings_old$general_folder <<- paste0(table_of_settings_old$general_folder, "/")
+      # display message, when something is wrong with the parameters or fix simple things directly
+      print(table_of_settings_old)
+      ### METADATA
+      if (!is.null(table_of_settings_old$metadata) | length(table_of_settings_old$metadata) != 0){
+        if (!file.exists(transform_path(table_of_settings_old$metadata))){
+          showModal(modalDialog(size = "l",
+                                title = "File not found!", 
+                                "Please make sure the metadata file exists and is of type 'txt' or 'tsv'", 
+                                easyClose = T, 
+                                footer = NULL))
+          metadata_file_selected("") 
+        } else if (!endsWith(transform_path(table_of_settings_old$metadata), ".txt") & !endsWith(transform_path(table_of_settings_old$metadata), ".tsv")){
+          showModal(modalDialog(size = "l",
+                                title = "Wrong file type!", 
+                                "Please make sure the metadata file is of type 'txt' or 'tsv'", 
+                                easyClose = T, 
+                                footer = NULL))
+          metadata_file_selected("") 
+          
+        } else {
+          metadata_file_selected(table_of_settings_old$metadata)
         }
-        updateTextInput(session, 'fastq.files', value = table_of_settings_old$general_folder)
-      } else {
-        updateTextInput(session, "fastq.files", value = "")
-      }  
-    } else {
-      updateTextInput(session, "fastq.files", value = "")
-    }
-    
-    if (!is.null(table_of_settings_old$genome_fasta) | length(table_of_settings_old$genome_fasta) != 0){
-      if (!file.exists(table_of_settings_old$genome_fasta)){
-        showModal(modalDialog(size = "l",
-                              title = "File not found!", 
-                              "Please make sure the genome (fasta) file exists and is in the correct folder!", 
-                              easyClose = T, 
-                              footer = NULL))
-        updateTextInput(session, "genome.fasta.file", value = "") 
-      } else {
-      updateTextInput(session, 'genome.fasta.file', value = table_of_settings_old$genome_fasta)
-      } 
-    } else {
-      updateTextInput(session, "genome.fasta.file", value = "")
-    }
-      
-    if (!is.null(table_of_settings_old$transcriptome_fasta) | length(table_of_settings_old$transcriptome_fasta) != 0){
-      if (!file.exists(table_of_settings_old$transcriptome_fasta)){
-        showModal(modalDialog(size = "l",
-                              title = "File not found!", 
-                              "Please make sure the transcriptome (fasta) file exists and is in the correct folder!", 
-                              easyClose = T, 
-                              footer = NULL))
-        updateTextInput(session, "transcriptome.fasta.file", value = "")
-      } else {
-      updateTextInput(session, 'transcriptome.fasta.file', value = table_of_settings_old$transcriptome_fasta)
       }
-    } else {
-      updateTextInput(session, "transcriptome.fasta.file", value = "")
-    }
-    if (!file.exists(table_of_settings_old$genome_gtf)){
-      showModal(modalDialog(size = "l",
-                            title = "File not found!", 
-                            "Please make sure the gtf file exists and is in the correct folder!", 
-                            easyClose = T, 
-                            footer = NULL))
-      updateTextInput(session, "gtf.file", value = "")
-    } else if (!endsWith(table_of_settings_old$genome_gtf, "gtf")){
-      showModal(modalDialog(size = "l",
-                            title = "Wrong file type!", 
-                            "Please make sure the annotation file is of type 'gtf'", 
-                            easyClose = T, 
-                            footer = NULL))
-      updateTextInput(session, "gtf.file", value = "")
-    } else if (!is.null(table_of_settings_old$genome_gtf) | length(table_of_settings_old$genome_gtf) != 0){
       
-      updateTextInput(session, 'gtf.file', value = table_of_settings_old$genome_gtf)
-    } else {
-      updateTextInput(session, "gtf.file", value = "")
-    }
-    
-    if (!is.null(table_of_settings_old$bed_file) | length(table_of_settings_old$bed_file) != 0){
-      if (!file.exists(table_of_settings_old$bed_file)){
+      if (!is.null(table_of_settings_old$barcoded) | length(table_of_settings_old$barcoded) != 0){
+        updateRadioButtons(session, 'barcoded', selected = table_of_settings_old$barcoded)
+      } else {
+        updateRadioButtons(session, "barcoded", selected = 1)
+      }
+      
+      if (!is.null(table_of_settings_old$DRS) | length(table_of_settings_old$DRS) != 0){
+        updateRadioButtons(session, 'DRS', selected = table_of_settings_old$DRS)
+      } else {
+        updateRadioButtons(session, "DRS", selected = 1)
+      }
+      
+      
+      if (!is.null(table_of_settings_old$general_folder)){
+        print("yes")
+        if (!file.exists(transform_path(table_of_settings_old$general_folder))){
+          showModal(modalDialog(size = "l",
+                                title = "Folder not found!", 
+                                "Please make sure the path to the main directory exists and contains the specified folder.", 
+                                easyClose = T, 
+                                footer = NULL))
+          fastq_files_selected("Not found")
+        } else if (length(table_of_settings_old$general_folder) != 0 ){
+          if (!endsWith(table_of_settings_old$general_folder, "/")) {
+            table_of_settings_old$general_folder <<- paste0(table_of_settings_old$general_folder, "/")
+            print("yes")
+          }
+          fastq_files_selected(table_of_settings_old$general_folder)
+        } else {
+          fastq_files_selected("Not found")
+        }  
+      } else {
+        fastq_files_selected("Not found")
+      }
+      
+      if (!is.null(table_of_settings_old$genome_fasta) | length(table_of_settings_old$genome_fasta) != 0){
+        if (!file.exists(transform_path(table_of_settings_old$genome_fasta))){
+          showModal(modalDialog(size = "l",
+                                title = "File not found!", 
+                                "Please make sure the genome (fasta) file exists and is in the correct folder!", 
+                                easyClose = T, 
+                                footer = NULL))
+          genome_fasta_file_selected("Not found") 
+        } else {
+          genome_fasta_file_selected(table_of_settings_old$genome_fasta)
+        } 
+      } else {
+        genome_fasta_file_selected("Not found")
+      }
+      
+      if (!is.null(table_of_settings_old$transcriptome_fasta) | length(table_of_settings_old$transcriptome_fasta) != 0){
+        if (!file.exists(transform_path(table_of_settings_old$transcriptome_fasta))){
+          showModal(modalDialog(size = "l",
+                                title = "File not found!", 
+                                "Please make sure the transcriptome (fasta) file exists and is in the correct folder!", 
+                                easyClose = T, 
+                                footer = NULL))
+          transcriptome_fasta_file_selected("Not found")
+        } else {
+          transcriptome_fasta_file_selected(table_of_settings_old$transcriptome_fasta)
+        }
+      } else {
+        transcriptome_fasta_file_selected("Not found")
+      }
+      
+      if (!file.exists(transform_path(table_of_settings_old$genome_gtf))){
         showModal(modalDialog(size = "l",
                               title = "File not found!", 
-                              "Please make sure the bed file exists and is in the correct folder!", 
+                              "Please make sure the gtf file exists and is in the correct folder!", 
                               easyClose = T, 
                               footer = NULL))
-        updateTextInput(session, "bed.file", value = "")
-      } else if (!endsWith(table_of_settings_old$bed_file, "bed")){
+        gtf_file_selected("Not found")
+      } else if (!endsWith(table_of_settings_old$genome_gtf, "gtf")){
         showModal(modalDialog(size = "l",
                               title = "Wrong file type!", 
-                              "Please make sure the annotation file is of type 'bed'", 
+                              "Please make sure the annotation file is of type 'gtf'", 
                               easyClose = T, 
                               footer = NULL))
-        updateTextInput(session, "bed.file", value = "")
+        gtf_file_selected("Not found")
+      } else if (!is.null(table_of_settings_old$genome_gtf) | length(table_of_settings_old$genome_gtf) != 0){
+        
+        gtf_file_selected(table_of_settings_old$genome_gtf)
       } else {
-      updateTextInput(session, 'bed.file', value = table_of_settings_old$bed_file)
+        gtf_file_selected("Not found")
       }
-    } else {
-      updateTextInput(session, "bed.file", value = "")
-    }
-
-
-    if (!is.null(table_of_settings_old$run_dir) | length(table_of_settings_old$run_dir) != 0){
-      if (!endsWith(table_of_settings_old$run_dir, "/")) {
-        table_of_settings_old$run_dir <<- paste0(table_of_settings_old$run_dir, "/")
-      }
-      if (!file.exists(table_of_settings_old$run_dir)){
-        showModal(modalDialog(size = "l",
-                              title = "Folder not found!", 
-                              "Please make sure the output directory exists and lays the specified path.", 
-                              easyClose = T, 
-                              footer = NULL))
-        updateTextInput(session, "run.dir", value = "")
+      
+      if (!is.null(table_of_settings_old$bed_file) | length(table_of_settings_old$bed_file) != 0){
+        if (!file.exists(transform_path(table_of_settings_old$bed_file))){
+          showModal(modalDialog(size = "l",
+                                title = "File not found!", 
+                                "Please make sure the bed file exists and is in the correct folder!", 
+                                easyClose = T, 
+                                footer = NULL))
+          bed_file_selected("Not found")
+        } else if (!endsWith(table_of_settings_old$bed_file, "bed")){
+          showModal(modalDialog(size = "l",
+                                title = "Wrong file type!", 
+                                "Please make sure the annotation file is of type 'bed'", 
+                                easyClose = T, 
+                                footer = NULL))
+          bed_file_selected("Not found")
+        } else {
+          bed_file_selected(table_of_settings_old$bed_file)
+        }
       } else {
-      updateTextInput(session, 'run.dir', value = table_of_settings_old$run_dir)
+        bed_file_selected("Not found")
       }
-    } else {
-      updateTextInput(session,"run.dir", value = "")
-    }
+      
+      
+      if (!is.null(table_of_settings_old$run_dir) | length(table_of_settings_old$run_dir) != 0){
+        if (!endsWith(table_of_settings_old$run_dir, "/")) {
+          table_of_settings_old$run_dir <<- paste0(table_of_settings_old$run_dir, "/")
+        }
+        if (!file.exists(transform_path(table_of_settings_old$run_dir))){
+          showModal(modalDialog(size = "l",
+                                title = "Folder not found!", 
+                                "Please make sure the output directory exists and lays the specified path.", 
+                                easyClose = T, 
+                                footer = NULL))
+          run_dir_selected("Not found")
+        } else {
+          run_dir_selected(table_of_settings_old$run_dir)
+        }
+      } else {
+        run_dir_selected("Not found")
+      }
     }
   })
   
   # Save current settings in reactive variable
   table_of_settings <- reactive({
     #print(input$jump2overview_B)
-    x = list("cores" = as.integer(input$cores),
+    x = list("threads" = as.integer(input$cores),
              "barcoded" = as.integer(input$barcoded),
-             "metadata.file" = input$metadata.file,
-             "fastq.files" = input$fastq.files,
-             "genome.fasta.file" = input$genome.fasta.file,
-             "transcriptome.fasta.file" = input$transcriptome.fasta.file,
-             "gtf.file" = input$gtf.file,
-             "bed.file" = input$bed.file,
-             "run.dir" = input$run.dir)
-    # cat(unlist(x))
+             "DRS" = as.integer(input$DRS),
+             "metadata_file" = metadata_file_selected(),
+             "fastq_files" = fastq_files_selected(),
+             "genome_fasta_file" = genome_fasta_file_selected(),
+             "transcriptome_fasta_file" = transcriptome_fasta_file_selected(),
+             "gtf_file" = gtf_file_selected(),
+             "bed_file" = bed_file_selected(),
+             "run.dir" = run_dir_selected())
+    print(unlist(x))
+    x
+  })
+
+
+  #list(metadata_file = transform_windows(metadata_file_selected()),
+  #  fastq_files = transform_windows(fastq_files_selected()),
+  #  genome_fasta_file = transform_windows(genome_fasta_file_selected()),
+  #  transcriptome_fasta_file = transform_windows(transcriptome_fasta_file_selected()),
+  #  gtf_file =  transform_windows(gtf_file_selected()),
+  #  bed_file =  transform_windows(bed_file_selected()),
+  #  run_dir = transform_windows(run_dir_selected())
+
+  table_of_settings_transformed <- reactive({
+    req(docker())
+    #print(input$jump2overview_B)
+    x = list("threads" = as.integer(input$cores),
+             "barcoded" = as.integer(input$barcoded),
+             "DRS" = as.integer(input$DRS),
+             "metadata_file" = docker()$metadata_file,
+             "fastq_files" = docker()$fastq_files,
+             "genome_fasta_file" = docker()$genome_fasta_file,
+             "transcriptome_fasta_file" = docker()$transcriptome_fasta_file,
+             "gtf_file" = docker()$gtf_file,
+             "bed_file" = docker()$bed_file,
+             "run.dir" = docker()$run_dir)
+    print(unlist(x))
     x
   })
   
@@ -430,8 +640,8 @@ server <- function(input, output, session) {
     design_matrix_box(input, output, session, F)
   })
   metadata <- reactive({
-      if (table_of_settings()$metadata != ""){
-        data.table::fread(table_of_settings()$metadata, data.table = F)
+      if (table_of_settings_transformed()$metadata != ""){
+        data.table::fread(table_of_settings_transformed()$metadata, data.table = F)
       } else {
         return (NULL)
       }
@@ -448,8 +658,8 @@ server <- function(input, output, session) {
   
   # Print table of settings
   output$table_of_settings_df <- DT::renderDataTable({
-    req(table_of_settings())
-    config = table_of_settings()
+    req(table_of_settings_transformed())
+    config = table_of_settings_transformed()
     config$conditions = "No multiple conditions"
     
     if (is.null(metadata())) return()
@@ -479,37 +689,43 @@ server <- function(input, output, session) {
   process_running <- reactiveValues(x = NULL)
 
   observeEvent(input$preprocessing_B, {
-    req(table_of_settings())
+    req(table_of_settings_transformed())
     req(metadata())
+    req(run_dir_selected())
     req(alignment())
+    req(docker())
     if (input$preprocessing_B == 1 & !is.null(metadata())){
-      if (!dir.exists(input$run.dir)) dir.create(input$run.dir)
-      dir.create(paste0(input$run.dir, "nextflow_work_dir"))
+      if (!dir.exists(docker()$run_dir)) dir.create(docker()$run_dir)
+      dir.create(paste0(docker()$run_dir, "nextflow_work_dir"))
 
       # Save config file
-      config = table_of_settings()
-      names(config) = c("cores", "barcoded", "metadata", "general_folder", "genome_fasta", "transcriptome_fasta", "genome_gtf", "bed_file", "run_dir")
+      config = table_of_settings_transformed()
+      names(config) = c("threads", "barcoded", "DRS", "metadata", "general_folder", "genome_fasta", "transcriptome_fasta", "genome_gtf", "bed_file", "run_dir")
       currentwd = dirname(getwd())
       print(currentwd)
-      config[["script_dir"]] = nextflow_script_dir
-      print(config)
-
-      write_yaml(x = config, file = paste0(input$run.dir, "config.yaml"))
+      write_yaml(x = config, file = paste0(docker()$run_dir, "config.yaml"))
       print(list.files(paste0(currentwd, "/server/bash_scripts"), ".sh"))
 
+      config = table_of_settings_transformed()
+      names(config) = c("threads", "barcoded", "DRS", "metadata", "general_folder", "genome_fasta", "transcriptome_fasta", "genome_gtf", "bed_file", "run_dir")
+      config[["script_dir"]] = nextflow_script_dir
+      write_yaml(x = config, file = paste0(docker()$run_dir, "cf_transformed.yaml"))
+      print(list.files(paste0(currentwd, "/server/bash_scripts"), ".sh"))
+      print(config)
 
+      
 
       if  (input$preprocess == 1){
         myProcess <<- processx::process$new(command = paste0(currentwd, "/app/server/bash_scripts/run_nextflow.sh"), 
-                                            args = c(paste0(config[["script_dir"]], "new_np_pipe.nf"), paste0(input$run.dir, "config.yaml"), paste0(input$run.dir, "nextflow_work_dir")), 
+                                            args = c(paste0(config[["script_dir"]], "new_np_pipe.nf"), paste0(run_dir_selected(), "cf_transformed.yaml"), paste0(run_dir_selected(), "nextflow_work_dir")), 
                                             echo_cmd = T,
-                                            stderr = paste0(input$run.dir,"error.log"), 
-                                            stdout = paste0(input$run.dir,"index.log"))
+                                            stderr = paste0(docker()$run_dir,"error.log"), 
+                                            stdout = paste0(docker()$run_dir,"index.log"))
 
-        write.table(c(1), file = paste0(input$run.dir, "process_running.txt"), col.names = F, row.names = F, quote = F)
+        write.table(c(1), file = paste0(docker()$run_dir, "process_running.txt"), col.names = F, row.names = F, quote = F)
       } else {
-        myProcess <<- processx::process$new(command = "echo", args = "Preprocessing skipped", echo_cmd = T,stderr =paste0(input$run.dir,"error.log"), stdout = paste0(input$run.dir,"index.log"))
-        write.table(c(0), file = paste0(input$run.dir, "process_running.txt"), col.names = F, row.names = F, quote = F)
+        myProcess <<- processx::process$new(command = "echo", args = "Preprocessing skipped", echo_cmd = T,stderr =paste0(docker()$run_dir,"error.log"), stdout = paste0(docker()$run_dir,"index.log"))
+        write.table(c(0), file = paste0(docker()$run_dir, "process_running.txt"), col.names = F, row.names = F, quote = F)
 
       }
       if (!myProcess$is_alive()) print("DEAD")
@@ -522,19 +738,20 @@ server <- function(input, output, session) {
   ##### Load gtf file ####
   observeEvent({input$tabs}, {
     # Load gtf file
-    req(input$gtf.file)
+    req(docker()$gtf_file)
+    req(docker())
     if (is.null(table_of_genes())){
       if(input$tabs == "run_overview"){
         print("load gtf started")
-        if (file.exists(paste0(input$run.dir, "converted_gtf.csv"))){
-          g = read.csv(paste0(input$run.dir, "converted_gtf.csv"), header = T)
+        if (file.exists(paste0(docker()$run_dir, "converted_gtf.csv"))){
+          g = read.csv(paste0(docker()$run_dir, "converted_gtf.csv"), header = T)
         } else {
-          g = getGeneSymbolFromGTF(input$gtf.file, ".")
+          g = getGeneSymbolFromGTF(docker()$gtf_file, ".")
         }
         table_of_genes(unique(g[,c("gene_id", "gene_name")]))
         
         print("loading finished!")
-        write.csv(g[, c("gene_id", "gene_name", "transcript_id", "transcript_name")], paste0(input$run.dir, "converted_gtf.csv"))
+        write.csv(g[, c("gene_id", "gene_name", "transcript_id", "transcript_name")], paste0(docker()$run_dir, "converted_gtf.csv"))
       }
     }
   }, priority = 0)
@@ -555,7 +772,7 @@ server <- function(input, output, session) {
       print(paste0(Sys.time(), ": Starting count file loading/updating"))
 
       req(metadata())
-      counts_file = paste0(table_of_settings()$run.dir, "merged_all.csv")
+      counts_file = paste0(table_of_settings_transformed()$run.dir, "merged_all.csv")
 
       print(sprintf("Count file does exists?: %s", file.exists(counts_file)))
       if (!file.exists(counts_file)) {
@@ -592,15 +809,17 @@ server <- function(input, output, session) {
   
   observeEvent({input$preprocessing_B + input$run_dt_preprocess}, {
     print("In Transcript Count")
-    
+    req(input$preprocessing_B)
+    req(input$run_dt_preprocess)
+    req(docker())
+    req(metadata())
     print(paste0("Current tab: ", input$tabs))
     print("###################################")
     print("##     Load/Update Transcript Counts file   ##")
     print("###################################")
     print(paste0(Sys.time(), ": Starting transcript count file loading/updating"))
-
-    req(metadata())
-    counts_file = paste0(table_of_settings()$run.dir, "salmon_merged_absolute.csv")
+    
+    counts_file = paste0(table_of_settings_transformed()$run.dir, "salmon_merged_absolute.csv")
     
     print(sprintf("Salmon Count file does exists?: %s", file.exists(counts_file)))
     if (file.exists(counts_file)) {
@@ -644,8 +863,8 @@ server <- function(input, output, session) {
                handlerExpr = {
                  overview_variables$readLengthTable <- reactivePoll(10000, session,
                                                                        checkFunc = function(){
-                                                                         req(input$run.dir)
-                                                                        inputSizeDir = paste0(input$run.dir, "ReadLengthFolder")
+                                                                         req(docker()$run_dir)
+                                                                        inputSizeDir = paste0(docker()$run_dir, "ReadLengthFolder")
                                                                         if (dir.exists(inputSizeDir)){
                                                                           filesList <- list.files(inputSizeDir, full.names = TRUE)
                                                                           file.info(filesList[1])$mtime[1]
@@ -654,8 +873,8 @@ server <- function(input, output, session) {
                                                                         }
                                                                        },
                                                                        valueFunc = function(){
-                                                                        req(input$run.dir)
-                                                                        inputSizeDir = paste0(input$run.dir, "ReadLengthFolder")
+                                                                        req(docker()$run_dir)
+                                                                        inputSizeDir = paste0(docker()$run_dir, "ReadLengthFolder")
                                                                         if (dir.exists(inputSizeDir)){
                                                                           filesList <- list.files(inputSizeDir, full.names = TRUE)
                                                                           if (length(filesList) == 0) return()
@@ -675,7 +894,7 @@ server <- function(input, output, session) {
   )
 
   readLengthTab <- reactive({
-    req(input$run.dir)
+    req(docker()$run_dir)
     
     req(overview_variables$readLengthTable())
     print("### Overview Length reactive")
@@ -742,7 +961,6 @@ server <- function(input, output, session) {
       if (!is.null(process_time$df())){
         print(head(process_time$df()))
         x = process_time$df()
-        
         # replace _ with whitespace in tool names for a cleaner legend
         x = x %>% mutate(Tool = gsub("_", " ", Tool))
         
@@ -762,10 +980,9 @@ server <- function(input, output, session) {
         } else { # every 1000th tick
           xticks <- xticks[xticks %% 1000 == 0]
         }
-        
         plot = ggplot(x, aes(x = Iteration, y = Time, fill = Tool)) +
           geom_bar(stat = "identity") +
-          scale_x_continuous(breaks = xticks) + # label each x tick individually
+          scale_x_continuous(breaks = xticks) + # label each x tick individually + # label each x tick individually
           ylab("Time [s]") + # add [s] to y-axis label
           theme_bw() +
           scale_fill_manual("Preprocessing steps", values = c("#CC6677", "#d8c66c", "#117733", "#88CCEE", "#AA4499", "#24011e","#092a36")) +
@@ -792,9 +1009,9 @@ server <- function(input, output, session) {
   observeEvent(input$preprocessing_B,{
     overview_variables_infer$inner_var_sample.table <- reactivePoll(10000, session,
                                    checkFunc = function(){
-                                     req(input$run.dir)
-                                     if (dir.exists(input$run.dir)) {
-                                        inner_var=paste0(input$run.dir, "inner_variability_per_sample.csv")
+                                     req(docker()$run_dir)
+                                     if (dir.exists(docker()$run_dir)) {
+                                        inner_var=paste0(docker()$run_dir, "inner_variability_per_sample.csv")
                                         if (file.exists(inner_var)){   
                                           file.info(inner_var)$mtime[1]
                                         }
@@ -803,9 +1020,9 @@ server <- function(input, output, session) {
                                      }
                                    },
                                    valueFunc = function(){
-                                     req(input$run.dir)
-                                     if (!dir.exists(input$run.dir)) return(NULL)
-                                     inner_var=paste0(input$run.dir, "inner_variability_per_sample.csv")
+                                     req(docker()$run_dir)
+                                     if (!dir.exists(docker()$run_dir)) return(NULL)
+                                     inner_var=paste0(docker()$run_dir, "inner_variability_per_sample.csv")
                                      
                                      if (file.exists(inner_var)) {
                                       read.table(inner_var, sep="\t", header=T)
@@ -815,9 +1032,9 @@ server <- function(input, output, session) {
                                    })
     overview_variables_infer$expGenes_counted.table <- reactivePoll(10000, session,
                                                               checkFunc = function(){
-                                                                req(input$run.dir)
-                                                                if (dir.exists(input$run.dir)) {
-                                                                  genes_counted=paste0(input$run.dir, "exp_genes_counted_per_sample.csv")
+                                                                req(docker()$run_dir)
+                                                                if (dir.exists(docker()$run_dir)) {
+                                                                  genes_counted=paste0(docker()$run_dir, "exp_genes_counted_per_sample.csv")
                                                                     if (file.exists(genes_counted)){   
                                                                       file.info(genes_counted)$mtime[1]
                                                                     }
@@ -826,9 +1043,9 @@ server <- function(input, output, session) {
                                                                 }
                                                               },
                                                               valueFunc = function(){
-                                                                req(input$run.dir)
-                                                                if (!dir.exists(input$run.dir)) return(NULL)
-                                                                genes_counted=paste0(input$run.dir, "exp_genes_counted_per_sample.csv")
+                                                                req(docker()$run_dir)
+                                                                if (!dir.exists(docker()$run_dir)) return(NULL)
+                                                                genes_counted=paste0(docker()$run_dir, "exp_genes_counted_per_sample.csv")
                                                                 
                                                                 if (file.exists(genes_counted)) {
                                                                   read.table(genes_counted, sep="\t", header=T)
@@ -960,7 +1177,7 @@ server <- function(input, output, session) {
   observeEvent({input$run_dea_B + input$submit_gene_selection}, {
     # req(metadata())
     print(paste0("Norm current tab: ", input$tabs))
-    req(table_of_settings())
+    req(table_of_settings_transformed())
     req(countsfile$df)
     print(!is.null(countsfile$df))
     if (is.null(countsfile$df)){
@@ -991,6 +1208,7 @@ server <- function(input, output, session) {
   }, 
   priority = 3)
   
+   
   output$counts_plots_box <- renderUI({
     input$submit_gene_selection
     # cat(unlist(unlist(input$submit_gene_selection)))
@@ -1088,7 +1306,7 @@ server <- function(input, output, session) {
         genes.list = genes.list(), 
         metadata = table_of_normCounts$df_norm[[3]],
         pvalue = 0.05, 
-        output.dir = paste0(table_of_settings()$run.dir, "TEA"), condi_cols())
+        output.dir = paste0(table_of_settings_transformed()$run.dir, "TEA"), condi_cols())
   }, priority = 2)
   
   output$table_of_genes_df <- DT::renderDataTable({
@@ -1126,7 +1344,7 @@ server <- function(input, output, session) {
     
   })
   
-  output$teaPlot <- renderPlot({
+    output$teaPlot <- renderPlot({
     #if (is.null(tea_res())) return()
     req(tea_res$df_res)
     if (input$disp == "boxplot"){
@@ -1151,14 +1369,12 @@ server <- function(input, output, session) {
         content = function(file) {
           plot <- tea_res$df_res[["Boxplot.down"]]
           ggsave(file, plot, device = input$tea_down.type, bg="white", height = 8, width = 20, units = "in")
-
         }
       )
     }
     if (input$disp == "dotplot"){
       output$down_tea = downloadHandler(
         filename = function() {
-
           paste0("Gene_counts_dotplot_", Sys.Date(), ".", input$tea_down.type)
           
         },
@@ -1183,7 +1399,6 @@ server <- function(input, output, session) {
     }
     
   })
-
   ## Gene Body Coverage ####
 
   output$table_of_genes_df_gC <- DT::renderDataTable({
@@ -1250,25 +1465,25 @@ server <- function(input, output, session) {
   ### Start genebodycoverage pipeline ####
   gB_results = reactiveVal(NULL)
   observeEvent(input$submit_gene_selection_gC, {
-    req(table_of_settings())
+    req(table_of_settings_transformed())
     req(input$submit_gene_selection_gC)
     print("HERE")
-    if (!file.exists(paste0(input$run.dir,"g_percentiles.json"))) return()
+    if (!file.exists(paste0(docker()$run_dir,"g_percentiles.json"))) return()
     if (!is.null(input$submit_gene_selection_gC)){
 
       # Save config file
       currentwd = dirname(getwd())
       print(currentwd)
       print(genes.list_gC())
-      bamFileList = paste0(input$run.dir, "bam_genome_merged/")
+      bamFileList = paste0(docker()$run_dir, "bam_genome_merged/")
       print(bamFileList)
-      converted_gtf = paste0(input$run.dir, "converted_gtf.csv")
+      converted_gtf = paste0(docker()$run_dir, "converted_gtf.csv")
       print(converted_gtf)
       myProcess <<- processx::process$new(command = paste0(currentwd, "/app/server/bash_scripts/run_genebodycoverage.sh"), 
-                                          args = c(paste0(currentwd, "/app/server/python_scripts/get_geneBody_coverage.py"), bamFileList, genes.list_gC()$gene_id, converted_gtf, input$run.dir), echo_cmd = T,stderr = "error_GC.log", stdout = "index_GC.log")
+                                          args = c(paste0(currentwd, "/app/server/python_scripts/get_geneBody_coverage.py"), bamFileList, genes.list_gC()$gene_id, converted_gtf, docker()$run_dir), echo_cmd = T,stderr = "error_GC.log", stdout = "index_GC.log")
       myProcess$wait()
       
-      df = paste0(input$run.dir, "samples.geneBodyCoverage.txt")
+      df = paste0(docker()$run_dir, "samples.geneBodyCoverage.txt")
       if (!file.exists(df)) print("something went wrong")
       geneBodyCov = read.table(df, header = T)
       print(geneBodyCov)
@@ -1360,7 +1575,7 @@ server <- function(input, output, session) {
 
   # Infer experiment #####
   infer_plots <- reactive({
-    req(table_of_settings())
+    req(table_of_settings_transformed())
     req(countsfile$df)
     if (is.null(countsfile$df)){
       showModal(modalDialog(size = "l",
@@ -1561,12 +1776,12 @@ server <- function(input, output, session) {
     if (input$run_dt_preprocess > 0){
       preProcTrans$pre_list <- DRIM_seq_prep(
                                     table = countsfile$df_trans,
-                                    run.dir = input$run.dir, 
+                                    run.dir = docker()$run_dir, 
                                     condition_col = input$design_column, 
                                     first.level = input$feature_A, 
                                     ref.level = input$feature_B, 
                                     samps = metadata(), 
-                                    gtf_file = input$gtf.file,
+                                    gtf_file = docker()$gtf_file,
                                     cores = 4
       )
       print(names(preProcTrans$pre_list))
@@ -1584,7 +1799,7 @@ server <- function(input, output, session) {
   observeEvent({input$run_dt_preprocess}, {
     req(preProcTrans$pre_list)
     if (is.null(preProcTrans$pre_list)) return()
-    gtf_csv = paste0(input$run.dir, "converted_gtf.csv")
+    gtf_csv = paste0(docker()$run_dir, "converted_gtf.csv")
     gtf_table <- read.table(gtf_csv, ",",header = T) 
     print("Until here it works!")
     print(names(preProcTrans$pre_list))
@@ -1598,7 +1813,7 @@ server <- function(input, output, session) {
                                   gtf_table = gtf_table,
                                   cores = 4
     )
-    #save_rds(DTE_run$df_res_dte, table_of_settings()$run.dir)
+    #save_rds(DTE_run$df_res_dte, table_of_settings_transformed()$run.dir)
     
   })
     
@@ -1622,7 +1837,7 @@ server <- function(input, output, session) {
     if (is.null(table_of_genes()$gene_id[input$dtu_tab_rows_selected])){
       print("Please select gene of interest in datatable")
     } else{
-      gtf_csv = paste0(input$run.dir, "converted_gtf.csv")
+      gtf_csv = paste0(docker()$run_dir, "converted_gtf.csv")
       gtf_table <- read.table(gtf_csv, ",",header = T) 
 
       DTU_run$df_res_dtu <- DTU_special(
@@ -1635,7 +1850,7 @@ server <- function(input, output, session) {
                                         cores = 4
       )
       
-      #save_rds(DTU_run$df_res_dtu, table_of_settings()$run.dir)
+      #save_rds(DTU_run$df_res_dtu, table_of_settings_transformed()$run.dir)
     }
   })
   
@@ -1647,10 +1862,10 @@ server <- function(input, output, session) {
   dea_res_preprocess <- reactiveValues(df_res = NULL)
   
   observeEvent({input$run_dea_B}, {
-    req(table_of_settings())
+    req(table_of_settings_transformed())
     req(countsfile$df)
     req(table_of_genes())
-    req(input$gtf.file)
+    req(docker()$gtf_file)
 
     if (is.null(countsfile$df)){
       showModal(modalDialog(size = "l",
@@ -1672,7 +1887,7 @@ server <- function(input, output, session) {
                             pvalue = as.numeric(input$pvalue), 
                             gtf_file = table_of_genes()
                             )
-      save_rds(dea_res_preprocess$df_res, table_of_settings()$run.dir)
+      save_rds(dea_res_preprocess$df_res, table_of_settings_transformed()$run.dir)
     } else {
       print(paste0(Sys.time(), ": Analysis not started!"))
       
@@ -1681,7 +1896,7 @@ server <- function(input, output, session) {
   })
   
   dea_res <- reactive({
-    req(table_of_settings())
+    req(table_of_settings_transformed())
     req(table_of_genes())
     req(dea_res_preprocess$df_res)    
     run_dea(metadata = dea_res_preprocess$df_res$metadata, 
@@ -1693,7 +1908,7 @@ server <- function(input, output, session) {
             dds = dea_res_preprocess$df_res$dds, 
             res_df = dea_res_preprocess$df_res$res_df,
             # pvalue = as.numeric(input$pvalue), 
-            # output.dir = table_of_settings()$run.dir, 
+            # output.dir = table_of_settings_transformed()$run.dir, 
             gtf_file = table_of_genes(), 
             condi_cols = condi_cols()
     )
@@ -1771,7 +1986,7 @@ server <- function(input, output, session) {
       }
       draw(createSam2Sam(dea_res_preprocess$df_res$rld)[[2]])
       dev.off()
-      # save_rds(dea_res(), table_of_settings()$run.dir)
+      # save_rds(dea_res(), table_of_settings_transformed()$run.dir)
       
     }
   )
@@ -1819,7 +2034,7 @@ server <- function(input, output, session) {
                 axis.title = element_text(size = 23))
 
       ggsave(file, plot = plot, device = input$down_vol_dex.type, bg = "white", width = 10, height = 7)
-      # save_rds(dea_res(), table_of_settings()$run.dir)
+      # save_rds(dea_res(), table_of_settings_transformed()$run.dir)
       
     }
   )
@@ -1842,7 +2057,7 @@ server <- function(input, output, session) {
                 axis.title = element_text(size = 23))
 
       ggsave(file, plot = plot, device = input$down_dtu_boxplot.type, bg = "white", width = 10, height = 7)
-      # save_rds(dea_res(), table_of_settings()$run.dir)
+      # save_rds(dea_res(), table_of_settings_transformed()$run.dir)
       
     }
   )
@@ -1853,8 +2068,8 @@ server <- function(input, output, session) {
   observeEvent(input$preprocessing_B,ignoreNULL = T,{
               seqRunInfos$df <- reactivePoll(10000, session,
                 checkFunc = function(){
-                  req(input$run.dir)
-                  mapStats=paste0(input$run.dir, "mapping_stats.txt")
+                  req(docker()$run_dir)
+                  mapStats=paste0(docker()$run_dir, "mapping_stats.txt")
                   if (file.exists(mapStats)){   
                     file.info(mapStats)$mtime[1]
                   } else {
@@ -1867,9 +2082,9 @@ server <- function(input, output, session) {
                   print(df_out)
 
                   # Num Q reads and mapped reads
-                  if (file.exists(paste0(input$run.dir, "mapping_stats.txt"))){
+                  if (file.exists(paste0(docker()$run_dir, "mapping_stats.txt"))){
                     print("Mapping statistics exists.")
-                    mapStats = read.table(paste0(input$run.dir, "mapping_stats.txt"), header = T, sep = "\t")
+                    mapStats = read.table(paste0(docker()$run_dir, "mapping_stats.txt"), header = T, sep = "\t")
                     print(head(mapStats))
                     colnames(mapStats) = c("Samples","mapped_reads", "X")
                     mapStats = mapStats[match(df_out$Samples, mapStats$Samples),]
@@ -1926,14 +2141,14 @@ server <- function(input, output, session) {
   observeEvent(input$preprocessing_B,ignoreNULL = T,{
               process_time$df <- reactivePoll(10000, session,
                 checkFunc = function(){
-                  req(input$run.dir)
-                  if (file.exists(paste0(input$run.dir, "processing_time_table.csv"))){
-                    file.info(paste0(input$run.dir, "processing_time_table.csv"))$mtime[1]
+                  req(docker()$run_dir)
+                  if (file.exists(paste0(docker()$run_dir, "processing_time_table.csv"))){
+                    file.info(paste0(docker()$run_dir, "processing_time_table.csv"))$mtime[1]
                   }
                 },
                 valueFunc = function(){
-                  if (file.exists(paste0(input$run.dir, "processing_time_table.csv"))){
-                    read.table(paste0(input$run.dir, "processing_time_table.csv"), header = T, sep = ",")
+                  if (file.exists(paste0(docker()$run_dir, "processing_time_table.csv"))){
+                    read.table(paste0(docker()$run_dir, "processing_time_table.csv"), header = T, sep = ",")
                   } else {
                     NULL
                   }
@@ -1946,8 +2161,7 @@ server <- function(input, output, session) {
     req(process_time$df())
     if (!is.null(process_time$df())){
       print(head(process_time$df()))
-      x = process_time$df() 
-      
+      x = process_time$df()
       # replace _ with whitespace in tool names for a cleaner legend
       x = x %>% mutate(Tool = gsub("_", " ", Tool))
       
@@ -1967,13 +2181,13 @@ server <- function(input, output, session) {
       } else { # every 1000th tick
         xticks <- xticks[xticks %% 1000 == 0]
       }
-      
+
       ggplot(x, aes(x = Iteration, y = Time, fill = Tool)) +
         geom_bar(stat = "identity") +
         scale_x_continuous(breaks = xticks) + # label each x tick individually
         ylab("Time [s]") + # add [s] to y-axis label
         theme_bw() +
-        scale_fill_manual("Preprocessing steps", values = c("#CC6677", "#d8c66c", "#117733", "#88CCEE", "#AA4499", "#24011e","#092a36")) +
+         scale_fill_manual("Preprocessing steps", values = c("#CC6677", "#d8c66c", "#117733", "#88CCEE", "#AA4499", "#24011e","#092a36")) +
         theme(
         panel.grid.minor = element_blank(), # remove minor grid lines
         panel.grid.major.x = element_blank(),
@@ -2213,18 +2427,18 @@ server <- function(input, output, session) {
   observeEvent(input$preprocessing_B,{
                  process_running$x <- reactivePoll(10000, session,
                                   checkFunc = function(){
-                                    req(input$run.dir)
-                                    process_run = paste0(input$run.dir, "process_running.txt")
-                                    if (dir.exists(input$run.dir)){
+                                    req(docker()$run_dir)
+                                    process_run = paste0(docker()$run_dir, "process_running.txt")
+                                    if (dir.exists(docker()$run_dir)){
                                       if (file.exists(process_run)){
                                         file.info(process_run)$mtime[1]
                                       }
                                     }
                                   },
                                   valueFunc = function(){
-                                    req(input$run.dir)
-                                    process_run = paste0(input$run.dir, "process_running.txt")
-                                    if (dir.exists(input$run.dir)){
+                                    req(docker()$run_dir)
+                                    process_run = paste0(docker()$run_dir, "process_running.txt")
+                                    if (dir.exists(docker()$run_dir)){
                                       if (file.exists(process_run)){
                                         print("Reading process x")
                                         print(read.table(process_run, header = F)[1,1])
@@ -2263,7 +2477,7 @@ server <- function(input, output, session) {
     req(input$preprocessing_B)
     req(input$stop_process)
     req(process_running$x())
-    write.table(c(0), file = paste0(input$run.dir, "process_running.txt"), col.names = F, row.names = F, quote = F)
+    write.table(c(0), file = paste0(docker()$run_dir, "process_running.txt"), col.names = F, row.names = F, quote = F)
     print("Nextflow pipeline is stopped!")
     output$stop_preprocessing <- renderUI({ 
       
@@ -2286,8 +2500,8 @@ server <- function(input, output, session) {
   autoInvalidate()
     req(input$preprocessing_B)
     req(process_running$x())
-    if (file.exists(paste0(input$run.dir, "process_running.txt"))){
-      restart = read.table(paste0(input$run.dir, "process_running.txt"), header = F)[1,1]
+    if (file.exists(paste0(docker()$run_dir, "process_running.txt"))){
+      restart = read.table(paste0(docker()$run_dir, "process_running.txt"), header = F)[1,1]
     }
     if (!is.null(input$preprocessing_B) & as.integer(restart) == 2){
       if (input$preprocessing_B > 0){
@@ -2302,7 +2516,7 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$resume_process, {
-    write.table(c(1), file = paste0(input$run.dir, "process_running.txt"), col.names = F, row.names = F, quote = F)
+    write.table(c(1), file = paste0(docker()$run_dir, "process_running.txt"), col.names = F, row.names = F, quote = F)
     print("Nextflow pipeline is resumed!")
     output$resume_preprocessing <- renderUI({
       actionButton(inputId = "resume_process_disabled" , label = "Resume preprocessing", class = "btn btn-primary",

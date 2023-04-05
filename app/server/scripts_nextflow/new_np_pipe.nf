@@ -545,7 +545,6 @@ process data_alignment_prep{
 
         string = ""
         string_array = []
-        iteration.value = iteration.value + 1
         println "Preprocessing \n"
         println "Data seen before update: ${params.data_seen_list.size()} \n"
         println ""
@@ -644,6 +643,9 @@ process data_alignment_prep{
         }
         for(i in 0..params.sample_names.size()-1){
         data_string = data_string + params.sample_names.get(i) + " "
+        }
+        if (string != ""){
+            iteration.value = iteration.value + 1
         }
         """
         corruption_gene_bam=0

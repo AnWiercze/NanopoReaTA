@@ -1,4 +1,6 @@
 pkg	Version
+shinyFiles	0.9.3
+gridtext	0.1.5
 ComplexHeatmap	2.10.0
 tximport	1.22.0
 rnaseqDTU	1.14.0

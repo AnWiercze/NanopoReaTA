@@ -168,7 +168,26 @@ ui <- dashboardPage(
 
                             /* changes the colour of the number tags */
                            .irs-from, .irs-to, .irs-single { background: #6699CC }"))),
-
+    
+    ## Input files
+    tags$head(
+      tags$style(HTML("
+            code {
+                display:block;
+                padding:9 px;
+                margin:0 0 10px;
+                margin-top:10px;
+                font-size:13px;
+                line-height:20px;
+                word-break:break-all;
+                word-wrap:break-word;
+                white-space:pre-wrap;
+                background-color:#F5F5F5;
+                border:1px solid rgba(0,0,0,0.15);
+                border-radius:4px; 
+                font-family:monospace;
+            }"))),
+    
     ### 1. Start page ####
     tabItems(
       tabItem(
@@ -221,11 +240,12 @@ ui <- dashboardPage(
                     collapsible = TRUE,
                     width = 12,
               fluidRow(
-                column(12, h3(p(em(strong("Load configuration file (if present)")))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
-                column(
-                  12,fileInput(inputId = "config_file", label = "Path to configuration file", accept = ".yaml", placeholder = "/path/to/config.yaml")
-
-                ),
+                column(12, h3(p(em(strong("Load configuration file (if present)")))), align = "left", 
+                       style = "margin-bottom: 10px; margin-top: -10px"),
+                column(6,shinyFilesButton("config_file", "Select file", 
+                                   title = "Please select a file:", multiple = FALSE,
+                                   buttonType = "default", class = NULL),
+                       verbatimTextOutput("conig_file_out"), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
                 column(12, useShinyjs(),
                     column(12, h3(p(em(strong("Number of cores")))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
                     column(12, sliderInput("cores", "Cores", 1, detectCores() - 2, detectCores() / 2, step = 1)),
@@ -236,30 +256,75 @@ ui <- dashboardPage(
                     # column(12, uiOutput('barcoded.out')),
                     column(12, radioButtons("preprocess", "Preprocessing?", choices = c("Yes" = 1, "No" = 0))),
                     column(12, radioButtons("barcoded", "Barcoding present", choices = c("Yes" = 1, "No" = 0))),
+                    column(12, radioButtons("DRS", "Sequencing method", choices = c("direct RNA" = 1, "(direct) cDNA" = 0))),
+                    
                     column(12, h3(p(em(strong("Fastq Files and Metadata")))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
                     # column(12, uiOutput('fastq.files.out')),
-                    column(12, textInput("fastq.files", "Path to main directory containing all MinKNOW outputs per sample", placeholder = "/path/to/MinKNOW_output/")),
-                    column(12, helpText("Note: Directory names must be identical to the sample names stored in the metadata file.",
-                      style = "margin-bottom: 10px; margin-top: -10px"
+                    column(12, h4(p(strong("Select path to main MinKNOW output directory"))), align = "left", style = "margin-top: -10px"),
+                    column(12, helpText("Note: Directory names within the choosen directory must be identical to the sample names stored in the metadata file.",
+                                        style = "margin-bottom: 10px; margin-top: -10px"
                     )),
-                    column(12, textInput("metadata.file", "Path to sample description file (tab separated)", placeholder = "/path/to/metadata.tsv")),
+                    column(6, shinyDirButton("fastq_files", "MinKNOW_output/", 
+                                       title = "Please select a directory:",
+                                       buttonType = "default", class = NULL), 
+                           verbatimTextOutput("fastq_file_out"), align = "left", style = "margin-bottom: 10px; margin-top: -5px"),
+                    #column(12, textInput("fastq.files", "Path to main directory containing all MinKNOW outputs per sample", placeholder = "/path/to/MinKNOW_output/")),
+                   
+                    column(12, h4(p(strong("Select sample description file (tab-separated)"))), align = "left", style = "margin-top: -10px"),
                     column(12, helpText("Note: Sample names must be stored in a column named >Sample_names<. The file must be tab separated.",
-                      style = "margin-bottom: 10px; margin-top: -10px"
+                                        style = "margin-bottom: 10px; margin-top: -10px"
                     )),
+                    column(6, shinyFilesButton("metadata_file", "metadata.tsv", 
+                                       title = "Please select a file:", multiple = FALSE,
+                                       buttonType = "default", class = NULL),
+                           verbatimTextOutput("metadata_file_out"), align = "left", style = "margin-bottom: 10px; margin-top: -5px"),
+                    #column(12, textInput("metadata.file", "Path to sample description file (tab separated)", placeholder = "/path/to/metadata.tsv")),
+                    
                     column(12, h3(p(em(strong("Mapping")))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
-                    column(6, textInput("genome.fasta.file", "Genome", placeholder = "/path/to/genome.fa")), 
-                    column(6, textInput("transcriptome.fasta.file", "Transcriptome", placeholder = "/path/to/transcripts.fa")),
+                    column(6, h4(p(strong("Genome"))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
+                    column(6, h4(p(strong("Transcriptome"))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
+                    
+                    column(6, shinyFilesButton("genome_fasta_file", "genome.fa", 
+                                               title = "Please select a file:", multiple = FALSE,
+                                               buttonType = "default", class = NULL), align = "left", style = "margin-top: -10px"),
+                    column(6, shinyFilesButton("transcriptome_fasta_file", "transcriptome.fa", 
+                                               title = "Please select a file:", multiple = FALSE,
+                                               buttonType = "default", class = NULL), align = "left", style = "margin-top: -10px"),
+                    column(6, verbatimTextOutput("genome_fasta_file_out"), align = "left", style = "margin-top: -10px"),
+                    column(6, verbatimTextOutput("transcriptome_fasta_file_out"), align = "left", style = "margin-top: -10px"),
+                    #column(6, textInput("genome.fasta.file", "Genome", placeholder = "/path/to/genome.fa")), 
+                    #column(6, textInput("transcriptome.fasta.file", "Transcriptome", placeholder = "/path/to/transcripts.fa")),
+                    
                     column(12, h3(p(em(strong("Feature quantification")))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
-                    column(6, textInput("gtf.file", "Gene/Transcript annotation (gtf)", placeholder = "/path/to/genes.gtf")),
-                    column(6, textInput("bed.file", "Gene/Transcript annotation (bed)", placeholder = "/path/to/genes.bed")),
                     column(12, helpText("Note: Fasta and gtf files must be downloaded from the same source (e.g. UCSC, GenCode,...) and assembly version (e.g. hg19 or hg38 for human)",
-                      style = "margin-bottom: 10px; margin-top: -10px"
+                                        style = "margin-bottom: 10px; margin-top: -10px"
                     )),
+                    column(6, h4(p(strong("Gene/Transcript annotation (gtf)"))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
+                    column(6, h4(p(strong("Gene/Transcript annotation (bed)"))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
+
+                    column(6, shinyFilesButton("gtf_file", "GTF", 
+                                               title = "Please select a file:", multiple = FALSE,
+                                               buttonType = "default", class = NULL), align = "left", style = "margin-top: -10px"),
+                    
+                    #column(6, textInput("gtf.file", "Gene/Transcript annotation (gtf)", placeholder = "/path/to/genes.gtf")),
+                    column(6, shinyFilesButton("bed_file", "BED", 
+                                               title = "Please select a file:", multiple = FALSE,
+                                               buttonType = "default", class = NULL), align = "left", style = "margin-top: -10px"),
+                    column(6, verbatimTextOutput("gtf_file_out"), align = "left"),
+                    column(6, verbatimTextOutput("bed_file_out"), align = "left"),
+                    #column(6, textInput("bed.file", "Gene/Transcript annotation (bed)", placeholder = "/path/to/genes.bed")),
+                    
                     column(12, h3(p(em(strong("Output")))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
-                    column(12, textInput("run.dir", "Path to output directory", placeholder = "/path/to/output_dir/")),
-                    column(12, helpText("Note: Mapping (bam) (and gene counts, and transcript counts) files will be saved to this directory.",
-                      style = "margin-bottom: 20px; margin-top: -10px"
-                    )))
+                    column(12, h4(p(strong("Path to output directory"))), align = "left", style = "margin-top: -10px"),
+                    column(12, helpText("Note: Mapping (.bam) (and gene counts, and transcript counts) files will be saved to this directory.",
+                                        style = "margin-bottom: 20px; margin-top: -10px"
+                    )),
+                    column(6, shinyDirButton("run_dir", "Select directory", 
+                                               title = "Please select a directory:",
+                                               buttonType = "default", class = NULL),
+                            verbatimTextOutput("run_dir_out"), align = "left")
+                    #column(12, textInput("run.dir", "Path to output directory", placeholder = "/path/to/output_dir/")),
+                    )
               )),
               fluidRow(
                 column(12, box(uiOutput("jump2overview_B.out"), width = 13, align = "right"), align = "right", style = "margin-bottom: 10px;", style = "margin-top: -10px;")
@@ -512,7 +577,7 @@ ui <- dashboardPage(
                   collapsible = F,
                   collapsed = F,
                  column(12, h3(p(em(strong("Significance threshold")))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
-                 column(12, radioButtons(inputId = "pvalue", label = "adjusted p-value", choices = list(0.05, 0.1))),
+                 column(12, textInput("pvalue","adjusted p-value", value = 0.05)),
                  column(6, uiOutput("submit_dge"), align = "center", style = "margin-bottom: 10px;", style = "margin-top: -10px;"),
                  column(6, uiOutput("submit_dt_preprocess"), align = "center", style = "margin-bottom: 10px;", style = "margin-top: -10px;")
             ),
