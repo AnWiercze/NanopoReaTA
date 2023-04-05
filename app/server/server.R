@@ -20,9 +20,10 @@ server <- function(input, output, session) {
   nextflow_script_dir = paste0(normalizePath("./server/scripts_nextflow/"), "/") # will be shifted to another place soon
   
   observeEvent(run_dir_selected(), {
-    print(run_dir_selected())
-    if (dir.exists(run_dir_selected())){
-      if (dir.exists(paste0(run_dir_selected(), "bam_merged_files"))){
+    req(docker())
+    print(docker()$run_dir)
+    if (dir.exists(docker()$run_dir)){
+      if (dir.exists(paste0(docker()$run_dir, "bam_merged_files"))){
         showModal(modalDialog(size = "l",
                               title = "Output directory is already present",
                               "The preprocessing of sequencing has started. Please go to next tab to select the analysis type of choice!",
@@ -164,7 +165,7 @@ server <- function(input, output, session) {
       if (!startsWith(path,"/NanopoReaTA_linux_docker")){
       transformed_path = paste0("/NanopoReaTA_linux_docker",path)
       }
-      else{
+      else {
         transformed_path=path
       }
     }
@@ -174,7 +175,7 @@ server <- function(input, output, session) {
         transformed_path = sub(".*?\\/","",transformed_path)
         transformed_path = paste0("/NanopoReaTA_windows_docker/",transformed_path)
       }
-      else{
+      else {
         transformed_path = path
       }
     }
@@ -699,7 +700,7 @@ server <- function(input, output, session) {
       dir.create(paste0(docker()$run_dir, "nextflow_work_dir"))
 
       # Save config file
-      config = table_of_settings_transformed()
+      config = table_of_settings()
       names(config) = c("threads", "barcoded", "DRS", "metadata", "general_folder", "genome_fasta", "transcriptome_fasta", "genome_gtf", "bed_file", "run_dir")
       currentwd = dirname(getwd())
       print(currentwd)
@@ -717,7 +718,7 @@ server <- function(input, output, session) {
 
       if  (input$preprocess == 1){
         myProcess <<- processx::process$new(command = paste0(currentwd, "/app/server/bash_scripts/run_nextflow.sh"), 
-                                            args = c(paste0(config[["script_dir"]], "new_np_pipe.nf"), paste0(run_dir_selected(), "cf_transformed.yaml"), paste0(run_dir_selected(), "nextflow_work_dir")), 
+                                            args = c(paste0(config[["script_dir"]], "new_np_pipe.nf"), paste0(docker()$run_dir, "cf_transformed.yaml"), paste0(docker()$run_dir, "nextflow_work_dir")), 
                                             echo_cmd = T,
                                             stderr = paste0(docker()$run_dir,"error.log"), 
                                             stdout = paste0(docker()$run_dir,"index.log"))
