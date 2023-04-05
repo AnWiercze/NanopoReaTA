@@ -716,7 +716,14 @@ server <- function(input, output, session) {
 
       
 
-      if  (input$preprocess == 1){
+      if(input$preprocess == 1){
+        
+        if(!is.null(myProcess)){
+          if(myProcess$is_alive()){
+             myProcess$kill()
+          }
+        }
+        
         myProcess <<- processx::process$new(command = paste0(currentwd, "/app/server/bash_scripts/run_nextflow.sh"), 
                                             args = c(paste0(config[["script_dir"]], "new_np_pipe.nf"), paste0(docker()$run_dir, "cf_transformed.yaml"), paste0(docker()$run_dir, "nextflow_work_dir")), 
                                             echo_cmd = T,
