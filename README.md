@@ -84,7 +84,7 @@ sudo docker build -t nanoporeata ./
 A docker image must be build only once and might take around half an hour. Once the image is build a docker container can be run with the following command:  
 
 ```bash
-sudo docker run -it -p 8080:8080 -v /:/data nanoporeata
+sudo docker run -it -p 8080:8080 -v /:/NanopoReaTA_linux_docker nanoporeata
 ```
 
 The docker container setup will be finished when the following line occurs:
