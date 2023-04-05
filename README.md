@@ -48,7 +48,7 @@ source ~/.bashrc
 
 #### Create a conda enviroment and install packages from requirements_NanopoReaTA.yml by following the steps below (~ 6 min):
 ```bash
-git clone git@github.com:AnWiercze/NanopoReaTA.git
+git clone https://github.com/AnWiercze/NanopoReaTA.git
 conda env create -f /path/to/NanopoReaTA/app/requirements_nanoporeata.yml
 ```
 
@@ -78,6 +78,7 @@ Open a bash shell Ctrl + Alt + T. Type the following command to install docker a
 
 ```bash
 sudo apt-get install -y docker.io
+git clone https://github.com/AnWiercze/NanopoReaTA.git
 cd ~/NanopoReaTA/app
 sudo docker build -t nanoporeata ./
 ```
