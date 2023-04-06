@@ -129,7 +129,13 @@ wsl --update
 docker build -t nanoporeata .
 sudo docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker nanoporeata
 ```
+he docker container setup will be finished when the following line occurs:
+Listening on http://0.0.0.0:8080
 
+You can now navigate to a browser of your choice on your local machine and type in the following URL:
+http://localhost:8080/
+
+NanopoReaTA should now appear on the browser window. 
  
 
 ## Usage
