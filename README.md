@@ -111,7 +111,7 @@ You will need one of the latest wsl systems on your computer.
 Download docker desktop: https://www.docker.com/products/docker-desktop/
 
 Download repository on this website as zip folder:
-On https://github.com/AnWiercze/NanopoReaTA click on the green Code button in the right corner. Download the folder as zip and unpack in a given folder.  
+On https://github.com/AnWiercze/NanopoReaTA click on the green "Code" button in the right corner. Download the folder as zip and unpack in a given folder.  
 
 Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
 
