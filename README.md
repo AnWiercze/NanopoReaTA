@@ -37,6 +37,8 @@ R packages (installation is automatized via R shiny)
 
 ### Installation via conda 
 
+Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")
+
 R can be installed from CRAN (https://cran.r-project.org/). Anaconda can be downloaded with the follwing steps:
 
 ```bash
@@ -69,10 +71,13 @@ All R packages that have not been installed yet will be downloaded and installed
 
 
 
-
 ### Installation via docker
 
+
 #### Installation on Linux based systems
+
+Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")
+
 
 Open a bash shell Ctrl + Alt + T. Type the following command to install docker and build a docker image:
 
@@ -96,6 +101,32 @@ http://localhost:8080/
 
 NanopoReaTA should now appear on the browser window. 
 
+#### Installation on Windows based systems
+
+For a successfull usage on Windows sequencing output and output of NanopoReaTa have to be stored on the same harddrive. Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Windows data" -> "Windows_data")
+
+
+You will need one of the latest wsl systems on your computer.
+
+Download docker desktop: https://www.docker.com/products/docker-desktop/
+
+Download repository on this website as zip folder:
+On https://github.com/AnWiercze/NanopoReaTA click on the green Code button in the right corner. Download the folder as zip and unpack in a given folder.  
+
+Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
+
+
+```
+cd Path_to_NanopoReata\app\
+wsl --update 
+```
+
+```
+docker build -t nanoporeata .
+sudo docker run -it -p 8080:8080 -v /:/NanopoReaTA_windows_docker nanoporeata
+```
+
+ 
 
 ## Usage
 Before running/exploiting real experiments with NanopoReaTA, we highly recommend to test the app, first (see [Testing](#testing) for more information). NanopoReaTA operates with a backend preprocessing pipeline based on [nextflow](https://www.nextflow.io/) and multiple R and python based scripts for downstream analyses. All results are visualized within the [R shiny](https://shiny.rstudio.com/) based frontend.
