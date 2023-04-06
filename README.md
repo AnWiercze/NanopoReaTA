@@ -123,7 +123,7 @@ wsl --update
 
 ```
 docker build -t nanoporeata .
-sudo docker run -it -p 8080:8080 -v /:/NanopoReaTA_windows_docker nanoporeata
+sudo docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker nanoporeata
 ```
 
  
