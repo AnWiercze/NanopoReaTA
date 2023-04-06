@@ -101,6 +101,8 @@ http://localhost:8080/
 
 NanopoReaTA should now appear on the browser window. 
 
+
+
 #### Installation on Windows based systems
 
 For a successfull usage on Windows sequencing output and output of NanopoReaTa have to be stored on the same harddrive. Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Windows data" -> "Windows_data")
@@ -109,6 +111,8 @@ For a successfull usage on Windows sequencing output and output of NanopoReaTa h
 You will need one of the latest wsl systems on your computer.
 
 Download docker desktop: https://www.docker.com/products/docker-desktop/
+
+Start docker desktop application. In order to use docker applications on windows docker desktop has to run in the background. 
 
 Download repository on this website as zip folder:
 On https://github.com/AnWiercze/NanopoReaTA click on the green "Code" button in the right corner. Download the folder as zip and unpack in a given folder.  
