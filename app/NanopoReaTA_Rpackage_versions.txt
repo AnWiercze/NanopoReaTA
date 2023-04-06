@@ -33,7 +33,6 @@ processx	3.7.0
 memuse	4.2-2
 BiocParallel	1.28.3
 foreach	1.5.2
-bambu	2.0.6
 BSgenome	1.62.0
 rtracklayer	1.54.0
 Biostrings	2.62.0
