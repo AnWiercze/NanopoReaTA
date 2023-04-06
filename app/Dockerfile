@@ -31,7 +31,8 @@ WORKDIR ./NanopoReaTA-master/app/
 
 RUN conda env create -f ./requirements_nanoporeata.yml
 
-RUN conda run -n nanoporeata Rscript install.R
+# RUN conda run -n nanoporeata Rscript install.R
+SHELL ["conda", "run", "--no-capture-output", "-n", "nanoporeata", "Rscript", "install.R"]
 
 RUN conda init bash
 
