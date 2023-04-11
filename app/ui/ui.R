@@ -230,7 +230,7 @@ ui <- dashboardPage(
             width = 12,
             # title = "Quality Box",
             # The id lets us use input$tabset1 on the server to find the current tab
-            id = "tabset1", # height = "250px",
+            id = "tabset1", 
             tabPanel(
               title = "Configuration", value = "panel1",
               box(
@@ -274,6 +274,29 @@ ui <- dashboardPage(
                     column(12, helpText("Note: Sample names must be stored in a column named >Sample_names<. The file must be tab separated.",
                                         style = "margin-bottom: 10px; margin-top: -10px"
                     )),
+                    box(
+                      title = "Create metadata file",
+                      status = "primary",
+                      solidHeader = TRUE,
+                      collapsible = TRUE,
+                      width = 12,
+                      fluidRow(
+                      column(12,
+                      withSpinner(DT::dataTableOutput("editable.metadata.table.out"), color = "#0dc5c1")
+                      ),
+                    ),
+                      fluidRow(
+                      column(
+                      12,align= "center", div(style = "display:inline-block", downloadButton("saveMetadata",
+                      label = "Download metadata",
+                      align = "center",
+                      icon = icon("arrow-alt-circle-down"),
+                      class = "btn btn-primary",
+                      style = "font-size:200%; color: white; background-color: #83c5be; border-radius: 5px"
+                        ))
+                      )
+                      )
+                    ),
                     column(6, shinyFilesButton("metadata_file", "metadata.tsv", 
                                        title = "Please select a file:", multiple = FALSE,
                                        buttonType = "default", class = NULL),

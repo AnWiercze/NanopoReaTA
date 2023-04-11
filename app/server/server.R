@@ -50,7 +50,50 @@ server <- function(input, output, session) {
     as.character(Sys.meminfo()[[2]])
   })
   
+ 
+  metadata_raw <- data.frame(rbind(data.frame(Samples=rep("doubleclick to insert Samplename",1),	Condition=rep("doubleclick to insert Condition",1),	Replicate=rep("doubleclick to insert Replicate",1)),
+    data.frame(Samples=rep("...",119),	Condition=rep("...",119),	Replicate=rep("...",119))))
+
+
+  metadata_reac <- metadata_raw 
+
   
+
+  ##0.3 Editable metadata file
+  output$editable.metadata.table.out <- DT::renderDataTable({
+    metadata_temp <- DT::datatable(
+      metadata_raw,
+      caption = 'Please make sure that samplenames fit names of sequencing output. If barcoded samples use barcode01-barcode96',
+      editable = "cell",
+      options = list(scrollY = 200,
+                     scrollX = 200,
+                     scroller = T,
+                     fixedColumns = TRUE
+                    ),
+      selection = 'none',
+      rownames = F)
+    
+  })
+
+  observeEvent(input$editable.metadata.table.out_cell_edit, {
+      info <- input$editable.metadata.table.out_cell_edit
+      print(info)
+      i <- as.numeric(info$row)
+      j <- as.numeric(info$col+1)
+      v <- as.character(info$value)
+      metadata_reac[i, j] <<- v
+    })
+
+  output$saveMetadata = downloadHandler(
+        filename = function(){paste0("metadata_", Sys.Date(), ".tsv")},
+        content = function(fname) {
+          download_metadata =  metadata_reac[which(metadata_reac$Condition != "..."),]
+          print(download_metadata)
+          write.table(download_metadata,fname,sep = "\t",row.names=F,col.names=T,quote = FALSE)
+        }
+    )
+
+
   ## 1. Preprocessing #######
   # Process variable for background processes executed with processx
   myProcess <- NULL
