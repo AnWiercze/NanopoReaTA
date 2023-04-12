@@ -63,7 +63,7 @@ server <- function(input, output, session) {
   output$editable.metadata.table.out <- DT::renderDataTable({
     metadata_temp <- DT::datatable(
       metadata_raw,
-      caption = 'Please make sure that samplenames fit names of sequencing output. If barcoded samples use barcode01-barcode96',
+      caption = 'Please make sure that samplenames fit names of sequencing output. If you use barcoded samples use barcode01-barcode96. Avoid underscores and spaces in your samplenames and conditions. If you already have a metadata file proceed with the Configuration tab.',
       editable = "cell",
       options = list(scrollY = 200,
                      scrollX = 200,
@@ -127,6 +127,12 @@ server <- function(input, output, session) {
                       selected = "read_length_dist_panel")
   }, 
   priority = 10)
+
+
+  observeEvent(input$jump2Configuration,{
+    updateTabsetPanel(session,"tabset1",
+                      selected = "panel1")
+  })
   
   observeEvent(input$jump2overview_B, {
     updateTabsetPanel(session, "tabset1",
