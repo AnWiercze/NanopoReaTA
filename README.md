@@ -35,6 +35,36 @@ R packages (installation is automatized via R shiny)
 ## Installation
 
 
+### Installation via docker
+
+
+#### Installation on Linux based systems
+
+Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")
+
+
+Open a bash shell Ctrl + Alt + T. Type the following command to install docker and build a docker image:
+
+```bash
+sudo apt-get install -y docker.io
+sudo docker pull stegiopast/nanoporeata
+```
+A docker image must be build only once and might take around half an hour. Once the image is build a docker container can be run with the following command:  
+
+```bash
+sudo docker run -it -p 8080:8080 -v /:/NanopoReaTA_linux_docker stegiopast/nanoporeata
+```
+
+The docker container setup will be finished when the following line occurs:
+Listening on http://0.0.0.0:8080
+
+You can now navigate to a browser of your choice on your local machine and type in the following URL:
+http://localhost:8080/
+
+NanopoReaTA should now appear on the browser window. 
+
+
+
 ### Installation via conda 
 
 Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")
@@ -71,38 +101,6 @@ All R packages that have not been installed yet will be downloaded and installed
 
 
 
-### Installation via docker
-
-
-#### Installation on Linux based systems
-
-Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")
-
-
-Open a bash shell Ctrl + Alt + T. Type the following command to install docker and build a docker image:
-
-```bash
-sudo apt-get install -y docker.io
-git clone https://github.com/AnWiercze/NanopoReaTA.git
-cd ~/NanopoReaTA/app
-sudo docker build -t nanoporeata ./
-```
-A docker image must be build only once and might take around half an hour. Once the image is build a docker container can be run with the following command:  
-
-```bash
-sudo docker run -it -p 8080:8080 -v /:/NanopoReaTA_linux_docker nanoporeata
-```
-
-The docker container setup will be finished when the following line occurs:
-Listening on http://0.0.0.0:8080
-
-You can now navigate to a browser of your choice on your local machine and type in the following URL:
-http://localhost:8080/
-
-NanopoReaTA should now appear on the browser window. 
-
-
-
 #### Installation on Windows based systems
 
 For a successfull usage on Windows sequencing output and output of NanopoReaTa have to be stored on the same harddrive. Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Windows data" -> "Windows_data")
@@ -121,13 +119,9 @@ Open power shell as administrator via search. (Start -> Search -> right click ->
 
 
 ```
-cd Path_to_NanopoReata\app\
 wsl --update 
-```
-
-```
-docker build -t nanoporeata .
-docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker nanoporeata
+docker pull stegiopast/nanoporeata
+docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata
 ```
 he docker container setup will be finished when the following line occurs:
 Listening on http://0.0.0.0:8080
