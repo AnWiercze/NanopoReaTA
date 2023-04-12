@@ -127,7 +127,7 @@ wsl --update
 
 ```
 docker build -t nanoporeata .
-sudo docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker nanoporeata
+docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker nanoporeata
 ```
 he docker container setup will be finished when the following line occurs:
 Listening on http://0.0.0.0:8080
