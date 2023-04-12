@@ -32,10 +32,10 @@ R packages (installation is automatized via R shiny)
 
 
 
-## Installation
+# Installation
 
 
-### Installation via docker
+## Installation via docker
 
 
 #### Installation on Linux based systems
@@ -65,7 +65,7 @@ NanopoReaTA should now appear on the browser window.
 
 
 
-### Installation via conda 
+## Installation via conda 
 
 Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")
 
@@ -101,7 +101,7 @@ All R packages that have not been installed yet will be downloaded and installed
 
 
 
-#### Installation on Windows based systems
+## Installation on Windows based systems
 
 For a successfull usage on Windows sequencing output and output of NanopoReaTa have to be stored on the same harddrive. Paths used by NanopoReaTA should not contain any spaces in their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Windows data" -> "Windows_data")
 
