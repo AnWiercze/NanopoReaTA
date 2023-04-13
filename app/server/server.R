@@ -1382,7 +1382,7 @@ server <- function(input, output, session) {
                      dom = 'lBfrtip',
                      fixedColumns = TRUE),
       rownames = T)
-  })
+  }, server = FALSE)
   
   output$selectedGenes <- DT::renderDataTable({
     req(genes.list())
@@ -1399,7 +1399,7 @@ server <- function(input, output, session) {
                      fixedColumns = TRUE),
       rownames = T)
     
-  })
+  }, server = FALSE)
   
     output$teaPlot <- renderPlot({
     #if (is.null(tea_res())) return()
@@ -1475,7 +1475,7 @@ server <- function(input, output, session) {
                      fixedColumns = TRUE),
                      selection = list(mode = "single", target = "row"),
       rownames = T)
-  })
+  },server = FALSE)
 
    genes.list_gC <- reactive({
     req(table_of_genes())
@@ -1501,7 +1501,7 @@ server <- function(input, output, session) {
                       , target = "row"),
       rownames = T)
     
-  })
+  }, server = FALSE)
 
   output$submit_gene_selection_gC.out <- renderUI({
     if (!is.null(table_of_genes())){
@@ -2327,7 +2327,7 @@ server <- function(input, output, session) {
       selection = list(mode = "single"
                        , target = "row"),
       rownames = T)
-  })
+  }, server = FALSE)
   
   output$selectedGene_dtu <- DT::renderDataTable({
     req(table_of_genes())
@@ -2345,7 +2345,7 @@ server <- function(input, output, session) {
                      fixedColumns = TRUE),
       rownames = T)
     
-  })
+  }, server = FALSE)
   
   # Section One ---------------------------------
   
