@@ -545,7 +545,6 @@ process data_alignment_prep{
 
         string = ""
         string_array = []
-        iteration.value = iteration.value + 1
         println "Preprocessing \n"
         println "Data seen before update: ${params.data_seen_list.size()} \n"
         println ""
@@ -626,6 +625,7 @@ process data_alignment_prep{
         }
         if (string != ""){
             alignment_running_counter.value = 1
+            iteration.value = iteration.value + 1
         }
         println ""
         println "New data: ${string_array.size()} \n"
