@@ -299,10 +299,10 @@ process make_directories{
 
     if [ ${params.DRS} -eq 1 ]
     then
-        minimap2 --MD -ax splice -uf -k14 -d ${params.run_dir}MT-human_ont.mmi $params.genome_fasta || echo "Indexing genome failed" >> ${params.run_dir}error_logs/index_genome.log
+        minimap2 --MD -ax splice -uf -k14 -d ${params.run_dir}MT-human_ont.mmi $params.genome_fasta || echo "Indiexing genome failed" >> ${params.run_dir}error_logs/index_genome.log
         minimap2 --MD -ax map-ont -uf -k14 -d ${params.run_dir}MT-human_transcript_ont.mmi $params.transcriptome_fasta || echo "Indexing transcriptome failed" >> ${params.run_dir}error_logs/index_transcriptome.log
     else
-        minimap2 --MD -ax splice -d ${params.run_dir}MT-human_ont.mmi $params.genome_fasta || echo "Indexing genome failed" >> ${params.run_dir}error_logs/index_genome.log
+        minimap2 --MD -ax splice -d ${params.run_dir}MT-human_ont.mmi $params.genome_fasta || echo "Indiexing genome failed" >> ${params.run_dir}error_logs/index_genome.log
         minimap2 --MD -ax map-ont -d ${params.run_dir}MT-human_transcript_ont.mmi $params.transcriptome_fasta || echo "Indexing transcriptome failed" >> ${params.run_dir}error_logs/index_transcriptome.log
     fi
     """
@@ -545,6 +545,7 @@ process data_alignment_prep{
 
         string = ""
         string_array = []
+        iteration.value = iteration.value + 1
         println "Preprocessing \n"
         println "Data seen before update: ${params.data_seen_list.size()} \n"
         println ""
@@ -643,9 +644,6 @@ process data_alignment_prep{
         }
         for(i in 0..params.sample_names.size()-1){
         data_string = data_string + params.sample_names.get(i) + " "
-        }
-        if (string != ""){
-            iteration.value = iteration.value + 1
         }
         """
         corruption_gene_bam=0
@@ -1427,11 +1425,11 @@ process salmon_annotation{
                     bam_files_to_merge=\${bam_files_to_merge}\${i}" "
                     fi
                 done
-                #echo \$bam_files_to_merge >> \${run_dir}/error_logs/bam_files_to_merge_transcripts.txt
+                echo \$bam_files_to_merge >> \${run_dir}/error_logs/bam_files_to_merge_transcripts.txt
                 #samtools merge \${run_dir}bam_transcriptome_merged/\${par_basis}.bam \${bam_files_to_merge} -f -h \${bam_files_to_merge} --threads ${params.threads} -c -p || echo "\${bam_files_to_merge}" >> \${run_dir}/error_logs/merge_transcriptome_few_error.log
                 samtools merge \${run_dir}bam_transcriptome_merged/\${par_basis}.bam \${bam_files_to_merge} -f --threads ${params.threads} -c -p || echo "\${bam_files_to_merge}" >> \${run_dir}/error_logs/merge_transcriptome_few_error.log
                 cp \${run_dir}bam_transcriptome_merged/\${par_basis}.bam \${run_dir}\${par_basis}/salmon/all.bam
-                samtools index \${run_dir}bam_transcriptome_merged/\${par_basis}.bam || echo "Indexing failed" >> \${run_dir}/error_logs/indexing_transcriptome_few_error.log
+                samtools index \${run_dir}bam_transcriptome_merged/\${par_basis}.bam --threads ${params.threads} || echo "Indexing failed" >> \${run_dir}/error_logs/indexing_transcriptome_few_error.log
                 fi
             fi
         }
@@ -1555,7 +1553,6 @@ process reawake_next_round{
         File continue_text2 = new File("${params.run_dir}process_running.txt")
         continue_text2.write "2"
         while(continue_bool != 1){
-            sleep(20000)
             def continue_text3 = new File("${params.run_dir}process_running.txt").getText()
             continue_bool = continue_text3.toInteger()
             if ( continue_bool == 1){
