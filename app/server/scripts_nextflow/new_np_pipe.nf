@@ -949,7 +949,7 @@ process minimap_alignment{
 	//Alignment running counter restricts number of parallel running alignment series to 2
 	bam_string=""
     println "Minimap2 Alignment started"
-
+    sleep(3000)
     for(i in 0..string_array.size()-1){
        if (string_array.size() > 0){
            element = string_array.get(i)
@@ -1083,16 +1083,7 @@ process minimap_transcript_alignment{
 	val string_array into move_transcripts_channel2
 	
 	script:
-	
-	
-	//Alignment running counter restricts number of parallel running alignment series to 2
-	if (string != ""){
-        //While loop is used to prevent from major RAM use in case of to many parallel alignment processes
-	    while(alignment_running_counter_transcript.value == 1){
-	         sleep(10000)
-	    }
-    alignment_running_counter_transcript.value = 1
-    }
+	sleep(3000)
 	
     println "Minimap2 Alignment started"
     bam_string=""
