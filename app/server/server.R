@@ -1247,7 +1247,7 @@ server <- function(input, output, session) {
       ))
     }
     print(!is.null(metadata()))
-    if (!is.null(countsfile$df) & !is.null(metadata())){
+    if (!is.null(countsfile$df) & !is.null(metadata()) & !any(colSums(countsfile$df) == 0)){
       if (is.null(input$design_column)){
         print("input$design_column is null")
         return()
@@ -1261,6 +1261,9 @@ server <- function(input, output, session) {
     } else {
       print(paste0(Sys.time(), ": Analysis not started!"))
       table_of_normCounts$df_norm <- NULL
+      updateTabItems(session, "tabs", "run_overview")
+      updateTabsetPanel(session, "main_quality_control",
+                      selected = "read_length_dist_panel")
     }
   }, 
   priority = 3)
@@ -1830,7 +1833,7 @@ server <- function(input, output, session) {
     req(countsfile$df_trans)
     print(input$tabs)
     print(input$dea.box)
-    if (input$run_dt_preprocess > 0){
+    if (input$run_dt_preprocess > 0 & !any(colSums(countsfile$df_trans) == 0)){
       preProcTrans$pre_list <- DRIM_seq_prep(
                                     table = countsfile$df_trans,
                                     run.dir = docker()$run_dir, 
@@ -1844,7 +1847,9 @@ server <- function(input, output, session) {
       print(names(preProcTrans$pre_list))
     } else {
       print(paste0(Sys.time(), ": Analysis not started!"))
-      
+      updateTabItems(session, "tabs", "run_overview")
+      updateTabsetPanel(session, "main_quality_control",
+                      selected = "read_length_dist_panel")
     }
     }, priority  = 0)
   
@@ -1933,21 +1938,22 @@ server <- function(input, output, session) {
                             footer = NULL
       ))
     }
-    if (input$tabs == "dea_main" & !(is.null(countsfile$df)) & !is.null(metadata())){
-      
-      cat(unlist(metadata()))
-      dea_res_preprocess$df_res <- run_preprocessing_dea(meta.file = metadata(),
-                            counts.file = countsfile$df, 
-                            condition.col = input$design_column,
-                            first.level = input$feature_A, 
-                            ref.level = input$feature_B, 
-                            pvalue = as.numeric(input$pvalue), 
-                            gtf_file = table_of_genes()
-                            )
-      save_rds(dea_res_preprocess$df_res, table_of_settings_transformed()$run.dir)
+    if (input$tabs == "dea_main" & !(is.null(countsfile$df)) & !is.null(metadata()) & !any(colSums(countsfile$df) == 0)){
+        cat(unlist(metadata()))
+        dea_res_preprocess$df_res <- run_preprocessing_dea(meta.file = metadata(),
+                              counts.file = countsfile$df, 
+                              condition.col = input$design_column,
+                              first.level = input$feature_A, 
+                              ref.level = input$feature_B, 
+                              pvalue = as.numeric(input$pvalue), 
+                              gtf_file = table_of_genes()
+                              )
+          save_rds(dea_res_preprocess$df_res, table_of_settings_transformed()$run.dir)
     } else {
       print(paste0(Sys.time(), ": Analysis not started!"))
-      
+      updateTabItems(session, "tabs", "run_overview")
+      updateTabsetPanel(session, "main_quality_control",
+                      selected = "read_length_dist_panel")
     }
 
   })
