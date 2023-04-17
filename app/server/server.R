@@ -805,7 +805,7 @@ server <- function(input, output, session) {
         } else {
           g = getGeneSymbolFromGTF(docker()$gtf_file, ".")
         }
-        table_of_genes(unique(g[,c("gene_id", "gene_name")]))
+        table_of_genes(unique(g[,c("gene_id", "gene_name","transcript_id", "transcript_name")]))
         
         print("loading finished!")
         write.csv(g[, c("gene_id", "gene_name", "transcript_id", "transcript_name")], paste0(docker()$run_dir, "converted_gtf.csv"))
@@ -864,10 +864,9 @@ server <- function(input, output, session) {
   )
   
   
-  observeEvent({input$preprocessing_B + input$run_dt_preprocess}, {
+  observeEvent({input$preprocessing_B + input$run_dt_preprocess + input$run_dte_B}, {
     print("In Transcript Count")
     req(input$preprocessing_B)
-    req(input$run_dt_preprocess)
     req(docker())
     req(metadata())
     print(paste0("Current tab: ", input$tabs))
@@ -1684,55 +1683,52 @@ server <- function(input, output, session) {
       actionButton(inputId = "run_dea_B" , label = "Gene Expression Analysis", class = "btn btn-primary",
                    style = "white-space: normal;display:inline-block;width:50%;text-align: center;
                                                         color: #fff; height: 70pt;
-                                                        font-size:180%;
+                                                        font-size:120%;
                                                         background-color: #e76f51;")
     } else {
       actionButton(inputId = "run_dea_B_disabled" , label = "Gene Expression Analysis", class = "btn btn-primary",
                    style = "white-space: normal;display:inline-block;width:50%;text-align: center;
                                                         color: #fff; height: 70pt;
-                                                        font-size:180%;
+                                                        font-size:120%;
                                                         background-color: gray;")
     }
   })
+
+
+  output$submit_dte <- renderUI({
+    if (!(is.null(input$design_column) | is.null(input$feature_A) | is.null(input$feature_B))){
+      actionButton(inputId = "run_dte_B" , label = "Transcript Expression Analysis", class = "btn btn-primary",
+                   style = "white-space: normal;display:inline-block;width:50%;text-align: center;
+                                                        color: #fff; height: 70pt;
+                                                        font-size:120%;
+                                                        background-color: #e76f51;")
+    } else {
+      actionButton(inputId = "run_dte_B_disabled" , label = "Transcript Expression Analysis", class = "btn btn-primary",
+                   style = "white-space: normal;display:inline-block;width:50%;text-align: center;
+                                                        color: #fff; height: 70pt;
+                                                        font-size:120%;
+                                                        background-color: gray;")
+    }
+  })
+
   
   output$submit_dt_preprocess <- renderUI({
     if (!(is.null(input$design_column) | is.null(input$feature_A) | is.null(input$feature_B))){
-      actionButton(inputId = "run_dt_preprocess" , label = "Transcript Expression Analysis", class = "btn btn-primary",
+      actionButton(inputId = "run_dt_preprocess" , label = "Transcript Usage Analysis", class = "btn btn-primary",
                    style = "white-space: normal;display:inline-block;width:50%;text-align: center;
                                                         color: #fff; height: 70pt;
-                                                        font-size:180%;
+                                                        font-size:120%;
                                                         background-color: #e76f51;")
     } else {
-      actionButton(inputId = "run_dt_preprocess_disabled" , label = "Transcript Expression Analysis", class = "btn btn-primary",
+      actionButton(inputId = "run_dt_preprocess_disabled" , label = "Transcript Usage Analysis", class = "btn btn-primary",
                    style = "white-space: normal;display:inline-block;width:50%;text-align: center;
                                                         color: #fff; height: 70pt;
-                                                        font-size:180%;
+                                                        font-size:120%;
                                                         background-color: gray;")
       
     }
   })
 
-  #output$run_dte <- renderUI({
-  #  if (!(is.null(input$design_column) | is.null(input$feature_A) | is.null(input$feature_B))){
-  #    actionButton(inputId = "run_dte_B" , label = "Transcript Expression", icon("arrow-alt-circle-right"), class = "btn btn-primary",
-  #                 style='font-size:200%; color: white; background-color: #669bbc; border-radius: 10px')
-  #  } else {
-  #    disabled(actionButton(inputId = "run_dte_B" , label = "Transcript Expression", icon("arrow-alt-circle-right"), class = "btn btn-primary",
-  #                          style='font-size:200%; color: white; background-color: #669bbc; border-radius: 10px'))
-  #    
-  #  }
-  #})
-    
-  #output$submit_dte <- renderUI({
-  #  if (!(is.null(input$design_column) | is.null(input$feature_A) | is.null(input$feature_B))){
-  #    actionButton(inputId = "run_dte_B" , label = "Transcript Expression", icon("arrow-alt-circle-right"), class = "btn btn-primary",
-  #                 style='font-size:200%; color: white; background-color: #669bbc; border-radius: 10px')
-  #  } else {
-  #    disabled(actionButton(inputId = "run_dte_B" , label = "Transcript Expression", icon("arrow-alt-circle-right"), class = "btn btn-primary",
-  #                          style='font-size:200%; color: white; background-color: #669bbc; border-radius: 10px'))
-  #    
-  #  }
-  #})
   
   output$submit_dtu <- renderUI({
     if (!(is.null(input$design_column) | is.null(input$feature_A) | is.null(input$feature_B))){
@@ -1752,49 +1748,17 @@ server <- function(input, output, session) {
     updateTabsetPanel(session, "dea.box",
                       selected = "dea.tab")
   }, priority = 5)
+
+  observeEvent(input$run_dte_B, {
+    updateTabsetPanel(session, "dea.box",
+                      selected = "dte.tab")
+  }, priority = 5)
   
   
   observeEvent(input$run_dt_preprocess, {
     updateTabsetPanel(session, "dea.box",
                       selected = "deu.tab")
   }, priority = 5)
-
-  #observeEvent(input$run_dte_B, {
-  #  updateTabsetPanel(session, "dea.box",
-  #                    selected = "dte.tab")
-  #}, priority = 5)
-  
-  
-  
-  #observeEvent(input$jump_to_settings_overview_B, {
-  #  if (is.null(metadata())) return()
-  #  if (!is.null(input$design_column)){
-  #    if (!(input$design_column == "")){
-  #      output$design_column_in2 <- renderUI({
-  #        selectInput(inputId = 'design_column', 
-  #                    label = 'Select condition column', 
-  #                    choices = colnames(metadata()),selected = input$design_column)#,
-  #                    #options = list(`actions-box` = TRUE))
-  #      })
-  #      output$feature_column_A2 <- renderUI({
-  #        selectInput(inputId = 'feature_A2', 
-  #                    label = 'Select condition A', 
-  #                    choices = unique(metadata()[,input$design_column]), selected = input$feature_A)#, 
-  #                    #options = list(`actions-box` = TRUE))
-  #      })
-        
-  #      output$feature_column_B2 <- renderUI({
-  #        if (is.null(metadata())) return()
-  #        x = unique(metadata()[,input$design_column])
-  #        selectInput(inputId = 'feature_B2', 
-  #                    label = 'Select condition B', 
-  #                    choices = x[!(x %in% input$feature_A)], selected = input$feature_B)#,
-  #                    #options = list(`actions-box` = TRUE))
-  #      })
-  #      
-  #    }
-  #  }
-  #})
 
   
   # Dialog is only run if table_of_genes is loaded
@@ -1808,6 +1772,20 @@ server <- function(input, output, session) {
     ))
     
     if (input$run_dea_B == 1){
+      print(head(table_of_genes()))
+    }
+  })
+
+  observeEvent(input$run_dte_B,{
+    req(table_of_genes())
+    showModal(modalDialog(size = "l",
+                          title = "Differential Expression Analysis started",
+                          "The DTE has started!",
+                          easyClose = TRUE,
+                          footer = NULL
+    ))
+    
+    if (input$run_dte_B == 1){
       print(head(table_of_genes()))
     }
   })
@@ -1827,7 +1805,21 @@ server <- function(input, output, session) {
     )
   })
 
-  ######## TRANSCRIPT ANALYSIS #########
+  output$select_color_dte.heat <- renderUI({
+    fluidRow(
+      box(
+      column(12, div(style = "font-size: 13px", selectInput("main_color_dte.heat", "Select Colorpalette", choices = c("RdBu", "PiYG", "PRGn", "PuOr", "Blue-Yellow",
+                                                                                                                  "Teal", "Sunset", "Viridis")))),
+      #column(6, div(style = "font-size: 13px", radioButtons("color_one.heat", "First Group Color", choices = c("#88CCEE", "#DDCC77", "#CC6677", "#117733", "#332288", "#AA4499", 
+      #                                                                                                         "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")))), 
+      #column(6, div(style = "font-size: 13px", radioButtons("color_two.heat", "Second Group Color", choices = c("#88CCEE", "#DDCC77", "#CC6677", "#117733", "#332288", "#AA4499", 
+      #                                                                                                          "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888"), selected = "#DDCC77"))), 
+      width = 12, solidHeader = T, collapsible = T, collapsed = T, status = "primary", title = div("Customize Colors", style = "font-size: 16px")
+    )
+    )
+  })
+
+  ######## DTU ANALYSIS #########
   preProcTrans <- reactiveValues(pre_list = NULL)
   observeEvent({input$run_dt_preprocess}, {
     req(countsfile$df_trans)
@@ -2102,6 +2094,192 @@ server <- function(input, output, session) {
     }
   )
 
+
+  ###############################################
+    ## Differential transcript usage
+
+  dte_res_preprocess <- reactiveValues(df_res = NULL)
+  
+  observeEvent({input$run_dte_B}, {
+    req(table_of_settings_transformed())
+    req(countsfile$df_trans)
+    req(table_of_genes())
+    req(docker()$gtf_file)
+    print("I'm here!")
+    print(countsfile$df_trans)
+    if (is.null(countsfile$df_trans)){
+      showModal(modalDialog(size = "l",
+                            title = "No countsfile loaded!",
+                            "The countsfile has not been loaded so the selected analysis is not possible, yet. 
+                            Please proceed here when it has been loaded as indicated in 'Run Overview'. ",
+                            easyClose = TRUE,
+                            footer = NULL
+      ))
+    }
+    if (input$tabs == "dea_main" & !(is.null(countsfile$df_trans)) & !is.null(metadata()) & !any(colSums(countsfile$df_trans) == 0)){
+        cat(unlist(metadata()))
+        dte_res_preprocess$df_res <- run_preprocessing_dte(meta.file = metadata(),
+                              counts.file = countsfile$df_trans,
+                              condition.col = input$design_column,
+                              first.level = input$feature_A, 
+                              ref.level = input$feature_B, 
+                              pvalue = as.numeric(input$pvalue), 
+                              gtf_file = table_of_genes()
+                              )
+          save_rds_dte(dte_res_preprocess$df_res, table_of_settings_transformed()$run.dir)
+    } else {
+      print(paste0(Sys.time(), ": Analysis not started!"))
+      updateTabItems(session, "tabs", "run_overview")
+      updateTabsetPanel(session, "main_quality_control",
+                      selected = "read_length_dist_panel")
+    }
+
+  })
+  
+  dte_res <- reactive({
+    req(table_of_settings_transformed())
+    req(table_of_genes())
+    req(dte_res_preprocess$df_res)    
+    run_dte(metadata = dte_res_preprocess$df_res$metadata, 
+            counts = dte_res_preprocess$df_res$counts,
+            condition.col = input$design_column, 
+            first.level = input$feature_A, 
+            ref.level = input$feature_B, 
+            rld = dte_res_preprocess$df_res$rld, 
+            dds = dte_res_preprocess$df_res$dds, 
+            res_df = dte_res_preprocess$df_res$res_df,
+            # pvalue = as.numeric(input$pvalue), 
+            # output.dir = table_of_settings_transformed()$run.dir, 
+            gtf_file = table_of_genes(), 
+            condi_cols = condi_cols()
+    )
+  })
+  
+  output$text <- renderText({
+    req(dte_res())
+    input$preprocessing_B
+    if (length(dte_res()) == 0){
+      "No file loaded!"
+    } else {
+      paste0(Sys.time(), " ", paste0(names(dte_res()), collapse = ","))
+      
+    }
+  })
+  
+  ### Download buttons ####
+  #!!!!!!MUCH ROOM FOR IMPROVEMENT!!!!!!!
+  # Save button for PCA plot
+  output$down_pca_dte = downloadHandler(
+    
+    filename = function() {
+        paste0("pca_dte_", Sys.Date(), ".", input$down_pca_dte.type)
+    },
+    content = function(file) {
+      req(dte_res_preprocess$df_res)
+      plot <- createPCA_DTE(dte_res_preprocess$df_res$rld, 
+              first.level = input$feature_A, 
+              ref.level = input$feature_B, 
+              condi_cols()) + theme_bw() +
+              theme(legend.title = element_text(size = 20),
+                legend.text = element_text(size = 20),
+                axis.text = element_text(angle = 45, hjust = 1, size = 17),
+                plot.title = element_text(hjust = 0.5, face = "bold", size = 23),
+                axis.title = element_text(size = 23))
+
+      ggsave(file, plot = plot, device = input$down_pca_dte.type, width = 10, height = 10, bg = "white")
+    }
+  )
+  
+  # Save button for volcano plot
+  output$down_vol_dte = downloadHandler(
+    
+    filename = function() {
+      paste0("DTE_volcano_plot_", Sys.Date(), ".", input$down_vol_dte.type)
+    },
+    content = function(file) {
+      req(dte_res_preprocess$df_res)
+      plot <- createVolcano_DTE(dte_res_preprocess$df_res$res_df, condi_cols()) + theme_bw() +
+              theme(#legend.title = element_text(size = 20),
+                legend.title = element_blank(), # remove legend title
+                legend.text = element_text(size = 20),
+                axis.text = element_text(angle = 45, hjust = 1, size = 17),
+                plot.title = element_text(hjust = 0.5, face = "bold", size = 23),
+                axis.title = element_text(size = 23))
+
+      ggsave(file, plot = plot, device = input$down_vol_dte.type, bg = "white", width = 10, height = 7)
+    }
+  )
+  
+  # Save button for Sam2sam plot
+  output$down_s2s_dte = downloadHandler(
+    
+    filename = function() {
+      paste0("DTE_sam2sam_", Sys.Date(), ".", input$down_s2s_dte.type)
+    },
+    content = function(file) {
+      req(dte_res_preprocess$df_res)
+
+      if (input$down_s2s_dte.type == "pdf"){
+        pdf(file = file, width = 10, height = 10)
+      } 
+      if (input$down_s2s_dte.type == "png"){
+        png(file = file, width = 10, height = 20, units = "cm", res = 300)
+      }
+      draw(createSam2Sam_DTE(dte_res_preprocess$df_res$rld)[[2]])
+      dev.off()
+      # save_rds(dea_res(), table_of_settings_transformed()$run.dir)
+      
+    }
+  )
+  
+  # Save button for heatmap
+  output$down_heat_dte = downloadHandler(
+    
+    filename = function() {
+      paste0("DTE_expression_heatmap_", Sys.Date(), ".", input$down_heat_dte.type)
+    },
+    content = function(file) {
+      req(dte_res_preprocess$df_res)
+      req(input$main_color_dte.heat)
+      color_plot <- condi_cols()
+      plot <- createHeatmap_DTE(dte_res_preprocess$df_res$dds,
+                           dte_res_preprocess$df_res$rld, 
+                           condi_col = color_plot, 
+                           transcripts = dte_res_preprocess$df_res$res_df[1:20, ], 
+                           main_color = input$main_color_dte.heat)
+      if (input$down_heat_dte.type == "pdf"){
+        pdf(file = file,width= 20, height = 20)
+      } 
+      if (input$down_heat_dte.type == "png"){
+        png(file = file,width= 20, height = 20, units = "cm", res = 300)
+      }
+      print(plot$heat.down)
+      dev.off()
+    }
+  )
+
+  ## Download button for DEX Volcano
+  output$down_vol_dex = downloadHandler(
+    
+    filename = function() {
+      paste0("DEX_volcano_plot_", Sys.Date(), ".", input$down_vol_dex.type)
+    },
+    content = function(file) {
+      req(DTE_run$df_res_dte$volcano_plot)
+      plot = DTE_run$df_res_dte$volcano_plot + 
+        theme_bw() +
+        theme(legend.title = element_blank(),
+                legend.text = element_text(size = 20),
+                axis.text = element_text(angle = 45, hjust = 1, size = 17),
+                plot.title = element_text(hjust = 0.5, face = "bold", size = 23),
+                axis.title = element_text(size = 23))
+
+      ggsave(file, plot = plot, device = input$down_vol_dex.type, bg = "white", width = 10, height = 7)
+      # save_rds(dea_res(), table_of_settings_transformed()$run.dir)
+      
+    }
+  )
+
     ## Download button for DEX Volcano
   output$down_dtu_boxplot = downloadHandler(
     
@@ -2289,10 +2467,28 @@ server <- function(input, output, session) {
                      dom = 'lBfrtip',
                      fixedColumns = TRUE), 
       rownames = F)
-  })
+  }, server = FALSE)
+
+  output$dte_tab <- renderDT({
+    input$preprocessing_B
+    req(dte_res_preprocess$df_res)
+    res = dte_res_preprocess$df_res$res_df
+    degs = res[res$padj < 0.05,]
+    DT::datatable(
+      degs,
+      extensions = c('Buttons', 'Scroller'),
+      options = list(scrollY = 200,
+                     scrollX = 500,
+                     deferRender = TRUE,
+                     scroller = TRUE,
+                     paging = TRUE,
+                     dom = 'lBfrtip',
+                     fixedColumns = TRUE), 
+      rownames = F)
+  }, server = FALSE)
   
   # Show table of DETs
-  output$dte_tab <- renderDT({
+  output$dex_tab <- renderDT({
     input$preprocessing_B
     req(DTE_run$df_res_dte$dxr_df)
     res = DTE_run$df_res_dte$dxr_df
@@ -2311,7 +2507,7 @@ server <- function(input, output, session) {
                      dom = 'lBfrtip',
                      fixedColumns = TRUE), 
       rownames = F)
-  })
+  }, server = FALSE)
   
   output$dtu_tab <- DT::renderDataTable({
     input$preprocessing_B
@@ -2390,6 +2586,44 @@ server <- function(input, output, session) {
                   condi_col = condi_cols(), 
                   genes = dea_res_preprocess$df_res$res_df[1:20, ], 
                   main_color = input$main_color.heat)
+    plot$heat
+  })
+
+  ### Output for DTE
+  output$volcano_plot_dte <- renderPlot({
+    req(dte_res_preprocess$df_res)
+    createVolcano_DTE(dte_res_preprocess$df_res$res_df, condi_cols())
+  }, bg="transparent")
+  
+  
+  output$pca_plot_dte <- renderPlot({
+    print("PCA is made")
+    req(dte_res_preprocess$df_res)
+    createPCA_DTE(dte_res_preprocess$df_res$rld, 
+              first.level = input$feature_A, 
+              ref.level = input$feature_B, 
+              condi_cols())   
+  }, bg="transparent")
+  
+  output$s2s_plot_dte <- renderPlot(bg = "transparent",{
+    print("Heatmap")
+
+    req(dte_res_preprocess$df_res)
+    createSam2Sam_DTE(dte_res_preprocess$df_res$rld)[[1]]
+    
+  })
+  
+  output$heat_plot_dte <- renderPlot(bg = "transparent", {
+    print("Heatmap")
+    req(dte_res_preprocess$df_res)
+    req(input$main_color_dte.heat)
+    # does not load correctly after being downloaded, all values still exist but nothing is rendered
+    # the plot can be seen when printed in RStudio, though  
+    plot = createHeatmap_DTE(dte_res_preprocess$df_res$dds,
+                  dte_res_preprocess$df_res$rld, 
+                  condi_col = condi_cols(), 
+                  transcripts = dte_res_preprocess$df_res$res_df[1:20, ], 
+                  main_color = input$main_color_dte.heat)
     plot$heat
   })
   
@@ -2483,6 +2717,74 @@ server <- function(input, output, session) {
             ) # tabBox Plots
           )
         ) # fluidRowcolumn
+    }
+  })
+
+
+  output$dte_results.out <- renderUI({
+  if (is.null(input$run_dte_B)) return()
+  if(input$run_dte_B > 0){
+    fluidRow(
+        column(12, box(
+          title = "Differential expressed transcripts",
+          width = 12,
+          status = "primary",
+          solidHeader = T,
+          collapsible = T,
+          collapsed = F,
+          DT::dataTableOutput("dte_tab") %>% withSpinner(color = "#0dc5c1")
+        )),
+        column(
+          12,
+          tabBox(
+            width = 12, title = "Plots",
+            # title = "Quality Box",
+            # The id lets us use input$tabset1 on the server to find the current tab
+            id = "tabset.plots",
+            tabPanel(
+              title = "PCA", value = "pca_dte.tab",
+              fluidRow(column(
+                12,
+                div(style = "display:inline-block; vertical-align: top", downloadButton("down_pca_dte")),
+                div(style = "display:inline-block; vertical-align: top; width: 80px", selectInput("down_pca_dte.type", NULL, choices = c("png", "pdf"))),
+                # div(style = "display:inline-block; vertical-align: top; margin-top: 8px", radioButtons("custom_color.pca", NULL, choices = c("default colors" = F, "custom colors" = T), inline = T)),
+                #uiOutput("select_color.pca"),
+                plotOutput("pca_plot_dte") %>% withSpinner(color = "#0dc5c1")
+              ))
+            ),
+            tabPanel(
+              title = "Volcano", value = "volcano_dte.tab",
+              fluidRow(column(
+                12,
+                div(style = "display: inline-block; vertical-align: top", downloadButton("down_vol_dte")),
+                div(style = "display: inline-block; vertical-align: top; width: 80px", selectInput("down_vol_dte.type", NULL, choices = c("png", "pdf"))),
+                # div(style = "display:inline-block; vertical-align: top; margin-top: 8px", radioButtons("custom_color.volcano", NULL, choices = c("default colors" = F, "custom colors" = T), inline = T)),
+                uiOutput("select_color.volcano"),
+                plotOutput("volcano_plot_dte") %>% withSpinner(color = "#0dc5c1")
+              ))
+            ),
+            tabPanel(
+              title = "Sample2Sample", value = "s2s_dte.tab",
+              fluidRow(column(
+                12,
+                div(style = "display:inline-block; vertical-align: top", downloadButton("down_s2s_dte")),
+                div(style = "display:inline-block; vertical-align: top; width: 80px", selectInput("down_s2s_dte.type", NULL, choices = c("png", "pdf"))),
+                plotOutput("s2s_plot_dte") %>% withSpinner(color = "#0dc5c1")
+              ))
+            ),
+            tabPanel(
+              title = "Heatmap", value = "heatmap_dte.tab",
+              fluidRow(column(
+                12,
+                div(style = "display:inline-block; vertical-align:top", downloadButton("down_heat_dte")),
+                div(style = "display:inline-block; vertical-align:top; width:80px", selectInput("down_heat_dte.type", NULL, choices = c("png", "pdf"))),
+                uiOutput("select_color_dte.heat"),
+                plotOutput("heat_plot_dte") %>% withSpinner(color = "#0dc5c1")
+              ))
+            )
+          ) # tabBox Plots
+        )
+      ) # fluidRowcolumn
     }
   })
 

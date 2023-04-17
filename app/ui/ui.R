@@ -612,8 +612,9 @@ ui <- dashboardPage(
                   collapsed = F,
                  column(12, h3(p(em(strong("Significance threshold")))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
                  column(12, textInput("pvalue","adjusted p-value", value = 0.05)),
-                 column(6, uiOutput("submit_dge"), align = "center", style = "margin-bottom: 10px;", style = "margin-top: -10px;"),
-                 column(6, uiOutput("submit_dt_preprocess"), align = "center", style = "margin-bottom: 10px;", style = "margin-top: -10px;")
+                 column(4, uiOutput("submit_dge"), align = "center", style = "margin-bottom: 10px;", style = "margin-top: -10px;"),
+                 column(4,uiOutput("submit_dte"),align = "center", style = "margin-bottom: 10px;", style = "margin-top: -10px;"),
+                 column(4, uiOutput("submit_dt_preprocess"), align = "center", style = "margin-bottom: 10px;", style = "margin-top: -10px;")
             ),
           column(12,
            tabBox(
@@ -621,15 +622,22 @@ ui <- dashboardPage(
        #### DEA results ####
 
              tabPanel(
-               title = "Gene-level", value = "dea.tab",
+               title = "Gene expression", value = "dea.tab",
                tabItem(
                  tabName = "dea",
                   uiOutput("dea_results.out")
                )
              ), # eof tabPanel
+             tabPanel(
+               title = "Transcript expression", value = "dte.tab",
+               tabItem(
+                 tabName = "dte",
+                  uiOutput("dte_results.out")
+               )
+             ),
              #### DEU results ####
              tabPanel(
-               title = "Transcript-level", value = "deu.tab",
+               title = "Transcript usage", value = "deu.tab",
                tabItem(
                  tabName = "deu",
                  fluidRow(
@@ -639,7 +647,7 @@ ui <- dashboardPage(
                         # The id lets us use input$tabset1 on the server to find the current tab
                         id = "tabset.deu",
                         tabPanel(
-                          title = "DTE", value = "dte.tab",
+                          title = "General", value = "dte.tab",
                           fluidPage(
                             fluidRow(column(12,box(
                                             title = "Differential transcript expression",
@@ -648,7 +656,7 @@ ui <- dashboardPage(
                                             solidHeader = T,
                                             collapsible = T,
                                             collapsed = F,
-                                            DT::dataTableOutput("dte_tab") %>% withSpinner(color = "#0dc5c1")
+                                            DT::dataTableOutput("dex_tab") %>% withSpinner(color = "#0dc5c1")
                                           ))),
                             
                             fluidRow(column(12, 
@@ -659,7 +667,7 @@ ui <- dashboardPage(
                           )
                         ),
                         tabPanel(
-                            title = "DTU", value = "dtu.tab",
+                            title = "Gene specific", value = "dtu.tab",
                             fluidPage(
                               fluidRow(
                                 column(6, box( 
