@@ -151,6 +151,12 @@ server <- function(input, output, session) {
     updateTabsetPanel(session, "dea.box",
                       selected = "dea.tab")
   })
+
+  observeEvent(input$run_dte_B, {
+    updateTabsetPanel(session, "dea.box",
+                      selected = "dte.tab")
+  })
+
   observeEvent(input$run_dt_preprocess, {
     updateTabsetPanel(session, "dea.box",
                       selected = "deu.tab")
@@ -1791,10 +1797,10 @@ server <- function(input, output, session) {
   })
   ### Select Colors####
     
-  output$select_color.heat <- renderUI({
+  output$select_color_heat <- renderUI({
     fluidRow(
       box(
-      column(12, div(style = "font-size: 13px", selectInput("main_color.heat", "Select Colorpalette", choices = c("RdBu", "PiYG", "PRGn", "PuOr", "Blue-Yellow",
+      column(12, div(style = "font-size: 13px", selectInput(inputId = "main_color_heat",label = "Select Colorpalette", choices = c("RdBu", "PiYG", "PRGn", "PuOr", "Blue-Yellow",
                                                                                                                   "Teal", "Sunset", "Viridis")))),
       #column(6, div(style = "font-size: 13px", radioButtons("color_one.heat", "First Group Color", choices = c("#88CCEE", "#DDCC77", "#CC6677", "#117733", "#332288", "#AA4499", 
       #                                                                                                         "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")))), 
@@ -1805,10 +1811,12 @@ server <- function(input, output, session) {
     )
   })
 
-  output$select_color_dte.heat <- renderUI({
+  outputOptions(output, "select_color_heat", suspendWhenHidden = FALSE)
+
+  output$select_color_dte_heat <- renderUI({
     fluidRow(
       box(
-      column(12, div(style = "font-size: 13px", selectInput("main_color_dte.heat", "Select Colorpalette", choices = c("RdBu", "PiYG", "PRGn", "PuOr", "Blue-Yellow",
+      column(12, div(style = "font-size: 13px", selectInput(inputId = "main_color_dte_heat",label =  "Select Colorpalette", choices = c("RdBu", "PiYG", "PRGn", "PuOr", "Blue-Yellow",
                                                                                                                   "Teal", "Sunset", "Viridis")))),
       #column(6, div(style = "font-size: 13px", radioButtons("color_one.heat", "First Group Color", choices = c("#88CCEE", "#DDCC77", "#CC6677", "#117733", "#332288", "#AA4499", 
       #                                                                                                         "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")))), 
@@ -1818,10 +1826,12 @@ server <- function(input, output, session) {
     )
     )
   })
+
+  outputOptions(output, "select_color_dte_heat", suspendWhenHidden = FALSE)
 
   ######## DTU ANALYSIS #########
   preProcTrans <- reactiveValues(pre_list = NULL)
-  observeEvent({input$run_dt_preprocess}, {
+    observeEvent({input$run_dt_preprocess}, {
     req(countsfile$df_trans)
     print(input$tabs)
     print(input$dea.box)
@@ -1846,9 +1856,9 @@ server <- function(input, output, session) {
     }, priority  = 0)
   
 
-  #############DTE Analysis##########################
+  #############DEXSeq Analysis##########################
   
-  DTE_run <- reactiveValues(df_res_dte = NULL)
+  DTU_general_run <- reactiveValues(df_res_dte = NULL)
   
   observeEvent({input$run_dt_preprocess}, {
     req(preProcTrans$pre_list)
@@ -1858,16 +1868,16 @@ server <- function(input, output, session) {
     print("Until here it works!")
     print(names(preProcTrans$pre_list))
  
-    DTE_run$df_res_dte <- DTE_general(
+    DTU_general_run$df_res_dte <- DTU_general(
       d_list = preProcTrans$pre_list, 
                                   condition_col = input$design_column, 
                                   first.level = input$feature_A, 
                                   ref.level = input$feature_B, 
                                   samps = metadata(), 
                                   gtf_table = gtf_table,
-                                  cores = 4
-    )
-    #save_rds(DTE_run$df_res_dte, table_of_settings_transformed()$run.dir)
+                                  cores = 4,
+                                  pvalue_input = as.numeric(input$pvalue))
+    #save_rds(DTU_general_run$df_res_dte, table_of_settings_transformed()$run.dir)
     
   })
     
@@ -1876,7 +1886,7 @@ server <- function(input, output, session) {
   ##################################################
   
   
-  ###########DTU Analysis##########################  
+  ###########DRIMSeq Analysis##########################  
   DTU_run <- reactiveValues(df_res_dtu = NULL)
 
   observeEvent(input$run_dtu_B, {
@@ -1901,7 +1911,8 @@ server <- function(input, output, session) {
                                         ref.level = input$feature_B,
                                         goi_id = table_of_genes()$gene_id[s],
                                         gtf_tab = gtf_table,
-                                        cores = 4
+                                        cores = 4,
+                                        pvalue_input = as.numeric(input$pvalue)
       )
       
       #save_rds(DTU_run$df_res_dtu, table_of_settings_transformed()$run.dir)
@@ -1914,6 +1925,8 @@ server <- function(input, output, session) {
   
   #################################################
   dea_res_preprocess <- reactiveValues(df_res = NULL)
+  dte_res_preprocess <- reactiveValues(df_res = NULL)
+  
   
   observeEvent({input$run_dea_B}, {
     req(table_of_settings_transformed())
@@ -1930,7 +1943,7 @@ server <- function(input, output, session) {
                             footer = NULL
       ))
     }
-    if (input$tabs == "dea_main" & !(is.null(countsfile$df)) & !is.null(metadata()) & !any(colSums(countsfile$df) == 0)){
+    if (!(is.null(countsfile$df)) & !is.null(metadata()) & !any(colSums(countsfile$df) == 0)){
         cat(unlist(metadata()))
         dea_res_preprocess$df_res <- run_preprocessing_dea(meta.file = metadata(),
                               counts.file = countsfile$df, 
@@ -2054,13 +2067,13 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       req(dea_res_preprocess$df_res)
-      req(input$main_color.heat)
+      # req(input$main_color_heat)
       color_plot <- condi_cols()
       plot <- createHeatmap(dea_res_preprocess$df_res$dds,
                            dea_res_preprocess$df_res$rld, 
                            condi_col = color_plot, 
                            genes = dea_res_preprocess$df_res$res_df[1:20, ], 
-                           main_color = input$main_color.heat)
+                           main_color = input$main_color_heat)
       if (input$down_heat.type == "pdf"){
         pdf(file = file,width= 20, height = 20)
       } 
@@ -2079,8 +2092,8 @@ server <- function(input, output, session) {
       paste0("DEX_volcano_plot_", Sys.Date(), ".", input$down_vol_dex.type)
     },
     content = function(file) {
-      req(DTE_run$df_res_dte$volcano_plot)
-      plot = DTE_run$df_res_dte$volcano_plot + 
+      req(DTU_general_run$df_res_dte$volcano_plot)
+      plot = DTU_general_run$df_res_dte$volcano_plot + 
         theme_bw() +
         theme(legend.title = element_blank(),
                 legend.text = element_text(size = 20),
@@ -2098,8 +2111,6 @@ server <- function(input, output, session) {
   ###############################################
     ## Differential transcript usage
 
-  dte_res_preprocess <- reactiveValues(df_res = NULL)
-  
   observeEvent({input$run_dte_B}, {
     req(table_of_settings_transformed())
     req(countsfile$df_trans)
@@ -2116,7 +2127,7 @@ server <- function(input, output, session) {
                             footer = NULL
       ))
     }
-    if (input$tabs == "dea_main" & !(is.null(countsfile$df_trans)) & !is.null(metadata()) & !any(colSums(countsfile$df_trans) == 0)){
+    if (!(is.null(countsfile$df_trans)) & !is.null(metadata()) & !any(colSums(countsfile$df_trans) == 0)){
         cat(unlist(metadata()))
         dte_res_preprocess$df_res <- run_preprocessing_dte(meta.file = metadata(),
                               counts.file = countsfile$df_trans,
@@ -2194,7 +2205,7 @@ server <- function(input, output, session) {
   output$down_vol_dte = downloadHandler(
     
     filename = function() {
-      paste0("DTE_volcano_plot_", Sys.Date(), ".", input$down_vol_dte.type)
+      paste0("DTE_volcano_plot_", Sys.Date(), ".", input$down_vol_dte_type)
     },
     content = function(file) {
       req(dte_res_preprocess$df_res)
@@ -2206,7 +2217,7 @@ server <- function(input, output, session) {
                 plot.title = element_text(hjust = 0.5, face = "bold", size = 23),
                 axis.title = element_text(size = 23))
 
-      ggsave(file, plot = plot, device = input$down_vol_dte.type, bg = "white", width = 10, height = 7)
+      ggsave(file, plot = plot, device = input$down_vol_dte_type, bg = "white", width = 10, height = 7)
     }
   )
   
@@ -2214,15 +2225,15 @@ server <- function(input, output, session) {
   output$down_s2s_dte = downloadHandler(
     
     filename = function() {
-      paste0("DTE_sam2sam_", Sys.Date(), ".", input$down_s2s_dte.type)
+      paste0("DTE_sam2sam_", Sys.Date(), ".", input$down_s2s_dte_type)
     },
     content = function(file) {
       req(dte_res_preprocess$df_res)
 
-      if (input$down_s2s_dte.type == "pdf"){
+      if (input$down_s2s_dte_type == "pdf"){
         pdf(file = file, width = 10, height = 10)
       } 
-      if (input$down_s2s_dte.type == "png"){
+      if (input$down_s2s_dte_type == "png"){
         png(file = file, width = 10, height = 20, units = "cm", res = 300)
       }
       draw(createSam2Sam_DTE(dte_res_preprocess$df_res$rld)[[2]])
@@ -2236,24 +2247,24 @@ server <- function(input, output, session) {
   output$down_heat_dte = downloadHandler(
     
     filename = function() {
-      paste0("DTE_expression_heatmap_", Sys.Date(), ".", input$down_heat_dte.type)
+      paste0("DTE_expression_heatmap_", Sys.Date(), ".", input$down_heat_dte_type)
     },
     content = function(file) {
       req(dte_res_preprocess$df_res)
-      req(input$main_color_dte.heat)
+      # req(input$main_color_dte_heat)
       color_plot <- condi_cols()
-      plot <- createHeatmap_DTE(dte_res_preprocess$df_res$dds,
+      plot_dte <- createHeatmap_DTE(dte_res_preprocess$df_res$dds,
                            dte_res_preprocess$df_res$rld, 
                            condi_col = color_plot, 
                            transcripts = dte_res_preprocess$df_res$res_df[1:20, ], 
-                           main_color = input$main_color_dte.heat)
-      if (input$down_heat_dte.type == "pdf"){
+                           main_color = input$main_color_dte_heat)
+      if (input$down_heat_dte_type == "pdf"){
         pdf(file = file,width= 20, height = 20)
       } 
-      if (input$down_heat_dte.type == "png"){
+      if (input$down_heat_dte_type == "png"){
         png(file = file,width= 20, height = 20, units = "cm", res = 300)
       }
-      print(plot$heat.down)
+      print(plot_dte$heat_dte.down)
       dev.off()
     }
   )
@@ -2265,8 +2276,8 @@ server <- function(input, output, session) {
       paste0("DEX_volcano_plot_", Sys.Date(), ".", input$down_vol_dex.type)
     },
     content = function(file) {
-      req(DTE_run$df_res_dte$volcano_plot)
-      plot = DTE_run$df_res_dte$volcano_plot + 
+      req(DTU_general_run$df_res_dte$volcano_plot)
+      plot = DTU_general_run$df_res_dte$volcano_plot + 
         theme_bw() +
         theme(legend.title = element_blank(),
                 legend.text = element_text(size = 20),
@@ -2455,7 +2466,8 @@ server <- function(input, output, session) {
     input$preprocessing_B
     req(dea_res_preprocess$df_res)
     res = dea_res_preprocess$df_res$res_df
-    degs = res[res$padj < 0.05,]
+    degs = res[res$padj < as.numeric(input$pvalue),]
+    colnames(degs) = c("gene name","gene base mean","log 2 fold change","lfcSE", "stat", "p-value", "p-adjusted","significance","gene ID")
     DT::datatable(
       degs,
       extensions = c('Buttons', 'Scroller'),
@@ -2469,13 +2481,14 @@ server <- function(input, output, session) {
       rownames = F)
   }, server = FALSE)
 
-  output$dte_tab <- renderDT({
+  output$dtes_tab <- renderDT({
     input$preprocessing_B
     req(dte_res_preprocess$df_res)
     res = dte_res_preprocess$df_res$res_df
-    degs = res[res$padj < 0.05,]
+    dtes = res[res$padj < as.numeric(input$pvalue),]
+    colnames(dtes) = c("transcript name","transcript base mean","log 2 fold change","lfcSE", "stat", "p-value", "p-adjusted","significance","gene ID")
     DT::datatable(
-      degs,
+      dtes,
       extensions = c('Buttons', 'Scroller'),
       options = list(scrollY = 200,
                      scrollX = 500,
@@ -2490,14 +2503,14 @@ server <- function(input, output, session) {
   # Show table of DETs
   output$dex_tab <- renderDT({
     input$preprocessing_B
-    req(DTE_run$df_res_dte$dxr_df)
-    res = DTE_run$df_res_dte$dxr_df
+    req(DTU_general_run$df_res_dte$dxr_df)
+    res = DTU_general_run$df_res_dte$dxr_df
     #print(res)
-    dtes = res[res$padj < 0.05,]
-    dtes = data.frame(gene_name = as.character(dtes$gene_name),group_id = as.character(dtes$groupID), feature_id = as.character(dtes$featureID),exon_base_mean = as.numeric(as.character(dtes$exonBaseMean)),p_adjusted = as.numeric(as.character(dtes$padj)), dispersion = as.numeric(as.character(dtes$dispersion)))
-    colnames(dtes) = c("names","gencode","feature ID", "Exon base mean", "p-adjusted", "dispersion")
+    dtus = res[res$padj < as.numeric(input$pvalue),]
+    dtus = data.frame(gene_name = as.character(dtus$gene_name), transcript_name = as.character(dtus$transcript_name),group_id = as.character(dtus$groupID), feature_id = as.character(dtus$featureID),exon_base_mean = as.numeric(as.character(dtus$exonBaseMean)),p_adjusted = as.numeric(as.character(dtus$padj)), dispersion = as.numeric(as.character(dtus$dispersion)))
+    colnames(dtus) = c("gene name","transcript name","gene ID","feature ID", "exon base mean", "p-adjusted", "dispersion")
     DT::datatable(
-      dtes,
+      dtus,
       extensions = c('Buttons', 'Scroller'),
       options = list(scrollY = 200,
                      scrollX = 500,
@@ -2578,14 +2591,14 @@ server <- function(input, output, session) {
   output$heat_plot <- renderPlot(bg = "transparent", {
     print("Heatmap")
     req(dea_res_preprocess$df_res)
-    req(input$main_color.heat)
+    # req(input$main_color_heat)
     # does not load correctly after being downloaded, all values still exist but nothing is rendered
     # the plot can be seen when printed in RStudio, though  
     plot = createHeatmap(dea_res_preprocess$df_res$dds,
                   dea_res_preprocess$df_res$rld, 
                   condi_col = condi_cols(), 
                   genes = dea_res_preprocess$df_res$res_df[1:20, ], 
-                  main_color = input$main_color.heat)
+                  main_color = input$main_color_heat)
     plot$heat
   })
 
@@ -2607,7 +2620,7 @@ server <- function(input, output, session) {
   
   output$s2s_plot_dte <- renderPlot(bg = "transparent",{
     print("Heatmap")
-
+    
     req(dte_res_preprocess$df_res)
     createSam2Sam_DTE(dte_res_preprocess$df_res$rld)[[1]]
     
@@ -2616,22 +2629,21 @@ server <- function(input, output, session) {
   output$heat_plot_dte <- renderPlot(bg = "transparent", {
     print("Heatmap")
     req(dte_res_preprocess$df_res)
-    req(input$main_color_dte.heat)
+    # req(input$main_color_dte_heat)
     # does not load correctly after being downloaded, all values still exist but nothing is rendered
     # the plot can be seen when printed in RStudio, though  
-    plot = createHeatmap_DTE(dte_res_preprocess$df_res$dds,
+    plot_dte = createHeatmap_DTE(dte_res_preprocess$df_res$dds,
                   dte_res_preprocess$df_res$rld, 
                   condi_col = condi_cols(), 
                   transcripts = dte_res_preprocess$df_res$res_df[1:20, ], 
-                  main_color = input$main_color_dte.heat)
-    plot$heat
+                  main_color = input$main_color_dte_heat)
+    plot_dte$heat_dte
   })
   
   output$volcano_dex_output <- renderPlot(bg = "transparent",{
     print("DEX Volcano plot")
-    req(DTE_run$df_res_dte$volcano_plot)
-    DTE_run$df_res_dte$volcano_plot
-    
+    req(DTU_general_run$df_res_dte$volcano_plot)
+    DTU_general_run$df_res_dte$volcano_plot
   })
   
   output$dtu_boxplot <- renderPlot(bg = "transparent",{
@@ -2691,7 +2703,7 @@ server <- function(input, output, session) {
                   div(style = "display: inline-block; vertical-align: top", downloadButton("down_vol")),
                   div(style = "display: inline-block; vertical-align: top; width: 80px", selectInput("down_vol.type", NULL, choices = c("png", "pdf"))),
                   # div(style = "display:inline-block; vertical-align: top; margin-top: 8px", radioButtons("custom_color.volcano", NULL, choices = c("default colors" = F, "custom colors" = T), inline = T)),
-                  uiOutput("select_color.volcano"),
+                  #uiOutput("select_color.volcano"),
                   plotOutput("volcano_plot") %>% withSpinner(color = "#0dc5c1")
                 ))
               ),
@@ -2710,7 +2722,7 @@ server <- function(input, output, session) {
                   12,
                   div(style = "display:inline-block; vertical-align:top", downloadButton("down_heat")),
                   div(style = "display:inline-block; vertical-align:top; width:80px", selectInput("down_heat.type", NULL, choices = c("png", "pdf"))),
-                  uiOutput("select_color.heat"),
+                  uiOutput("select_color_heat"),
                   plotOutput("heat_plot") %>% withSpinner(color = "#0dc5c1")
                 ))
               )
@@ -2732,7 +2744,7 @@ server <- function(input, output, session) {
           solidHeader = T,
           collapsible = T,
           collapsed = F,
-          DT::dataTableOutput("dte_tab") %>% withSpinner(color = "#0dc5c1")
+          DT::dataTableOutput("dtes_tab") %>% withSpinner(color = "#0dc5c1")
         )),
         column(
           12,
@@ -2740,7 +2752,6 @@ server <- function(input, output, session) {
             width = 12, title = "Plots",
             # title = "Quality Box",
             # The id lets us use input$tabset1 on the server to find the current tab
-            id = "tabset.plots",
             tabPanel(
               title = "PCA", value = "pca_dte.tab",
               fluidRow(column(
@@ -2757,9 +2768,9 @@ server <- function(input, output, session) {
               fluidRow(column(
                 12,
                 div(style = "display: inline-block; vertical-align: top", downloadButton("down_vol_dte")),
-                div(style = "display: inline-block; vertical-align: top; width: 80px", selectInput("down_vol_dte.type", NULL, choices = c("png", "pdf"))),
+                div(style = "display: inline-block; vertical-align: top; width: 80px", selectInput("down_vol_dte_type", NULL, choices = c("png", "pdf"))),
                 # div(style = "display:inline-block; vertical-align: top; margin-top: 8px", radioButtons("custom_color.volcano", NULL, choices = c("default colors" = F, "custom colors" = T), inline = T)),
-                uiOutput("select_color.volcano"),
+                #uiOutput("select_color.volcano"),
                 plotOutput("volcano_plot_dte") %>% withSpinner(color = "#0dc5c1")
               ))
             ),
@@ -2768,7 +2779,7 @@ server <- function(input, output, session) {
               fluidRow(column(
                 12,
                 div(style = "display:inline-block; vertical-align: top", downloadButton("down_s2s_dte")),
-                div(style = "display:inline-block; vertical-align: top; width: 80px", selectInput("down_s2s_dte.type", NULL, choices = c("png", "pdf"))),
+                div(style = "display:inline-block; vertical-align: top; width: 80px", selectInput("down_s2s_dte_type", NULL, choices = c("png", "pdf"))),
                 plotOutput("s2s_plot_dte") %>% withSpinner(color = "#0dc5c1")
               ))
             ),
@@ -2777,8 +2788,8 @@ server <- function(input, output, session) {
               fluidRow(column(
                 12,
                 div(style = "display:inline-block; vertical-align:top", downloadButton("down_heat_dte")),
-                div(style = "display:inline-block; vertical-align:top; width:80px", selectInput("down_heat_dte.type", NULL, choices = c("png", "pdf"))),
-                uiOutput("select_color_dte.heat"),
+                div(style = "display:inline-block; vertical-align:top; width:80px", selectInput("down_heat_dte_type", NULL, choices = c("png", "pdf"))),
+                uiOutput("select_color_dte_heat"),
                 plotOutput("heat_plot_dte") %>% withSpinner(color = "#0dc5c1")
               ))
             )

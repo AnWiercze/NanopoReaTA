@@ -81,7 +81,12 @@ DRIM_seq_prep <- function(table = count.table, run.dir = csv.dir, samps = metada
                 min_samps_gene_expr=(n.small), min_gene_expr=50)
   
   table(table(counts(d)$gene_id))
-  design_full <- model.matrix(~condition, data=DRIMSeq::samples(d))
+  input_design <- DRIMSeq::samples(d)
+  input_design$condition <- factor(input_design$condition,levels = c(first.level,ref.level))
+  print(input_design)
+  design_full <- model.matrix(~condition, data=input_design)
+  print(design_full)
+  print(colnames(design_full)[2])
   #print(design_full)
   set.seed(1)
   system.time({
@@ -112,7 +117,7 @@ DRIM_seq_prep <- function(table = count.table, run.dir = csv.dir, samps = metada
 ###############################################################################################
 
 
-DTU_special <- function(d_list = tryout, condition_col = "Condition", first.level = "a2d3-OE", ref.level = "Ctrl", goi_id = "ENSG00000111640.15",gtf_tab = gtf_table, cores = 4){
+DTU_special <- function(d_list = tryout, condition_col = "Condition", first.level = "a2d3-OE", ref.level = "Ctrl", goi_id = "ENSG00000111640.15",gtf_tab = gtf_table, cores = 4, pvalue_input = 0.05){
     
     d = d_list$drim
     counts = d_list$counts
@@ -168,7 +173,7 @@ DTU_special <- function(d_list = tryout, condition_col = "Condition", first.leve
     }
     plot_dataframe_d$counts_df = as.numeric(plot_dataframe_d$counts_df)
     plot_dataframe_d$percentage = as.numeric(plot_dataframe_d$percentage)
-    plot_dataframe_d$Significance = res.txp[which(res.txp$gene_id == goi_id),]$adj_pvalue < 0.05
+    plot_dataframe_d$Significance = res.txp[which(res.txp$gene_id == goi_id),]$adj_pvalue < pvalue_input
     plot_dataframe_d$Significance[is.na(plot_dataframe_d$Significance)] <- FALSE
     goi_name = unique(gtf_tab$gene_name[gtf_tab$gene_id == goi_id])
     print(goi_name)
@@ -236,25 +241,12 @@ DTU_special <- function(d_list = tryout, condition_col = "Condition", first.leve
 
 
 
-
-###############################################################################################
-#                                                                                             #
-#                                                                                             #
-#                                                                                             #
-#                                           DTE                                               #
-#                                                                                             #
-#                                                                                             #
-#                                                                                             #
-#                                                                                             #
-###############################################################################################
-
-
-DTE_general <- function(d_list, condition_col = "Condition", first.level = "Hct116", ref.level = "MCF7", samps = metadata, gtf_table, cores = 4){
+DTU_general <- function(d_list, condition_col = "Condition", first.level = "Hct116", ref.level = "MCF7", samps = metadata, gtf_table, cores = 4, pvalue_input = 0.05){
   ###############################################################################################
   #                                                                                             #
   #                                                                                             #
   #                                                                                             #
-  #                                   DTE with DEXSeq                                           #
+  #                                   DTU with DEXSeq                                           #
   #                                                                                             #
   #                                                                                             #
   #                                                                                             #
@@ -267,20 +259,23 @@ DTE_general <- function(d_list, condition_col = "Condition", first.level = "Hct1
 
   sample.data <- DRIMSeq::samples(d)
   print(sample.data)
+  sample.data$condition <- factor(sample.data$condition,levels = c(first.level,ref.level))
   count.data <- round(as.matrix(counts(d)[,-c(1:2)]))
   print(count.data)
+  
+
   dxd <- DEXSeqDataSet(countData=count.data,
                        sampleData=sample.data,
                        design=~sample + exon + condition:exon,
                        featureID=counts(d)$feature_id,
                        groupID=counts(d)$gene_id)
   #print(dxd)
-  
+  dxd$condition = factor(dxd$condition,levels = c(first.level,ref.level))
   system.time({
     dxd <- estimateSizeFactors(dxd)
     dxd <- estimateDispersions(dxd, quiet=TRUE)
     dxd <- testForDEU(dxd, reducedModel=~sample + exon)
-    dxd <- estimateExonFoldChanges( dxd, fitExpToVar="condition")
+    dxd <- estimateExonFoldChanges( dxd, fitExpToVar="condition", denominator=ref.level)
   })
   dxr <- DEXSeqResults(dxd, independentFiltering=FALSE)
   output_list = list()
@@ -319,7 +314,7 @@ DTE_general <- function(d_list, condition_col = "Condition", first.level = "Hct1
   
   print("Line Y passed")
   
-  dxr_df$Significance = dxr_df$padj < 0.05
+  dxr_df$Significance = dxr_df$padj < pvalue_input
   dxr_df$Significance_reg = ifelse(dxr_df$Significance, 
                                    ifelse(dxr_df$log_2_fold_Change > 0, "Up", "Down"), 
                                    "Not sig.")
@@ -330,7 +325,9 @@ DTE_general <- function(d_list, condition_col = "Condition", first.level = "Hct1
                     "Not sig." = "gray")
   
   dxr_df$gene_name = gtf_table[match(dxr_df$groupID,gtf_table$gene_id),"gene_name"]
-  rownames(dxr_df) = paste(dxr_df$gene_name,dxr_df$featureID,sep = ":")
+  dxr_df$transcript_name = gtf_table[match(dxr_df$featureID,gtf_table$transcript_id),"transcript_name"]
+  #rownames(dxr_df) = paste(dxr_df$gene_name,dxr_df$featureID,sep = ":")
+  rownames(dxr_df) = dxr_df$transcript_name
 
   volcano_plot_dex <- ggplot(dxr_df,mapping = aes(x = log_2_fold_Change, y=-log10(padj),color = Significance_reg)) +
     geom_point(size=1.75) + 
@@ -345,11 +342,7 @@ DTE_general <- function(d_list, condition_col = "Condition", first.level = "Hct1
     theme(
       panel.background = element_rect(fill = "transparent"), # bg of the panel
       plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
-      #panel.grid.major = element_blank(), # get rid of major grid
-      #panel.grid.minor = element_blank(), # get rid of minor grid
       legend.background = element_rect(fill = "transparent"), # get rid of legend bg
-      #legend.box.background = element_rect(fill = "transparent"), # get rid of legend panel bg
-      #legend.title = element_text(size = 20, color = "white"),
       legend.title = element_blank(), # remove legend title
       legend.key = element_rect(colour = "transparent", fill = "transparent"),
       legend.text = element_text(size = 20, color = "white"),

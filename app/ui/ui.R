@@ -613,26 +613,25 @@ ui <- dashboardPage(
                  column(12, h3(p(em(strong("Significance threshold")))), align = "left", style = "margin-bottom: 10px; margin-top: -10px"),
                  column(12, textInput("pvalue","adjusted p-value", value = 0.05)),
                  column(4, uiOutput("submit_dge"), align = "center", style = "margin-bottom: 10px;", style = "margin-top: -10px;"),
-                 column(4,uiOutput("submit_dte"),align = "center", style = "margin-bottom: 10px;", style = "margin-top: -10px;"),
+                 column(4, uiOutput("submit_dte"), align = "center", style = "margin-bottom: 10px;", style = "margin-top: -10px;"),
                  column(4, uiOutput("submit_dt_preprocess"), align = "center", style = "margin-bottom: 10px;", style = "margin-top: -10px;")
             ),
           column(12,
            tabBox(
              width = 12, id = "dea.box",
        #### DEA results ####
-
              tabPanel(
                title = "Gene expression", value = "dea.tab",
                tabItem(
-                 tabName = "dea",
-                  uiOutput("dea_results.out")
+                tabName = "dea",
+                uiOutput("dea_results.out")
                )
              ), # eof tabPanel
              tabPanel(
                title = "Transcript expression", value = "dte.tab",
                tabItem(
                  tabName = "dte",
-                  uiOutput("dte_results.out")
+                 uiOutput("dte_results.out")
                )
              ),
              #### DEU results ####
@@ -647,10 +646,10 @@ ui <- dashboardPage(
                         # The id lets us use input$tabset1 on the server to find the current tab
                         id = "tabset.deu",
                         tabPanel(
-                          title = "General", value = "dte.tab",
+                          title = "General", value = "dtu_dex.tab",
                           fluidPage(
                             fluidRow(column(12,box(
-                                            title = "Differential transcript expression",
+                                            title = "Differential transcript usage",
                                             width = 12,
                                             status = "primary",
                                             solidHeader = T,

@@ -210,8 +210,8 @@ createHeatmap_DTE <- function(dds, rld, condi_col, main_color = "RdBu", gtf_file
   )
 
   g_draw2 = draw(g2, background = "transparent")
-
-  return(list("heat" = g_draw, "heat.down" = g_draw2))
+  flog.info("########## Create Heatmap Finished ###########")
+  return(list("heat_dte" = g_draw, "heat_dte.down" = g_draw2))
 }
 
 createSam2Sam_DTE <- function(rld){
