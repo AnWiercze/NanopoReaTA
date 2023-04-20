@@ -1419,7 +1419,7 @@ process salmon_annotation{
                     bam_files_to_merge=\${bam_files_to_merge}\${i}" "
                     fi
                 done
-                echo \$bam_files_to_merge >> \${run_dir}/error_logs/bam_files_to_merge_transcripts.txt
+                #echo \$bam_files_to_merge >> \${run_dir}/error_logs/bam_files_to_merge_transcripts.txt
                 #samtools merge \${run_dir}bam_transcriptome_merged/\${par_basis}.bam \${bam_files_to_merge} -f -h \${bam_files_to_merge} --threads ${params.threads} -c -p || echo "\${bam_files_to_merge}" >> \${run_dir}/error_logs/merge_transcriptome_few_error.log
                 samtools merge \${run_dir}bam_transcriptome_merged/\${par_basis}.bam \${bam_files_to_merge} -f --threads ${params.threads} -c -p || echo "\${bam_files_to_merge}" >> \${run_dir}/error_logs/merge_transcriptome_few_error.log
                 cp \${run_dir}bam_transcriptome_merged/\${par_basis}.bam \${run_dir}\${par_basis}/salmon/all.bam
