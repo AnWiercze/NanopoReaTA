@@ -641,6 +641,30 @@ ui <- dashboardPage(
                  tabName = "deu",
                  fluidRow(
                    column(12,
+                      fluidRow(column(12,box( 
+                                        title = "Differential transcript usage",
+                                        width = 12,
+                                        tabBox(
+                                            width = 12,
+                                            tabPanel(
+                                            title = "DEXSeq analysis",
+                                            width = 12,
+                                            status = "primary",
+                                            solidHeader = T,
+                                            collapsible = T,
+                                            collapsed = F,
+                                            DT::dataTableOutput("dex_tab") %>% withSpinner(color = "#0dc5c1")
+                                            ),
+                                            tabPanel(
+                                            title = "DRIMSeq analysis",
+                                            width = 12,
+                                            status = "primary",
+                                            solidHeader = T,
+                                            collapsible = T,
+                                            collapsed = F,
+                                            DT::dataTableOutput("drim_tab") %>% withSpinner(color = "#0dc5c1")
+                                            )
+                                          )))),
                       tabBox(
                         width = 12, title = "Transcript analysis options",
                         # The id lets us use input$tabset1 on the server to find the current tab
@@ -648,16 +672,6 @@ ui <- dashboardPage(
                         tabPanel(
                           title = "General", value = "dtu_dex.tab",
                           fluidPage(
-                            fluidRow(column(12,box(
-                                            title = "Differential transcript usage",
-                                            width = 12,
-                                            status = "primary",
-                                            solidHeader = T,
-                                            collapsible = T,
-                                            collapsed = F,
-                                            DT::dataTableOutput("dex_tab") %>% withSpinner(color = "#0dc5c1")
-                                          ))),
-                            
                             fluidRow(column(12, 
                               div(style = "display: inline-block; vertical-align: top", downloadButton("down_vol_dex")),
                               div(style = "display: inline-block; vertical-align: top; width: 80px", selectInput("down_vol_dex.type", NULL, choices = c("png", "pdf"))),

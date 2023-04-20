@@ -1753,18 +1753,18 @@ server <- function(input, output, session) {
   observeEvent(input$run_dea_B, {
     updateTabsetPanel(session, "dea.box",
                       selected = "dea.tab")
-  }, priority = 5)
+  }, priority = 10)
 
   observeEvent(input$run_dte_B, {
     updateTabsetPanel(session, "dea.box",
                       selected = "dte.tab")
-  }, priority = 5)
+  }, priority = 10)
   
   
   observeEvent(input$run_dt_preprocess, {
     updateTabsetPanel(session, "dea.box",
                       selected = "deu.tab")
-  }, priority = 5)
+  }, priority = 10)
 
   
   # Dialog is only run if table_of_genes is loaded
@@ -2382,10 +2382,10 @@ server <- function(input, output, session) {
                      deferRender = TRUE,
                      scroller = TRUE,
                      paging = TRUE,
-                     dom = 't',
+                     dom = 'lBfrtip',
                      fixedColumns = TRUE), 
       rownames = F)
-  })
+  },server = FALSE)
 
 
   process_time = reactiveValues(df = NULL)
@@ -2500,7 +2500,37 @@ server <- function(input, output, session) {
       rownames = F)
   }, server = FALSE)
   
-  # Show table of DETs
+
+  output$drim_tab <- renderDT({
+    input$preprocessing_B
+    req(preProcTrans$pre_list)
+    req(docker()$run_dir)
+    res = data.frame(preProcTrans$pre_list$res_df)
+    res = na.omit(res)
+    res = res[res$adj_pvalue < as.numeric(input$pvalue),]
+    gtf_csv = paste0(docker()$run_dir, "converted_gtf.csv")
+    gtf_table <- read.table(gtf_csv, ",",header = T) 
+    res$gene_name = gtf_table[match(res$feature_id, gtf_table$transcript_id), "gene_name"]
+    res$transcript_name = gtf_table[match(res$feature_id, gtf_table$transcript_id), "transcript_name"]
+    dtus = data.frame(gene_name = as.character(res$gene_name), transcript_name = as.character(res$transcript_name),gene_id = as.character(res$gene_id),feature_id = as.character(res$feature_id),lr = as.numeric(res$lr), pvalue = as.numeric(res$pvalue),adj_pvalue = as.numeric(res$adj_pvalue))
+    colnames(dtus) = c("gene name","transcript name","gene ID","feature ID", "lr","pvalue", "p-adjusted")
+    #print(res)
+    DT::datatable(
+      dtus,
+      extensions = c('Buttons', 'Scroller'),
+      options = list(scrollY = 200,
+                     scrollX = 500,
+                     deferRender = TRUE,
+                     scroller = TRUE,
+                     paging = TRUE,
+                     dom = 'lBfrtip',
+                     fixedColumns = TRUE), 
+      rownames = F)
+  }, server = FALSE)
+
+
+
+  # Show table of DTUs
   output$dex_tab <- renderDT({
     input$preprocessing_B
     req(DTU_general_run$df_res_dte$dxr_df)

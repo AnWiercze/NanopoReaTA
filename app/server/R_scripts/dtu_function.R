@@ -76,9 +76,9 @@ DRIM_seq_prep <- function(table = count.table, run.dir = csv.dir, samps = metada
   n <- length(samps$sample_id)
   n.small <- min(table(samps$condition))
   d <- dmFilter(d,
-                min_samps_feature_expr=as.integer(n.small), min_feature_expr=10,
+                min_samps_feature_expr=as.integer(n.small), min_feature_expr=5,
                 #              min_samps_feature_prop=int(n.small/1.5), min_feature_prop=0.1,
-                min_samps_gene_expr=(n.small), min_gene_expr=50)
+                min_samps_gene_expr=(n.small), min_gene_expr=20)
   
   table(table(counts(d)$gene_id))
   input_design <- DRIMSeq::samples(d)
@@ -94,6 +94,10 @@ DRIM_seq_prep <- function(table = count.table, run.dir = csv.dir, samps = metada
     d <- dmFit(d, design=design_full, BPPARAM = param)
     d <- dmTest(d, coef=colnames(design_full)[2], BPPARAM = param)
   })
+
+    
+  res_txp <- DRIMSeq::results(d, level="feature")
+
   print("DRIM SEQ MADE IT")
   #print(counts(d))
   list = list()
@@ -101,6 +105,7 @@ DRIM_seq_prep <- function(table = count.table, run.dir = csv.dir, samps = metada
   list$drim = d
   list$samps = samps
   list$txdf = txdf
+  list$res_df = res_txp 
   return(list)
 }
 

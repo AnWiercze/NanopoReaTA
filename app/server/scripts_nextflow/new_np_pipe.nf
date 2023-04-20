@@ -154,6 +154,9 @@ move_transcripts_minimap2_running.value = 0
 salmon_annotation_running = new IntObj()
 salmon_annotation_running.value = 0
 
+continue_bool = new IntObj()
+continue_bool.value = 0
+
 iteration = new IntObj()
 iteration.value = 0
 
@@ -1536,21 +1539,21 @@ process reawake_next_round{
     println "Continue ?"
     println continue_text
     println "____________"
-    int continue_bool = continue_text.toInteger()
-    if (continue_bool == 1){
+    continue_bool.value = continue_text.toInteger()
+    if (continue_bool.value == 1){
         checkup << Channel.from(1)
     }
     else {
-        File continue_text2 = new File("${params.run_dir}process_running.txt")
+        def continue_text2 = new File("${params.run_dir}process_running.txt")
         continue_text2.write "2"
-        while(continue_bool != 1){
+        while(continue_bool.value != 1){
             def continue_text3 = new File("${params.run_dir}process_running.txt").getText()
-            continue_bool = continue_text3.toInteger()
-            if ( continue_bool == 1){
+            continue_bool.value = continue_text3.toInteger()
+            if ( continue_bool.value == 1){
                 println "Going to continue"
             }
             else {
-                println "Preprocessing is stopped"
+                sleep(2000)
             }
         }
         checkup << Channel.from(1)
