@@ -32,7 +32,20 @@ createLengthPlots <- function(readLengths_df_filt, metadata, conditionCol, condi
     xlab("Read length") +
     ylab("Density") +
     ggtitle("Sample-wise length distribution\n(filtered longest 1 % of reads)") +
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(
+                        # rect = element_rect(fill = "transparent"),
+                         panel.background = element_rect(fill = 'transparent', color = "white"), # bg of the panel
+                         plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+                         legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+                        # legend.box.background = element_rect(fill = "transparent"),
+                         legend.title = element_text(size = 16, color = "white"),
+                         legend.key = element_rect(colour = "transparent", fill = "transparent"),
+                         legend.text = element_text(size = 14, color = "white"),
+                         axis.text = element_text(angle = 45, hjust = 1, size = 14, color = "white"),
+                         plot.title = element_text(hjust = 0.5, face = "bold", size = 23, color = "white"),
+                         axis.title = element_text(size = 23, color = "white"),
+                         axis.line = element_line(color = "white"),
+                         axis.ticks = element_line(color = "white"))
   
   # Plot group-wise distribution of all reads
   groupWise_All = ggplot(readLengths_df_filt, aes(x = Length, color = Condition)) +
@@ -42,7 +55,20 @@ createLengthPlots <- function(readLengths_df_filt, metadata, conditionCol, condi
     xlab("Read length") +
     ylab("Density") +
     ggtitle("Condition-wise length distribution\n(filtered longest 1 % of reads)") +
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(
+                        # rect = element_rect(fill = "transparent"),
+                         panel.background = element_rect(fill = 'transparent', color = "white"), # bg of the panel
+                         plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+                         legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+                        # legend.box.background = element_rect(fill = "transparent"),
+                         legend.title = element_text(size = 16, color = "white"),
+                         legend.key = element_rect(colour = "transparent", fill = "transparent"),
+                         legend.text = element_text(size = 14, color = "white"),
+                         axis.text = element_text(angle = 45, hjust = 1, size = 14, color = "white"),
+                         plot.title = element_text(hjust = 0.5, face = "bold", size = 23, color = "white"),
+                         axis.title = element_text(size = 23, color = "white"),
+                         axis.line = element_line(color = "white"),
+                         axis.ticks = element_line(color = "white"))
   
   
   return(list(sampleWise_All = sampleWise_All, groupWise_All = groupWise_All))
