@@ -243,10 +243,10 @@ The table on the lefthand side lists all the genes annotated in the loaded GTF f
 Before using this functionality, the preprocessing should be stopped by pressing the "Stop preprocessing" button in the sidebar (see [Stop preprocessing](#stop-preprocessing). The current preprocessing iteration will be finished and the pipeline is paused afterwards. The user must wait until the preprocessing pipeline is paused before starting Gene Body Coverage analyses. (Message of iteration completion will follow soon...). The Gene selection functions similar as in [Gene counts](#gene-counts), but only one gene can be selected each time. After the gene selection is submitted, the percentage of coverage for a gene divided into 100 percentiles is shown sample- and group-wise (=mean). The calculation is based on the RSeQC script for gene body coverage analsis (https://rseqc.sourceforge.net/).
 
 ### Differential Expression Analysis
-Countfiles for gene- or transcriptome-wise analysis have to be updated manually on demnand. After each iteration please click on one of the buttons to either update gene (DESeq2-based) or transcriptome (DRIM-Seq and DEXSeq based) data. Please make sure, that the sequencing ran long enough to show low inner variabilities in the expression pattern. After pressing the button a differential expression analysis is executed. This may take around 5 minutes, depending on the size of the dataset. 
+Countfiles for gene- or transcriptome-wise analysis have to be updated manually on demnand. After each iteration please click on one of the buttons to either update gene (DESeq2-based) or transcript (DESeq2-, DRIM-Seq and DEXSeq based) data. Please make sure, the sequencing ran long enough to show low inner variabilities in the expression pattern. After pressing the button a differential expression analysis is executed. This may take around 5 minutes, depending on the size of the dataset. 
 
-#### Gene-level Tab analysis
-Differential gene expression analysis will be performed and the following visualization are shown:
+#### Gene-level analysis (DGE with DESeq2)
+Differential gene expression analysis will be performed and the following visualizations are shown:
 - A table of all differential expressed genes
 - PCA analysis
 - Volcano plot (DGE)
@@ -257,12 +257,24 @@ Differential gene expression analysis will be performed and the following visual
 <p align="center"><img src="Gifs/Volcano Plots_DGE.gif"  width="85%"></p>
 
 #### Transcript-level analysis
-##### Differential Transcript Expression (DTE)
-All differentially expressed transcripts and a volcano plot are shown.
+##### Differential Transcript Expression (DTE with DESeq2)
+Differential transcript expression analysis will be performed and the following visualizations are shown:
+- A table of all differential expressed transcripts
+- PCA analysis
+- Volcano plot (DTE)
+- Sample-2-Sample plot
+- Heatmap of the top 20 differential expressed transcripts based on p-adjusted
+
 <p align="center"><img src="Gifs/Volcano Plots_DTE.gif"  width="85%"></p>
 
-##### Differential Transcript Usage
-Please select a gene to show the differential transcript usage within a gene of interest and click on submit genes. The analysis shows boxplots of relative transcript adundance within a gene of interest 
+##### Differential Transcript Usage (DTU with DRIMSeq and DEXSeq)
+Differential transcript usage analysis will be performed with DEXSeq to allow a general DTU overview. The following visualizations are shown.
+
+- A table of all differential expressed transcripts (Results of DRIM-Seq and DEX-Seq)
+- Volcano plot (DTE)
+
+Additionally, on can select a gene to show the differential transcript usage within a gene of interest and click on submit genes. The analysis shows boxplots of relative transcript adundance within a gene of interest. The analysis is performed with DRIM-Seq.
+
 <p align="center"><img src="Gifs/DTU_Boxplot.gif"  width="85%"></p>
 
 
