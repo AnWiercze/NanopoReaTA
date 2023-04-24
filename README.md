@@ -263,6 +263,7 @@ All differentially expressed transcripts and a volcano plot are shown.
 
 ##### Differential Transcript Usage
 Please select a gene to show the differential transcript usage within a gene of interest and click on submit genes. The analysis shows boxplots of relative transcript adundance within a gene of interest 
+<p align="center"><img src="Gifs/DTU_Boxplot.gif"  width="85%"></p>
 
 
 ## Testing 
