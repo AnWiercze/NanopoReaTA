@@ -133,8 +133,20 @@ Before running/exploiting real experiments with NanopoReaTA, we highly recommend
 ### Welcome Page
 When the application is started, the welcome page is shown and contains a **Start NanopoReaTA** button as well as the [NanopoReaTA](#nanoporeata---nanopore-real-time-analysis-pipeline) manual. 
 
+### Metadata Creator
+After pushing the **Start NanopoReaTA** button the user is linked to a metadata creator page. The user should enter the samples, conditions and replicates of the running sequencing experiment and is then able to download a metadata file, which is mandatory to run the application. If samples are barcoded the samples must be named after their barcodes (barcode01-barcode96). Once the metadata is downloaded it can be locally renamed and moved. By clicking the blu arrow on the bottom right of the page the configuration of the real-time processing can be initiated.  
+
+#### Example metadata file
+
+ Samples | Condition | Replicate | Custom 
+ :---: | :---: | :---: | :---: 
+ Sample1 | Cond1 | R1 | male
+ Sample2 | Cond2 | R1 | female
+ Sample3 | Cond1 | R1 | female
+ Sample4 | Cond2 | R1 | male
+
 ### Configuration Page 
-After pushing the **Start NanopoReaTA** button, the configuration page opens and the user has to fill out required information or upload an already existing configuration file in yaml format from previous NanopoReaTA runs (Please check [example_conf_files](example_conf_files) for correct parameter naming). After all configurations are set, the configurations will be saved as config.yaml in the defined output folder.  
+The user will be linked to the configuration page and has to select required files and folders or upload an already existing configuration file in yaml format from previous NanopoReaTA runs (Please check [example_conf_files](example_conf_files) for correct parameter naming). After all configurations are set, the configurations will be saved as config.yaml in the defined output folder. ("run folder") 
 
 The following parameters have to be set by the user: 
 *Directory inputs needs an "/" at the end. Please make sure to let them end with an "/" character. 
@@ -151,16 +163,7 @@ The following parameters have to be set by the user:
  GTF annotation file  | string | Please insert the filepath to the GTF file
  BED annotation file | string | Please insert the filepath to the BED file
  Output directory | string | Please insert the output directory file (Note that the ouput directory should already exist as an empty instance)
- 
- #### Example metadata file
- The metadata file has to be created manually using tab separation (.tsv) and must contain at least three columns of the following structure: "Samples", "Condition", "Experiment", "Custom1", "...".
- 
- Samples | Condition | Experiment | Custom 
- :---: | :---: | :---: | :---: 
- Sample1 | Cond1 | E1 | male
- Sample2 | Cond2 | E1 | female
- Sample3 | Cond1 | E1 | female
- Sample4 | Cond2 | E1 | male
+
  
  #### Reference and annotation files
 The required genome and annotation files for the organism of interest must be downloaded from the Gencode database (https://www.gencodegenes.org/), since the syntax of NanopoReaTA is suited to the respective standards. Mouse reference data can be obtained at GENCODE database: GRCm39 Release M27 (https://www.gencodegenes.org/mouse/release_M27.html). Human reference data can be obtained at GENCODE database: GRCh38.p13 v40 (https://www.gencodegenes.org/human/release_40.html). BED files of the respective genome versions can be downloaded from RSeQC: (https://sourceforge.net/projects/rseqc/files/BED).
