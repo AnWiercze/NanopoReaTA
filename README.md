@@ -188,25 +188,16 @@ By clicking on **Settings overview**, the user will be forwarded to the final [c
 The input configurations can be finally checked by the user. If the paramters are correct, the user can start the preprocessing by clicking the **Start preprocessing** button. Otherwise the user can rearrange the settings by going back to the configuration tab
 
 #### NanopoReaTA run options
-There are three options how and if to run preprocessing of NanopoReaTA: 
-1) Start  [NanopoReaTA's UI](#start-nanoporeata) and select *Run Preprocessing - Yes* at the [Configuration Page](#configuration-page) to start the backend preprocessing pipeline within the app. The user can keep track of the running nextflow pipeline within the index.log and error.log files created in the user-defined output folder by executing `tail -f /path/to/output/dir/index.log` in a terminal window. 
-2) For visualization of NanopoReaTA preprocessed results only, start [NanopoReaTA's UI](#start-nanoporeata), select *Preprocessing - No* and set the respective output folder created by NanopoReaTA at the [Configuration Page](#configuration-page), before pressing the "Start Preprocessing" button. Preprocessing will not be executed.
-3) Start preprocessing pipeline outside NanopoReaTA's UI by selecting *Preprocessing - No* at [Configuration Page](#configuration-page) before pressing the "Start preprocessing" button. In this case, preprocessing will not be executed automatically. The configuration file that is saved as config.yaml in the user-defined output folder will be used to start the nextflow pipeline in parallel by executing the following commands in a second terminal:
-```
-conda activate nanoporeata
-cd /path_to_app/NanopoReaTA/app/server/scripts_nextflow/ 
-nextflow run new_np_pipe.nf -params-file /path_to_output_dir/defined_in_UI/config.yaml
-```
-The pipeline will start to run and create a constantly updated text output on the console. The running pipeline can now be constantly observed. 
 
-*Adavantages of starting Preprocessing outside the UI:
-This approach has a couple of benefits, when running a long sequencing experiment. Such that the processing pipeline will not be closed in case someone is closing the browser window. Additionally, one can keep track of the steps executed in the nextflow pipeline directly within the terminal.*
+1) Start  [NanopoReaTA's UI](#start-nanoporeata) and select *Run Preprocessing - Yes* at the [Configuration Page](#configuration-page) to start the backend preprocessing pipeline within the app. The user can keep track of the running nextflow pipeline within the index.log and error.log files created in the user-defined output folder by executing `tail -f /path/to/output/dir/index.log` in a terminal window. 
+
+2) For visualization of NanopoReaTA preprocessed results only, start [NanopoReaTA's UI](#start-nanoporeata), select *Preprocessing - No* and set the respective output folder created by NanopoReaTA at the [Configuration Page](#configuration-page), before pressing the "Start Preprocessing" button. Preprocessing will not be executed.
 
 ### Run Overview
 The Run Overview tab shows the number of reads and feature counts and visualizes the sample- and group-wise read length distribution and gene expression variability per preprocessing iteration. Additionally, the time each tool needs in each iteration is shown. All information is constantly updating when preprocessing is running.
 
 #### Number of observations
-The table in this tab shows the number of mapped genes (minimap2), gene counts (featureCounts) and transcriptome (salmon) counts. The counts are provided for each sample, respectively. 
+The table in this tab shows the number of mapped genes (minimap2), gene counts (featureCounts) and transcriptome (salmon) counts. The counts are provided for each sample, respectively.
 
 #### Read length distribution 
 One can see the read length distributions for respective samples or selected conditions. The read length information is extracted directly from the fastq files (passed_reads).
@@ -222,12 +213,13 @@ On the right side the deviation of relative gene abundancy compared to the last 
 
 #### Process time
 
-This plot visualizes the run time for each tool running during the preprocessing. Thus, one is able to estimate the runtime for an update in the next iteration.
+This plot visualizes the run time for each tool running during the preprocessing. Thus, one is able to estimate the runtime for an update in the next iteration. Transcriptome and genome related steps run in parallel to optimize performance. All processing steps run in an additive manner to avoid redundant computational operations.  
+
 <p align="center"><img src="Gifs/Process_time.gif"  width="80%"></p>
 
 ### Preprocessing stop and go
 
-For the following analytical steps the preprocessing should be temporarily stopped and the completion of the running iteration should be awaited. The stop preprocessing button on the left side causes the pipeline to stop after each completed processing iteration. Subsequently, all the analytical steps of interest can be performed. The resume preprocessing button causes the pipeline to continue within 20 seconds.  
+For the following analytical steps the preprocessing should be temporarily stopped and the completion of the running iteration should be awaited. The stop preprocessing button on the left side causes the pipeline to stop after each completed processing iteration. Subsequently, all the analytical steps of interest can be performed. The resume preprocessing button causes the pipeline to continue once all the analytical steps of interest are performed.  
 
 
 ### Gene-wise analysis
@@ -237,13 +229,14 @@ In the Gene-wise anaylsis tab, one is able to explore the expression levels and 
 
 #### Gene counts
 
-The table on the lefthand side lists all the genes annotated in the loaded GTF file. One can search and select several genes of interest via double click on the table entry. Once a gene is selected it will occur on the table at the right hand side. By clicking the submit genes button, the analysis will start. A median of ratio normalization via DESeq2 will be performed and the user can plot the raw and normalized counts per condition as Dot- or Boxplot.
+The table on the lefthand side lists all the genes annotated in the loaded GTF file. One can search and select several genes of interest via double click on the table entry. Once a gene is selected it will occur on the table at the right hand side. By clicking the submit genes button, the analysis will start. A median of ratio normalization via DESeq2 will be performed and the user can plot the raw and normalized counts per condition as Dot-, Violin- or Boxplot.
 
 <p align="center"><img src="Gifs/Selected_Genes.gif"  width="80%"></p>
 
 #### Gene Body coverage
 
-Before using this functionality, the preprocessing should be stopped by pressing the "Stop preprocessing" button in the sidebar (see [Stop preprocessing](#stop-preprocessing). The current preprocessing iteration will be finished and the pipeline is paused afterwards. The user must wait until the preprocessing pipeline is paused before starting Gene Body Coverage analyses. (Message of iteration completion will follow soon...). The Gene selection functions similar as in [Gene counts](#gene-counts), but only one gene can be selected each time. After the gene selection is submitted, the percentage of coverage for a gene divided into 100 percentiles is shown sample- and group-wise (=mean). The calculation is based on the RSeQC script for gene body coverage analsis (https://rseqc.sourceforge.net/).
+The Gene selection functions similar as in [Gene counts](#gene-counts), but only one gene can be selected each time. After the gene selection is submitted, the percentage of coverage for a gene divided into 100 percentiles is shown sample- and group-wise (=mean). The calculation is based on the RSeQC script for gene body coverage analysis (https://rseqc.sourceforge.net/).
+
 
 ### Differential Expression Analysis
 Countfiles for gene- or transcriptome-wise analysis have to be updated manually on demnand. After each iteration please click on one of the buttons to either update gene (DESeq2-based) or transcript (DESeq2-, DRIM-Seq and DEXSeq based) data. Please make sure, the sequencing ran long enough to show low inner variabilities in the expression pattern. After pressing the button a differential expression analysis is executed. This may take around 5 minutes, depending on the size of the dataset. 
@@ -282,7 +275,8 @@ Additionally, on can select a gene to show the differential transcript usage wit
 
 
 ## Testing 
-For testing and all visualizations shown in this documentation, we used direct cDNA sequencing data in fastq format provided by The Singapore Nanopore Expression Project (https://github.com/GoekeLab/sg-nex-data) [[1]](#1). The SG-NEx data was accessed on 08.12.2022 at registry.opendata.aws/sg-nex-data. Example input files can be found under [example_conf_files](example_conf_files).
+For testing and all visualizations shown in this documentation, we used data of HEK293 and HeLa cells. The dataset is available on "(uploaded soon)". Metadata can be found under https://github.com/AnWiercze/NanopoReaTA/blob/master/example_conf_files/example_metadata.txt.
+
 
 ## Publications
 
@@ -324,10 +318,7 @@ A pre-print of this tool is in progress and will be published soon.
 
 
 ### Test data
-<a id="1">[1]</a> 
-Chen, Y. et al. (2021). 
-A systematic benchmark of Nanopore long read RNA sequencing for transcript level analysis in human cell lines.
-bioRxiv, doi: https://doi.org/10.1101/2021.04.21.440736.
+Test data will be uploaded soon.
 
 ## Contact
 
