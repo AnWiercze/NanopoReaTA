@@ -259,7 +259,7 @@ Differential gene expression analysis will be performed and the following visual
 #### Transcript-level analysis
 ##### Differential Transcript Expression (DTE)
 All differentially expressed transcripts and a volcano plot are shown.
-<p align="center"><img src="Gifs/Volcano Plot_DTE.gif"  width="85%"></p>
+<p align="center"><img src="Gifs/Volcano Plots_DTE.gif"  width="85%"></p>
 
 ##### Differential Transcript Usage
 Please select a gene to show the differential transcript usage within a gene of interest and click on submit genes. The analysis shows boxplots of relative transcript adundance within a gene of interest 
