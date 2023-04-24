@@ -270,8 +270,8 @@ Differential transcript expression analysis will be performed and the following 
 ##### Differential Transcript Usage (DTU with DRIMSeq and DEXSeq)
 Differential transcript usage analysis will be performed with DEXSeq to allow a general DTU overview. The following visualizations are shown.
 
-- A table of all differential expressed transcripts (Results of DRIM-Seq and DEX-Seq)
-- Volcano plot (DTE)
+- A table of all differential expressed transcripts (Results of DRIM-Seq and DEXSeq analysis)
+- Volcano plot (DTU, DEXSeq-based)
 
 Additionally, on can select a gene to show the differential transcript usage within a gene of interest and click on submit genes. The analysis shows boxplots of relative transcript adundance within a gene of interest. The analysis is performed with DRIM-Seq.
 
