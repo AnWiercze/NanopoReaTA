@@ -41,7 +41,7 @@ server <- function(input, output, session) {
   
   ### 0.2 Cores for DEA ####
   # Set number of cores of default cores used for R process (from input in DEA tab)
-  observe({register(MulticoreParam(input$cores))})
+  observe({register(MulticoreParam(max(c(4,round(input$cores * 0.6)))))})
   
   
   ## RAM in use (currently not embedded into ui)
@@ -1844,7 +1844,7 @@ server <- function(input, output, session) {
                                     ref.level = input$feature_B, 
                                     samps = metadata(), 
                                     gtf_file = docker()$gtf_file,
-                                    cores = 4
+                                    cores = max(c(4,round(input$cores * 0.6)))
       )
       print(names(preProcTrans$pre_list))
     } else {
@@ -1875,7 +1875,7 @@ server <- function(input, output, session) {
                                   ref.level = input$feature_B, 
                                   samps = metadata(), 
                                   gtf_table = gtf_table,
-                                  cores = 4,
+                                  cores = max(c(4,round(input$cores * 0.6))),
                                   pvalue_input = as.numeric(input$pvalue))
     #save_rds(DTU_general_run$df_res_dte, table_of_settings_transformed()$run.dir)
     
@@ -1911,7 +1911,7 @@ server <- function(input, output, session) {
                                         ref.level = input$feature_B,
                                         goi_id = table_of_genes()$gene_id[s],
                                         gtf_tab = gtf_table,
-                                        cores = 4,
+                                        cores = max(c(4,round(input$cores * 0.6))),
                                         pvalue_input = as.numeric(input$pvalue)
       )
       
