@@ -24,8 +24,11 @@ options(shiny.maxRequestSize = 30*1024^2)
 ## DEA ####
 source("server/R_scripts/dea_function.R", local = TRUE)
 
-## DTU and DTE #### 
-source("server/R_scripts/dtu_and_dte_function.R", local = TRUE)
+## DTE ####
+source("server/R_scripts/dte_function.R", local = TRUE)
+
+## DTU #### 
+source("server/R_scripts/dtu_function.R", local = TRUE)
 
 ## READ LENGTH DISTRIBUTION ####
 source("server/R_scripts/read_length_distribution_plots.R", local = TRUE)
