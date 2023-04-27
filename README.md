@@ -101,7 +101,7 @@ All R packages that have not been installed yet will be downloaded and installed
 
 
 
-## Installation on Windows based systems
+#### Installation on Windows based systems
 
 For a successfull usage on Windows sequencing output and output of NanopoReaTa have to be stored on the same harddrive. Paths used by NanopoReaTA should not contain any spaces in their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Windows data" -> "Windows_data")
 
