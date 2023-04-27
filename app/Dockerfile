@@ -15,6 +15,44 @@ RUN apt-get update
 RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/*
 
+RUN mkdir Human_reference_data
+RUN wget https://sourceforge.net/projects/rseqc/files/BED/Human_Homo_sapiens/hg38_GENCODE_V42_Comprehensive.bed.gz/download -O hg38_GENCODE_V42_Comprehensive.bed.gz
+RUN gunzip hg38_GENCODE_V42_Comprehensive.bed.gz
+
+RUN wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/GRCh38.primary_assembly.genome.fa.gz
+RUN gunzip GRCh38.primary_assembly.genome.fa.gz
+
+RUN wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.transcripts.fa.gz
+RUN gunzip gencode.v43.transcripts.fa.gz
+
+RUN wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.primary_assembly.annotation.gtf.gz
+RUN gunzip gencode.v43.primary_assembly.annotation.gtf.gz
+
+RUN mv hg38_GENCODE_V42_Comprehensive.bed Human_reference_data
+RUN mv GRCh38.primary_assembly.genome.fa Human_reference_data
+RUN mv gencode.v43.transcripts.fa Human_reference_data
+RUN mv gencode.v43.primary_assembly.annotation.gtf Human_reference_data
+
+
+RUN mkdir Mouse_reference_data
+RUN wget https://sourceforge.net/projects/rseqc/files/BED/Mouse_Mus_musculus/GRCm39_GENCODE_VM27.bed.gz/download -O GRCm39_GENCODE_VM27.bed.gz
+RUN gunzip GRCm39_GENCODE_VM27.bed.gz
+RUN wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M32/GRCm39.primary_assembly.genome.fa.gz
+RUN gunzip GRCm39.primary_assembly.genome.fa.gz
+RUN wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M32/gencode.vM32.transcripts.fa.gz
+RUN gunzip gencode.vM32.transcripts.fa.gz
+RUN wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M32/gencode.vM32.primary_assembly.annotation.gtf.gz
+RUN gunzip gencode.vM32.primary_assembly.annotation.gtf.gz
+
+RUN mv GRCm39_GENCODE_VM27.bed Mouse_reference_data 
+RUN mv GRCm39.primary_assembly.genome.fa Mouse_reference_data 
+RUN mv gencode.vM32.transcripts.fa Mouse_reference_data 
+RUN mv gencode.vM32.primary_assembly.annotation.gtf Mouse_reference_data 
+
+RUN mkdir Reference_data
+RUN mv Human_reference_data Reference_data
+RUN mv Mouse_reference_data Reference_data 
+
 # Install miniconda
 ENV CONDA_DIR /opt/conda
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
@@ -41,6 +79,7 @@ ENV PORT=8080
 EXPOSE 8080
 
 ENV SHINY_LOG_STDERR=1
+
 
 ENTRYPOINT ["conda","run", "--no-capture-output","-n","nanoporeata", "Rscript", "app_docker.R"]
 
