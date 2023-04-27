@@ -65,6 +65,33 @@ NanopoReaTA should now appear on the browser window.
 
 
 
+#### Installation on Windows based systems
+
+For a successfull usage on Windows sequencing output and output of NanopoReaTa have to be stored on the same harddrive. Paths used by NanopoReaTA should not contain any spaces in their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Windows data" -> "Windows_data")
+
+You will need one of the latest wsl systems on your computer.
+
+Download docker desktop: https://www.docker.com/products/docker-desktop/
+
+Start docker desktop application. In order to use docker applications on windows docker desktop has to run in the background.  
+
+Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
+
+```
+wsl --update 
+docker pull stegiopast/nanoporeata
+docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata
+```
+The docker container setup will be finished when the following line occurs:
+Listening on http://0.0.0.0:8080
+
+You can now navigate to a browser of your choice on your local machine and type in the following URL:
+http://localhost:8080/
+
+NanopoReaTA should now appear on the browser window. 
+ 
+
+
 ## Installation via conda 
 
 Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")
@@ -100,32 +127,6 @@ Rscript app.R
 All R packages that have not been installed yet will be downloaded and installed into your conda environment automatically, when starting NanopoReaTA the first time. This can take up to ~ 30 min. After the installation of packages is finished, **a browser link** will appear. Copy and paste the link shown in your terminal into a browser window, in case the app does not open automatically.  
 
 
-
-#### Installation on Windows based systems
-
-For a successfull usage on Windows sequencing output and output of NanopoReaTa have to be stored on the same harddrive. Paths used by NanopoReaTA should not contain any spaces in their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Windows data" -> "Windows_data")
-
-You will need one of the latest wsl systems on your computer.
-
-Download docker desktop: https://www.docker.com/products/docker-desktop/
-
-Start docker desktop application. In order to use docker applications on windows docker desktop has to run in the background.  
-
-Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
-
-```
-wsl --update 
-docker pull stegiopast/nanoporeata
-docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata
-```
-The docker container setup will be finished when the following line occurs:
-Listening on http://0.0.0.0:8080
-
-You can now navigate to a browser of your choice on your local machine and type in the following URL:
-http://localhost:8080/
-
-NanopoReaTA should now appear on the browser window. 
- 
 
 ## Usage
 Before running/exploiting real experiments with NanopoReaTA, we highly recommend to test the app, first (see [Testing](#testing) for more information). NanopoReaTA operates with a backend preprocessing pipeline based on [nextflow](https://www.nextflow.io/) and multiple R and python based scripts for downstream analyses. All results are visualized within the [R shiny](https://shiny.rstudio.com/) based frontend.
