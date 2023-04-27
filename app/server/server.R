@@ -217,7 +217,7 @@ server <- function(input, output, session) {
 
   transform_path <- function(path){
     if (dir.exists("/NanopoReaTA_linux_docker")){
-      if (!startsWith(path,"/NanopoReaTA_linux_docker")){
+      if (!startsWith(path,"/NanopoReaTA_linux_docker") & !startsWith(path,"/Reference_data")){
       transformed_path = paste0("/NanopoReaTA_linux_docker",path)
       }
       else {
@@ -225,7 +225,7 @@ server <- function(input, output, session) {
       }
     }
     else if (dir.exists("/NanopoReaTA_windows_docker")){
-      if (!startsWith(path,"/NanopoReaTA_windows_docker")){ 
+      if (!startsWith(path,"/NanopoReaTA_windows_docker") & !startsWith(path,"/Reference_data")){ 
         transformed_path = gsub("\\\\", "/", as.character(path)) 
         transformed_path = sub(".*?\\/","",transformed_path)
         transformed_path = paste0("/NanopoReaTA_windows_docker/",transformed_path)
