@@ -83,8 +83,8 @@ createVolcano <- function(res_df, condi_col){
   # Subset significat genes to color in blue
   gen_subset <- subset(res_df, res_df$Significance == TRUE)
   gen_subset <- gen_subset[order(gen_subset$padj),]
-  if (dim(gen_subset)[1] > 5){
-    gen_subset_short <- gen_subset[1:5,]
+  if (dim(gen_subset)[1] > 10){
+    gen_subset_short <- gen_subset[1:10,]
   } else {
     gen_subset_short <- gen_subset
   }

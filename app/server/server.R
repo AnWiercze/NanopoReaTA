@@ -1296,7 +1296,8 @@ server <- function(input, output, session) {
                    div(style="display:inline-block; width:80px; vertical-align:top", selectInput("tea_down.type", NULL, choices = c("png", "pdf")))),
             column(12, plotOutput("teaPlot", height = "500px", click = clickOpts(id="plot_click"),
                                   hover = hoverOpts(id = "plot_hover", delayType = "throttle"),
-                                  brush = brushOpts(id = "plot_brush"))  %>% withSpinner(color="#0dc5c1"))
+                                  brush = brushOpts(id = "plot_brush"))  %>% withSpinner(color="#0dc5c1")),
+            column(12, br(), p(em(fig_des$gene_counts)))
           ))
     } else {
       # if (input$submit_gene_selection == 0) return()
@@ -1317,7 +1318,8 @@ server <- function(input, output, session) {
                    div(style="display:inline-block; width:80px; vertical-align:top", selectInput("tea_down.type", NULL, choices = c("png", "pdf")))),
             column(12, plotOutput("teaPlot", height = "500px", click = clickOpts(id="plot_click"),
                                   hover = hoverOpts(id = "plot_hover", delayType = "throttle"),
-                                  brush = brushOpts(id = "plot_brush"))  %>% withSpinner(color="#0dc5c1"))
+                                  brush = brushOpts(id = "plot_brush"))  %>% withSpinner(color="#0dc5c1")),
+            column(12, br(), p(em(fig_des$gene_counts)))
           ))
     }
   })
@@ -2690,7 +2692,8 @@ server <- function(input, output, session) {
           column(12, 
           div(style = "display: inline-block; vertical-align: top", downloadButton("down_dtu_boxplot")),
           div(style = "display: inline-block; vertical-align: top; width: 80px", selectInput("down_dtu_boxplot.type", NULL, choices = c("png", "pdf"))),
-          plotOutput("dtu_boxplot") %>% withSpinner(color = "#0dc5c1"))
+          plotOutput("dtu_boxplot") %>% withSpinner(color = "#0dc5c1"),
+          br(), p(em(fig_des$single_gene_deu)))
         }
       }
   })
@@ -2724,7 +2727,8 @@ server <- function(input, output, session) {
                   # div(style = "display:inline-block; vertical-align: top; margin-top: 8px", radioButtons("custom_color.pca", NULL, choices = c("default colors" = F, "custom colors" = T), inline = T)),
                   #uiOutput("select_color.pca"),
                   plotOutput("pca_plot") %>% withSpinner(color = "#0dc5c1")
-                ))
+                ),
+                column(12, br(), p(em(fig_des$pca_genes))))
               ),
               tabPanel(
                 title = "Volcano", value = "volcano.tab",
@@ -2735,7 +2739,8 @@ server <- function(input, output, session) {
                   # div(style = "display:inline-block; vertical-align: top; margin-top: 8px", radioButtons("custom_color.volcano", NULL, choices = c("default colors" = F, "custom colors" = T), inline = T)),
                   #uiOutput("select_color.volcano"),
                   plotOutput("volcano_plot") %>% withSpinner(color = "#0dc5c1")
-                ))
+                ),
+                column(12, br(), p(em(fig_des$volcano_genes))))
               ),
               tabPanel(
                 title = "Sample2Sample", value = "s2s.tab",
@@ -2744,7 +2749,8 @@ server <- function(input, output, session) {
                   div(style = "display:inline-block; vertical-align: top", downloadButton("down_s2s")),
                   div(style = "display:inline-block; vertical-align: top; width: 80px", selectInput("down_s2s.type", NULL, choices = c("png", "pdf"))),
                   plotOutput("s2s_plot") %>% withSpinner(color = "#0dc5c1")
-                ))
+                ),
+                column(12, br(), p(em(fig_des$sample2sample_genes))))
               ),
               tabPanel(
                 title = "Heatmap", value = "heatmap.tab",
@@ -2754,7 +2760,8 @@ server <- function(input, output, session) {
                   div(style = "display:inline-block; vertical-align:top; width:80px", selectInput("down_heat.type", NULL, choices = c("png", "pdf"))),
                   uiOutput("select_color_heat"),
                   plotOutput("heat_plot") %>% withSpinner(color = "#0dc5c1")
-                ))
+                ),
+                column(12, br(), p(em(fig_des$heatmap_genes))))
               )
             ) # tabBox Plots
           )
@@ -2791,7 +2798,8 @@ server <- function(input, output, session) {
                 # div(style = "display:inline-block; vertical-align: top; margin-top: 8px", radioButtons("custom_color.pca", NULL, choices = c("default colors" = F, "custom colors" = T), inline = T)),
                 #uiOutput("select_color.pca"),
                 plotOutput("pca_plot_dte") %>% withSpinner(color = "#0dc5c1")
-              ))
+              ),
+              column(12, br(), p(em(fig_des$pca_transcripts))))
             ),
             tabPanel(
               title = "Volcano", value = "volcano_dte.tab",
@@ -2802,7 +2810,8 @@ server <- function(input, output, session) {
                 # div(style = "display:inline-block; vertical-align: top; margin-top: 8px", radioButtons("custom_color.volcano", NULL, choices = c("default colors" = F, "custom colors" = T), inline = T)),
                 #uiOutput("select_color.volcano"),
                 plotOutput("volcano_plot_dte") %>% withSpinner(color = "#0dc5c1")
-              ))
+              ),
+              column(12, br(), p(em(fig_des$volcano_transcripts))))
             ),
             tabPanel(
               title = "Sample2Sample", value = "s2s_dte.tab",
@@ -2811,7 +2820,8 @@ server <- function(input, output, session) {
                 div(style = "display:inline-block; vertical-align: top", downloadButton("down_s2s_dte")),
                 div(style = "display:inline-block; vertical-align: top; width: 80px", selectInput("down_s2s_dte_type", NULL, choices = c("png", "pdf"))),
                 plotOutput("s2s_plot_dte") %>% withSpinner(color = "#0dc5c1")
-              ))
+              ),
+              column(12, br(), p(em(fig_des$sample2sample_transcrips))))
             ),
             tabPanel(
               title = "Heatmap", value = "heatmap_dte.tab",
@@ -2821,7 +2831,8 @@ server <- function(input, output, session) {
                 div(style = "display:inline-block; vertical-align:top; width:80px", selectInput("down_heat_dte_type", NULL, choices = c("png", "pdf"))),
                 uiOutput("select_color_dte_heat"),
                 plotOutput("heat_plot_dte") %>% withSpinner(color = "#0dc5c1")
-              ))
+              ),
+              column(12, br(), p(em(fig_des$heatmap_transcripts))))
             )
           ) # tabBox Plots
         )

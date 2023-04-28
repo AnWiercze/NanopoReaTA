@@ -56,6 +56,28 @@ metadata_table_box2 <- function(input, output, session) {
   )
 }
 
+# Figure Descriptions 
+
+fig_des <- list("read_length" = "The distribution of read lengths derived from generated fastq files is plotted per sample (left) and per condition (right). All reads of length over the 99 % quantile of all lengths are removed from this visualizations. This plot updates automatically when newly generated data is processed. ",
+             "inner_var_samp" = "Sem class sit luctus vitae, quam aliquam non, cum. Vestibulum sed ultricies est convallis, diam natoque fames et mauris aenean in sed nunc. ",
+             "inner_var_cond" = "Sem class sit luctus vitae, quam aliquam non, cum. Vestibulum sed ultricies est convallis, diam natoque fames et mauris aenean in sed nunc. ",
+             "gene_counts_var_samp" = "The number of identified genes (> 0 reads counted) is plotted after each iteration. Each line corresponds to one sample. When no more additional genes are detected, the lines reach a plateau.",
+             "gene_counts_var_cond" = "The sum of the number of identified genes in each condition (> 0 reads counted) is plotted after each iteration. When no more additional genes are detected, the lines reach a plateau. ",
+             "process_time" = "The bar plot shows the time in seconds all preprocessing steps needed per iteration. One iteration processes at maximum 30 files from all samples. This plot updates automatically when a new process has finished. ",
+             "gene_counts" = "The raw and normalized gene counts from FeatureCounts [Liao et al. 2014] are visualized for selected genes per condition using boxplots. The median-of-ratios normalization method from DESeq2 [Love et al. 2014] was used for normalization. ",
+             "gene_body_coverage" = "The raw and normalized gene counts from FeatureCounts [Liao et al. 2014] are visualized for selected genes per condition using boxplots. The median-of-ratios normalization method from DESeq2 [Love et al. 2014] was used for normalization. ",
+             "volcano_genes" = "The differential gene expression analysis results from DESeq2 are shown by plotting the log2FoldChange between the conditions of interest against the –log10 adjusted p-value per gene observed from the Wald-Test integrated in DESeq2 [Love, Huber, and Anders et al. 2014]. The top 10 significant genes are labeled by their symbol. ",
+             "pca_genes" = "From the Principal Component Analysis of the top 500 genes with the highest variance across all samples, the two Principal Components – PC1 and PC2 - that explain the most variance in the dataset are plotted against each other. Each dot corresponds to one sample and is coloured by the respective condition. ",
+             "sample2sample_genes" = "The euclidean distance between the gene expression patterns of all samples to each other is plotted using heatmap. Normalized gene counts were used for distance computation.  ",
+             "heatmap_genes" = "The expression of the top 20 differentially expressed genes is plotted using Heatmap by coloring the number of reads per gene. The legend on the right side describes which colors correspond to highly and lowly expressed genes.  ",
+             "volcano_transcripts" = "The differential transcript expression analysis results from DESeq2 are visualized by plotting the log2FoldChange between the conditions of interest against the –log10 adjusted p-value per transcript observed from the Wald-Test integrated in DESeq2 [Love, Huber, and Anders et al. 2014]. The top 10 significant transcripts are labeled by their symbol. ",
+             "pca_transcripts" = "From the Principal Component Analysis of the top 500 transcripts with the highest variance across all samples, the two Principal Components – PC1 and PC2 - that explain the most variance in the dataset are plotted against each other. Each dot corresponds to one sample and is coloured by the respective condition. ",
+             "sample2sample_transcrips" = "The euclidean distance between the transcript expression patterns of all samples to each other is plotted using heatmap. Normalized transcript counts were used for distance computation.  ",
+             "heatmap_transcripts" = "The expression of the top 20 differentially expressed transcripts is plotted using Heatmap by coloring the number of reads per transcript. The legend on the right side describes which colors correspond to highly and lowly expressed transcripts.  ",
+             "volcano_deu" = "The differential transcript usage analysis results from DEXSeq [Anders, Reyes, and Huber 2012] are visualized by plotting the log2FoldChange between the conditions of interest against the –log10 adjusted p-value per transcript. The top 10 significantly differentially used transcripts are labeled by their symbol. ",
+             "single_gene_deu" ="The proportional expression of each transcript from the selected gene is shown via boxplots for each condition. Differentially used transcripts between the conditions derived from DRIMSeq [Nowicka and Robinson 2016] are highlighted by a red significance line above the respective boxplots.  ")  
+
+
 # _______________________________________________________________________________
 # UI ####
 
@@ -324,8 +346,8 @@ ui <- dashboardPage(
                     column(6, shinyFilesButton("transcriptome_fasta_file", "transcriptome.fa", 
                                                title = "Please select a file:", multiple = FALSE,
                                                buttonType = "default", class = NULL), align = "left", style = "margin-top: -10px"),
-                    column(6, verbatimTextOutput("genome_fasta_file_out"), align = "left", style = "margin-top: -10px"),
-                    column(6, verbatimTextOutput("transcriptome_fasta_file_out"), align = "left", style = "margin-top: -10px"),
+                    column(6, verbatimTextOutput("genome_fasta_file_out"), align = "left"),
+                    column(6, verbatimTextOutput("transcriptome_fasta_file_out"), align = "left"),
                     #column(6, textInput("genome.fasta.file", "Genome", placeholder = "/path/to/genome.fa")), 
                     #column(6, textInput("transcriptome.fasta.file", "Transcriptome", placeholder = "/path/to/transcripts.fa")),
                     
@@ -457,6 +479,9 @@ ui <- dashboardPage(
                     div(style = "display: inline-block; vertical-align:top", downloadButton("groupwise_read_length.down")),
                     div(style = "display: inline-block; width: 80px; vertical-align: top", selectInput("groupwise_read_length.type", NULL, choices = c("png", "pdf"))),
                     plotOutput("groupwise_read_length.out") %>% withSpinner(color = "#0dc5c1")
+                  ),
+                  column(12, br(),
+                  p(em(fig_des$read_length))       
                   )
                 )
               ),
@@ -477,6 +502,8 @@ ui <- dashboardPage(
                       div(style = "display: inline-block; width: 80px; vertical-align: top", selectInput("inner_var_sample.type", NULL, choices = c("png", "pdf"))),
                       plotOutput("inner_var_sample.out")%>% withSpinner(color = "#0dc5c1")
                     ),
+                    column(6, br(), p(em(fig_des$gene_counts_var_samp))),
+                    column(6, br(), p(em(fig_des$inner_var_samp))),
                     title = "Sample-wise", solidHeader = T, status = "primary", width = 12, collapsible = F
                     )
                   )
@@ -496,10 +523,13 @@ ui <- dashboardPage(
                       div(style = "display: inline-block; width: 80px; vertical-align: top", selectInput("inner_var_condition.type", NULL, choices = c("png", "pdf"))),
                       plotOutput("inner_var_condition.out")%>% withSpinner(color = "#0dc5c1")
                     ),
+                    column(6, br(), p(em(fig_des$gene_counts_var_cond))),
+                    column(6, br(), p(em(fig_des$inner_var_cond))),
                     title = "Condition-wise", solidHeader = T, status = "primary", width = 12, collpsible = F
                     )
                   )
-                )
+                ),
+                column(12, br(), p(em(fig_des$inner_var)))
               ),
               tabPanel(
                 title = "Process time", value = "process_time_panel",
@@ -509,7 +539,8 @@ ui <- dashboardPage(
                     div(style = "display: inline-block; vertical-align:top", downloadButton("process_time.down")),
                     div(style = "display: inline-block; width: 80px; vertical-align: top", selectInput("process_time.type", NULL, choices = c("png", "pdf"))),
                     plotOutput("process_time.out") %>% withSpinner(color = "#0dc5c1")
-                  )
+                  ),
+                  column(12, br(), p(em(fig_des$process_time)))
                 )
               )
             )
@@ -593,7 +624,8 @@ ui <- dashboardPage(
               fluidRow(
                 useShinyjs(), column(12, uiOutput("submit_gene_selection_gC.out"), align = "center", style = "margin-bottom: 10px; margin-top: -10px")
               ),
-              fluidRow(column(12, uiOutput("geneBodyCoveragePlot")))
+              fluidRow(column(12, uiOutput("geneBodyCoveragePlot")),
+                       column(12, br(), p(em(fig_des$gene_body_coverage))))
             )
           )
         )
@@ -676,7 +708,8 @@ ui <- dashboardPage(
                               div(style = "display: inline-block; vertical-align: top", downloadButton("down_vol_dex")),
                               div(style = "display: inline-block; vertical-align: top; width: 80px", selectInput("down_vol_dex.type", NULL, choices = c("png", "pdf"))),
                               plotOutput("volcano_dex_output") %>% withSpinner(color = "#0dc5c1")
-                                    ))
+                                    ),
+                              column(12, br(), p(em(fig_des$volcano_deu))))
                           )
                         ),
                         tabPanel(

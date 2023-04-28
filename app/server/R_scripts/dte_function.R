@@ -84,8 +84,8 @@ createVolcano_DTE <- function(res_df, condi_col){
   # Subset significat transcripts to color in blue
   transcript_subset <- subset(res_df, res_df$Significance == TRUE)
   transcript_subset <- transcript_subset[order(transcript_subset$padj),]
-  if (dim(transcript_subset)[1] > 5){
-    transcript_subset_short <- transcript_subset[1:5,]
+  if (dim(transcript_subset)[1] > 10){
+    transcript_subset_short <- transcript_subset[1:10,]
   } else {
     transcript_subset_short <- transcript_subset
   }
