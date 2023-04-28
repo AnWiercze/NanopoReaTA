@@ -59,8 +59,8 @@ metadata_table_box2 <- function(input, output, session) {
 # Figure Descriptions 
 
 fig_des <- list("read_length" = "The distribution of read lengths derived from generated fastq files is plotted per sample (left) and per condition (right). All reads of length over the 99 % quantile of all lengths are removed from this visualizations. This plot updates automatically when newly generated data is processed. ",
-             "inner_var_samp" = "Sem class sit luctus vitae, quam aliquam non, cum. Vestibulum sed ultricies est convallis, diam natoque fames et mauris aenean in sed nunc. ",
-             "inner_var_cond" = "Sem class sit luctus vitae, quam aliquam non, cum. Vestibulum sed ultricies est convallis, diam natoque fames et mauris aenean in sed nunc. ",
+             "inner_var_samp" = "The change in gene composition (CGC) plot shows the sum of absolute differences of relative gene (%gi) counts per individual gene (g) in iteration (i) to the relative gene counts in iteration (i-1) for each respective sample. \nCGC = sum(|(%g(i-1))-(%g(i))|). ",
+             "inner_var_cond" = "The change in gene composition (CGC) plot shows the mean sum of absolute differences of relative gene (%gi) counts per individual gene (g) in iteration (i) to the relative gene counts in iteration (i-1) per sample in each condition (c). ",
              "gene_counts_var_samp" = "The number of identified genes (> 0 reads counted) is plotted after each iteration. Each line corresponds to one sample. When no more additional genes are detected, the lines reach a plateau.",
              "gene_counts_var_cond" = "The sum of the number of identified genes in each condition (> 0 reads counted) is plotted after each iteration. When no more additional genes are detected, the lines reach a plateau. ",
              "process_time" = "The bar plot shows the time in seconds all preprocessing steps needed per iteration. One iteration processes at maximum 30 files from all samples. This plot updates automatically when a new process has finished. ",
