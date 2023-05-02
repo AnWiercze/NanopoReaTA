@@ -40,7 +40,7 @@ R packages (installation is automatized via R shiny)
 
 #### Installation on Linux based systems
 
-Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")
+!IMPORTANT NOTE: All path selected by NanopoReaTA should not contain any spaces in their names. Paths should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")!
 
 
 Open a bash shell Ctrl + Alt + T. Type the following command to install docker and build a docker image:
