@@ -17,10 +17,17 @@ NanopoReaTA - Nanopore Real Time Analysis Pipeline
 
 # Installation
 ## Requirements
- Hardware |
+Hardware |
  :---: 
 RAM: 64GB |
 Threads: > 12 
+
+**Biological input** |
+Total number of samples | >= 4
+ :---: 
+Number of conditions | 2
+ :---: 
+Min. number of samples | per condition | 2
 
 
 ## Installation using docker
@@ -28,7 +35,8 @@ Threads: > 12
 
 #### Installation on Linux based systems
 
-Open a bash shell Ctrl + Alt + T. Type the following command to install docker and build a docker image:
+1. Open a bash shell Ctrl + Alt + T. 
+2. Type the following command to install docker and pull the docker image:
 
 ```bash
 sudo apt-get install -y docker.io
@@ -41,7 +49,7 @@ sudo apt-get install -y docker.io
 sudo docker pull stegiopast/nanoporeata:no_reference
 ```
 
-Once the docker image is pulled, the container can be run with the following command:  
+3. Once the docker image is pulled, the container can be run with the following command:  
 
 With references:
 ```bash
@@ -57,10 +65,10 @@ The docker container setup will be finished when the following line occurs:
 Listening on http://0.0.0.0:8080
 ```
 
-You can now navigate to a browser of your choice on your local machine and type in the following URL:
+4. You can now navigate to a browser of your choice on your local machine and type in the following URL:
 http://localhost:8080/
 
-NanopoReaTA should now appear on the browser window. 
+5. NanopoReaTA should now appear on the browser window. 
 
 !NOTE: If a new docker version is available, please remove the previous docker image first, before pulling the new version of NanopoReaTA.! 
 
@@ -82,18 +90,18 @@ For a successfull usage on Windows sequencing output and output of NanopoReaTa h
 
 You will need one of the latest wsl systems on your computer.
 
-Download docker desktop: https://www.docker.com/products/docker-desktop/
+1. Download docker desktop: https://www.docker.com/products/docker-desktop/
 
-Start docker desktop application. In order to use docker applications on windows docker desktop has to run in the background.  
+2. Start docker desktop application. In order to use docker applications on windows, docker desktop has to run in the background.  
 
-Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
+3. Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
 
-Update wsl:
+4. Update wsl:
 ```
 wsl --update
 ```
 
-Pull the docker image:
+5. Pull the docker image:
 ```bash
 docker pull stegiopast/nanoporeata:references
 docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata:references
@@ -108,20 +116,20 @@ docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanopo
 The docker container setup will be finished when the following line occurs:
 Listening on http://0.0.0.0:8080
 
-You can now navigate to a browser of your choice on your local machine and type in the following URL:
+6. You can now navigate to a browser of your choice on your local machine and type in the following URL:
 http://localhost:8080/
 
-NanopoReaTA should now appear on the browser window. 
+7. NanopoReaTA should now appear on the browser window. 
 
 
 ## Usage
 Before running/exploiting real experiments with NanopoReaTA, we highly recommend to test the app, first (see [Testing](#testing) for more information). NanopoReaTA operates with a backend preprocessing pipeline based on [nextflow](https://www.nextflow.io/) and multiple R and python based scripts for downstream analyses. All results are visualized within the [R shiny](https://shiny.rstudio.com/) based frontend.
 
 ### Welcome Page
-When the application is started, the welcome page is shown and contains a **Start NanopoReaTA** button as well as the [NanopoReaTA](#nanoporeata---nanopore-real-time-analysis-pipeline) manual. 
+When the application is started, the welcome page is shown and contains a **Start analysis** button as well as the [NanopoReaTA](#nanoporeata---nanopore-real-time-analysis-pipeline) manual. 
 
 ### Metadata Creator
-After pushing the **Start NanopoReaTA** button the user is linked to a metadata creator page. If the user already created his or her own metadata file, he or her can skip this step and provide the path to the file in the configuation page. If not, the user should enter the samples, conditions and replicates of the running sequencing experiment and must then download the self-created metadata file. Please be aware of the format described below (tab-separated). If samples are barcoded the samples must be named after their barcodes (barcode01-barcode96) - meaning the folder names that MinKNOW automatically creates must match. Once the self-created metadata is downloaded it can be locally renamed and moved. By clicking the blue arrow on the bottom right of the page the configuration of the processing can be initiated.  
+After pushing the **Start NanopoReaTA** button the user is linked to a metadata creator page. If the user already created his or her own metadata file, he or her can skip this step and provide the path to the file in the configuation page. Please be aware of the format described below (tab-separated). If no metadata file is available, the user should enter the samples, conditions, and replicates of the running sequencing experiment and must then download the self-created metadata file. If samples are barcoded the samples must be named after their barcodes (barcode01-barcode96) - meaning the folder names that MinKNOW automatically creates must match. Once the self-created metadata is downloaded it can be locally renamed and moved. By clicking the blue arrow on the bottom right of the page the configuration of the processing can be initiated.  
 
 #### Example metadata file
 
@@ -133,10 +141,10 @@ After pushing the **Start NanopoReaTA** button the user is linked to a metadata 
  Sample4 | Cond2 | R1 | male
 
 ### Configuration Page 
-The user will be linked to the configuration page and has to select required files and folders or upload an already existing configuration file in yaml format from previous NanopoReaTA runs (Please check [example_conf_files](example_conf_files) for correct parameter naming). After all configurations are set, the configurations will be saved as config.yaml in the defined output folder. ("run folder") 
+The user will be linked to the configuration page and has to select required files and folders or upload an already existing configuration file in yaml format from previous NanopoReaTA runs (Please check [example_conf_files](example_conf_files) for correct parameter naming). After all configurations are set, the configurations will be saved as config.yaml in the defined output folder. ("output directory") 
 
 The following parameters have to be set by the user: 
-*Directory inputs needs an "/" at the end. Please make sure to let them end with an "/" character.
+*Directory inputs needs an "/" at the end. Please make sure to let them end with an "/" character if manually written in the config.yaml file.
 
  Parameter | Datatype | Comments 
  :---: | :---: | :---:
