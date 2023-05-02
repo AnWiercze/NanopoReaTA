@@ -273,7 +273,7 @@ The following visualizations are shown:
 <p align="center"><img src="Gifs/DTU_Boxplot.gif"  width="85%"></p>
 
 
-### Test data
+## Test data
 We provide a dataset of cDNA extracted from 2 samples of HEK293 and 2 samples of HeLa cells. The cells have been incubated for ~5 days in 95% humidity with a 5% C02 concentration in. When cells reached 90% confluency the RNA was isolated with Trizol and treated with DNase I. Reverse transcription and library preparation was performed with ONT (Oxford Nanopore Technologies) based direct cDNA kit + native barcoding expansion kit (SQK-DCS109 + EXP-NBD104).
 
 Test data is available on the ENA (European Nucleotide Archive) with the project number PRJEB61670: https://www.ebi.ac.uk/ena/browser/view/PRJEB61670.
