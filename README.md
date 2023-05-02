@@ -28,7 +28,7 @@ Min. number of samples per condition | 2
 
 
 ## Installation using docker [2]
-!IMPORTANT NOTE: All paths selected by NanopoReaTA should not contain any spaces in their names. Paths should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")!
+*NOTE: All paths selected by NanopoReaTA should not contain any spaces in their names. Paths should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")*
 
 #### Installation on Linux based systems
 
@@ -39,7 +39,7 @@ Min. number of samples per condition | 2
 sudo apt-get install -y docker.io
 sudo docker pull stegiopast/nanoporeata:references
 ```
-NOTE: With the docker image tag "references", all human and mouse reference files needed for NanopoReaTA will be automatically downloaded from GENCODE (~36 GB) and saved in root. If the root directory has limited space (< 40 GB), please use the tag "no_reference" as following and download the reference files as described below: 
+*NOTE: With the docker image tag "references", all human and mouse reference files needed for NanopoReaTA will be automatically downloaded from GENCODE (~36 GB) and saved in root. If the root directory has limited space (< 40 GB), please use the tag "no_reference" as following and download the reference files as described below:*
 
 ```bash
 sudo apt-get install -y docker.io
@@ -67,7 +67,7 @@ http://localhost:8080/
 
 5. NanopoReaTA should now appear on the browser window. 
 
-!NOTE: If a new docker version is available, please remove the previous docker image first, before pulling the new version of NanopoReaTA.! 
+*NOTE: If a new docker version is available, please remove the previous docker image first, before pulling the new version of NanopoReaTA.!*
 
 ##### Remove NanopoReaTA docker image 
 
@@ -107,7 +107,7 @@ docker pull stegiopast/nanoporeata:references
 ```
 docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata:references
 ```
-NOTE: With the docker image tag "references", all human and mouse reference files needed for NanopoReaTA will be automatically downloaded from GENCODE (~36 GB) and saved in root. If the root directory has limited space (< 40 GB), please use the tag "no_reference" as following and download the reference files as described below: 
+*NOTE: With the docker image tag "references", all human and mouse reference files needed for NanopoReaTA will be automatically downloaded from GENCODE (~36 GB) and saved in root. If the root directory has limited space (< 40 GB), please use the tag "no_reference" as following and download the reference files as described below:*
 
 ```bash
 docker pull stegiopast/nanoporeata:no_reference
@@ -124,7 +124,7 @@ http://localhost:8080/
 
 ## Reference and annotation files
 
-NOTE: If you pulled the docker image with included references, the data can be found in the "/Reference_data" folder of the docker. Mouse and Human data from GENCODE (https://www.gencodegenes.org) are included.
+*NOTE: If you pulled the docker image with included references, the data can be found in the "/Reference_data" folder of the docker and the following section can be skipped. Mouse and Human data from GENCODE (https://www.gencodegenes.org) are included.*
 
 The required genome and annotation files for the organism of interest can be downloaded from the GENCODE database (https://www.gencodegenes.org/), since the syntax of NanopoReaTA is suited to the respective standards. Mouse reference data can be obtained at GENCODE database: GRCm39 Release M27 (https://www.gencodegenes.org/mouse/release_M27.html). Human reference data can be obtained at GENCODE database: GRCh38.primary_assembly v40 (https://www.gencodegenes.org/human/release_40.html). BED files of the respective genome versions can be downloaded from RSeQC: (https://sourceforge.net/projects/rseqc/files/BED).
 
@@ -279,7 +279,7 @@ We provide a dataset of cDNA extracted from 2 samples of HEK293 and 2 samples of
 Test data is available on the ENA (European Nucleotide Archive) with the project number PRJEB61670: https://www.ebi.ac.uk/ena/browser/view/PRJEB61670.
 Please note that one will have to reconstruct the folder structure of the MinKnow output using barcoded samples.
 
-Experiment_folder/Sample_folder/Identifier/fastq_pass/barcodeXY/*.fastq with (barcode01-barcode04). Barcode01 + barcode02 are HEK293 cDNA samples and barcode03-04 are HeLa cDNA samples.  
+Examples: ***Experiment_folder**/Sample_folder/Identifier/fastq_pass/barcodeXY/run_xyz_999.fastq* with (barcode01-barcode04). Barcode01 + barcode02 are HEK293 cDNA samples and barcode03-04 are HeLa cDNA samples.  
 
 The metadata file can be found under https://github.com/AnWiercze/NanopoReaTA/blob/master/example_conf_files/example_metadata.txt.
 
