@@ -6,7 +6,7 @@ NanopoReaTA - Nanopore Real Time Analysis Pipeline
 [![R.shiny ](https://img.shields.io/badge/R.shiny-1.7.1-brightgreen)](https://www.r-project.org/)
 [![R](https://img.shields.io/badge/R-4.1.2-green)](https://shiny.rstudio.com/)
 
-**NanopoReaTA** is an R shiny application that integrates both preprocessing and downstream analysis pipelines for RNA sequencing data from Oxford Nanopore Technologies (ONT) into a user-friendly interface. NanopoReaTA focuses on the analysis of (direct) cDNA and RNA-sequencing (cDNA, DRS) reads and guides you through the different steps up to final visualizations of results from i.e. differential expression or gene body coverage. Furthermore, NanopoReaTa can be run in real-time right after starting a run via MinKNOW, the sequencing application of ONT. 
+**NanopoReaTA** is an R shiny application that integrates both preprocessing and downstream analysis pipelines for RNA sequencing data from [Oxford Nanopore Technologies (ONT)](https://nanoporetech.com/) into a user-friendly interface. NanopoReaTA focuses on the analysis of (direct) cDNA and RNA-sequencing (cDNA, DRS) reads and guides you through the different steps up to final visualizations of results from i.e. differential expression or gene body coverage. Furthermore, NanopoReaTa can be run in real-time right after starting a run via MinKNOW, the sequencing application of ONT. 
 
 
 **Currently available analysis modules:**
@@ -194,17 +194,17 @@ The input configurations can be finally checked by the user. If the parameters a
 2) For visualization of NanopoReaTA preprocessed results only, start [NanopoReaTA's UI](#start-nanoporeata), select *Preprocessing - No* and set the respective output folder created by NanopoReaTA at the [Configuration Page](#configuration-page), before pressing the "Start" button. Preprocessing will not be executed.
 
 ### Run Overview
-The Run Overview tab shows the number of reads and feature counts and visualizes the sample- and group-wise read length distribution and gene expression variability per preprocessing iteration. Additionally, the time each tool needs in each iteration is shown. All information is constantly updating when preprocessing is running.
+The Run Overview tab shows the number of mapped reads and gene counts and visualizes the sample- and group-wise read length distribution and gene expression variability per preprocessing iteration. Additionally, the time each tool needs in each iteration is shown. All information is constantly updating when preprocessing is running.
 
 #### Number of observations
-The table in this tab shows the number of mapped genes (minimap2), gene counts (featureCounts) and transcriptome (salmon) counts. The counts are provided for each sample, respectively.
+The table in this tab shows the number of mapped genes (*minimap2* [2]), gene counts (*featureCounts* [3]) and transcriptome counts (*salmon* [6]). The counts are provided for each sample, respectively.
 
 #### Read length distribution 
 One can see the read length distributions for respective samples and conditions. The read length information is extracted directly from the fastq files (MinKNOW-defined passed reads only).
 
 #### Gene expression variability
 
-On the left side the number of genes detected is plotted per iteration for samples and selected conditions, respectively. The information is extracted from the output count table of FeatureCounts. 
+On the left side the number of genes detected is plotted per iteration for samples and selected conditions, respectively. The information is extracted from the output count table of *featureCounts*. 
 
 On the right side the deviation of relative gene abundancy compared to the last iteration is plotted. This is a measure for the change of gene abundancy variability within a single sample. The latter allows an assumption whether relative abundancies have stabilized throughout the ongoing sequencing.  
 
@@ -229,19 +229,19 @@ In the Gene-wise anaylsis tab, one is able to explore the expression levels and 
 
 #### Gene counts
 
-The table on the lefthand side lists all the genes annotated in the loaded GTF file. One can search and select several genes of interest via click on the table entry. Once a gene is selected it will occur on the table at the right hand side. By clicking the submit genes button, the analysis will start. A median of ratio normalization via DESeq2 will be performed and the user can plot the raw and normalized counts per condition as Dot-, Violin- or Boxplot.
+The table on the lefthand side lists all the genes annotated in the loaded GTF file. One can search and select several genes of interest via click on the table entry. Once a gene is selected it will occur on the table at the right hand side. By clicking the submit genes button, the analysis will start. A median of ratio normalization via DESeq2 [4] will be performed and the user can plot the raw and normalized counts per condition as Dot-, Violin- or Boxplot.
 
 <p align="center"><img src="Gifs/Selected_Genes.gif"  width="80%"></p>
 
 #### Gene Body coverage
 
-Here, one gene can be selected for gene body coverage analysis each time. The gene selection functions similar as in [Gene counts](#gene-counts). After the gene selection is submitted, the percentage of coverage for a gene divided into 100 percentiles is shown sample- and group-wise (=mean). The calculation is based on the RSeQC script for gene body coverage analysis (https://rseqc.sourceforge.net/).
+Here, one gene can be selected for gene body coverage analysis each time. The gene selection functions similar as in [Gene counts](#gene-counts). After the gene selection is submitted, the percentage of coverage for a gene divided into 100 percentiles is shown sample- and group-wise (=mean). The calculation is based on the RSeQC script for gene body coverage analysis (https://rseqc.sourceforge.net/) [7].
 
 
 ### Differential Expression Analysis
 In the Differential Expression Analysis tab, the user can run three different analyses: Differential Gene Expression (DGE), Differential Transcript Expression (DTE) and Differential Transcript Usage (DTU) by clicking the respective button. Note that these analyses do not update automatically when processing will be started again and new data is generated. That means that after stopping the preprocessing pipeline again, the analyses buttons need to be pressed to analyse latest input files (like counts files). Once the analysis is completed, the user will be linked to the respective analysis output tab (may take a few minutes). 
 
-#### Gene-level analysis (DGE with DESeq2)
+#### Gene-level analysis (DGE with DESeq2[4])
 Differential gene expression analysis will be performed and the following visualizations are shown:
 - A table of all differentially expressed genes
 - PCA analysis
@@ -253,7 +253,7 @@ Differential gene expression analysis will be performed and the following visual
 <p align="center"><img src="Gifs/Volcano Plots_DGE.gif"  width="85%"></p>
 
 #### Transcript-level analysis
-##### Differential Transcript Expression (DTE with DESeq2)
+##### Differential Transcript Expression (DTE with DESeq2 [4])
 Differential transcript expression analysis will be performed and the following visualizations are shown:
 - A table of all differentially expressed transcripts
 - PCA analysis
@@ -263,7 +263,7 @@ Differential transcript expression analysis will be performed and the following 
 
 <p align="center"><img src="Gifs/Volcano Plots_DTE.gif"  width="85%"></p>
 
-##### Differential Transcript Usage (DTU with DRIMSeq and DEXSeq)
+##### Differential Transcript Usage (DTU with DRIMSeq [5] and DEXSeq [1])
 Differential transcript usage analysis will be performed with DEXSeq and DRIMSeq.
 The following visualizations are shown: 
 - Tables of all differentially used transcripts' analysis results (Results of DEXSeq and DRIMSeq)
@@ -306,8 +306,6 @@ Anna Wierczeiko, Stefan Pastore, Stefan Mündnich, Mark Helm, Tamer Butto, Susan
 [6] Patro, R., Duggal, G., Love, M. I., Irizarry, R. A., & Kingsford, C. (2017). Salmon provides fast and bias-aware quantification of transcript expression. Nature Methods 2017 14:4, 14(4), 417–419. https://doi.org/10.1038/nmeth.4197
 
 [7] Wang, L., Wang, S., & Li, W. (2012). RSeQC: quality control of RNA-seq experiments. Bioinformatics, 28(16), 2184–2185. https://doi.org/10.1093/BIOINFORMATICS/BTS356
-
-[8] Wang, Y., Zhao, Y., Bollas, A., Wang, Y., & Au, K. F. (2021). Nanopore sequencing technology, bioinformatics and applications. Nature Biotechnology 2021 39:11, 39(11), 1348–1365. https://doi.org/10.1038/s41587-021-01108-x
 
 
 
