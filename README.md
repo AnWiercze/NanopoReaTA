@@ -64,7 +64,7 @@ NanopoReaTA should now appear on the browser window.
 
 !NOTE: If a new docker version is available, please remove the previous docker image first, before pulling the new version of NanopoReaTA.! 
 
-### Remove NanopoReaTA docker image 
+##### Remove NanopoReaTA docker image 
 
 With references:
 ```bash
