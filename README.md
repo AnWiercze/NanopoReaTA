@@ -6,12 +6,12 @@ NanopoReaTA - Nanopore Real Time Analysis Pipeline
 [![R.shiny ](https://img.shields.io/badge/R.shiny-1.7.1-brightgreen)](https://www.r-project.org/)
 [![R](https://img.shields.io/badge/R-4.1.2-green)](https://shiny.rstudio.com/)
 
-**NanopoReaTA** is an R shiny application that integrates both preprocessing and downstream analysis pipelines for RNA sequencing data from Oxford Nanopore Technologies (ONT) into a user-friendly interface. NanopoReaTA focuses on the analysis of cDNA and direct RNA-sequencing (cDNA, DRS) reads and guides you through the different steps up to final visualizations of results from i.e. differential expression or gene body coverage. Furthermore, NanopoReaTa can be run in real-time right after starting a run via MinKNOW, the sequencing application of ONT. 
+**NanopoReaTA** is an R shiny application that integrates both preprocessing and downstream analysis pipelines for RNA sequencing data from Oxford Nanopore Technologies (ONT) into a user-friendly interface. NanopoReaTA focuses on the analysis of (direct) cDNA and RNA-sequencing (cDNA, DRS) reads and guides you through the different steps up to final visualizations of results from i.e. differential expression or gene body coverage. Furthermore, NanopoReaTa can be run in real-time right after starting a run via MinKNOW, the sequencing application of ONT. 
 
 
 **Currently available analysis modules:**
 1. [Run Overview](#run-overview) - Experiment statistics over time
-2. [Gene-wise analysis](#gene-wise-analysis) - Gene-wise analysis of expression (Gene counts, Gene body coverage)
+2. [Gene-wise analysis](#gene-wise-analysis) - Gene-wise analysis of expression (gene counts, gene body coverage)
 3. [Differential expression analysis](#differential-expression-analysis) - Differential expression and/or usage analysis of genes (DEA) and transcripts (DTE + DTU)
 
 ## Requirements
