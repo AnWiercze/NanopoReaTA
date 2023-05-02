@@ -24,7 +24,7 @@ Threads: > 12
 
 
 ## Installation using docker
-!IMPORTANT NOTE: All path selected by NanopoReaTA should not contain any spaces in their names. Paths should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")!
+!IMPORTANT NOTE: All paths selected by NanopoReaTA should not contain any spaces in their names. Paths should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")!
 
 #### Installation on Linux based systems
 
@@ -32,27 +32,53 @@ Open a bash shell Ctrl + Alt + T. Type the following command to install docker a
 
 ```bash
 sudo apt-get install -y docker.io
-sudo docker pull stegiopast/nanoporeata
+sudo docker pull stegiopast/nanoporeata:references
 ```
-A docker image must be build only once and might take around half an hour. Once the image is build a docker container can be run with the following command:  
+NOTE: With the docker image tag "references", all human and mouse reference files needed for NanopoReaTA will be automatically downloaded from GENCODE (~36 GB) and saved in root. If the root directory has limited space (< 40 GB), please use the tag "no_reference" as following and download the reference files as described below: 
 
 ```bash
-sudo docker run -it -p 8080:8080 -v /:/NanopoReaTA_linux_docker stegiopast/nanoporeata
+sudo apt-get install -y docker.io
+sudo docker pull stegiopast/nanoporeata:no_reference
+```
+
+Once the docker image is pulled, the container can be run with the following command:  
+
+With references:
+```bash
+sudo docker run -it -p 8080:8080 -v /:/NanopoReaTA_linux_docker stegiopast/nanoporeata:references
+```
+Or without references: 
+```bash
+sudo docker run -it -p 8080:8080 -v /:/NanopoReaTA_linux_docker stegiopast/nanoporeata:no_reference
 ```
 
 The docker container setup will be finished when the following line occurs:
+```bash
 Listening on http://0.0.0.0:8080
+```
 
 You can now navigate to a browser of your choice on your local machine and type in the following URL:
 http://localhost:8080/
 
 NanopoReaTA should now appear on the browser window. 
 
+!NOTE: If a new docker version is available, please remove the previous docker image first, before pulling the new version of NanopoReaTA.! 
 
+## Remove NanopoReaTA docker image 
+
+With references:
+```bash
+docker rmi -f stegiopast/nanoporeata:references
+```
+NOTE: With the docker image tag "references", all human and mouse reference files needed for NanopoReaTA will be automatically downloaded from GENCODE (~36 GB) and saved in root. If the root directory has limited space (< 40 GB), please use the tag "no_reference" as following and download the reference files as described below: 
+
+```bash
+docker rmi -f stegiopast/nanoporeata:no_reference
+```
 
 #### Installation on Windows based systems
 
-For a successfull usage on Windows sequencing output and output of NanopoReaTa have to be stored on the same harddrive. Paths used by NanopoReaTA should not contain any spaces in their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Windows data" -> "Windows_data")
+For a successfull usage on Windows sequencing output and output of NanopoReaTa have to be stored on the same hard-drive.
 
 You will need one of the latest wsl systems on your computer.
 
@@ -63,10 +89,20 @@ Start docker desktop application. In order to use docker applications on windows
 Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
 
 ```
-wsl --update 
-docker pull stegiopast/nanoporeata
-docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata
+wsl --update
 ```
+
+With reference:
+```bash
+docker pull stegiopast/nanoporeata:references
+docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata:references
+```
+Without references:
+```bash
+docker pull stegiopast/nanoporeata:no_reference
+docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata:no_reference
+```
+
 The docker container setup will be finished when the following line occurs:
 Listening on http://0.0.0.0:8080
 
@@ -83,7 +119,7 @@ Before running/exploiting real experiments with NanopoReaTA, we highly recommend
 When the application is started, the welcome page is shown and contains a **Start NanopoReaTA** button as well as the [NanopoReaTA](#nanoporeata---nanopore-real-time-analysis-pipeline) manual. 
 
 ### Metadata Creator
-After pushing the **Start NanopoReaTA** button the user is linked to a metadata creator page. The user should enter the samples, conditions and replicates of the running sequencing experiment and is then able to download a metadata file, which is mandatory to run the application. If samples are barcoded the samples must be named after their barcodes (barcode01-barcode96). Once the metadata is downloaded it can be locally renamed and moved. By clicking the blu arrow on the bottom right of the page the configuration of the real-time processing can be initiated.  
+After pushing the **Start NanopoReaTA** button the user is linked to a metadata creator page. If the user already created his or her own metadata file, he or her can skip this step and provide the path to the file in the configuation page. If not, the user should enter the samples, conditions and replicates of the running sequencing experiment and must then download the self-created metadata file. Please be aware of the format described below (tab-separated). If samples are barcoded the samples must be named after their barcodes (barcode01-barcode96) - meaning the folder names that MinKNOW automatically creates must match. Once the self-created metadata is downloaded it can be locally renamed and moved. By clicking the blue arrow on the bottom right of the page the configuration of the processing can be initiated.  
 
 #### Example metadata file
 
@@ -98,7 +134,7 @@ After pushing the **Start NanopoReaTA** button the user is linked to a metadata 
 The user will be linked to the configuration page and has to select required files and folders or upload an already existing configuration file in yaml format from previous NanopoReaTA runs (Please check [example_conf_files](example_conf_files) for correct parameter naming). After all configurations are set, the configurations will be saved as config.yaml in the defined output folder. ("run folder") 
 
 The following parameters have to be set by the user: 
-*Directory inputs needs an "/" at the end. Please make sure to let them end with an "/" character. 
+*Directory inputs needs an "/" at the end. Please make sure to let them end with an "/" character.
 
  Parameter | Datatype | Comments 
  :---: | :---: | :---:
@@ -115,7 +151,10 @@ The following parameters have to be set by the user:
 
  
  #### Reference and annotation files
-The required genome and annotation files for the organism of interest must be downloaded from the Gencode database (https://www.gencodegenes.org/), since the syntax of NanopoReaTA is suited to the respective standards. Mouse reference data can be obtained at GENCODE database: GRCm39 Release M27 (https://www.gencodegenes.org/mouse/release_M27.html). Human reference data can be obtained at GENCODE database: GRCh38.p13 v40 (https://www.gencodegenes.org/human/release_40.html). BED files of the respective genome versions can be downloaded from RSeQC: (https://sourceforge.net/projects/rseqc/files/BED).
+
+NOTE: If you pulled the docker image with included references, the data can be found in the "/Reference_data" folder of the docker. Mouse and Human data from Gencode are included.
+
+The required genome and annotation files for the organism of interest can be downloaded from the Gencode database (https://www.gencodegenes.org/), since the syntax of NanopoReaTA is suited to the respective standards. Mouse reference data can be obtained at GENCODE database: GRCm39 Release M27 (https://www.gencodegenes.org/mouse/release_M27.html). Human reference data can be obtained at GENCODE database: GRCh38.primary_assembly v40 (https://www.gencodegenes.org/human/release_40.html). BED files of the respective genome versions can be downloaded from RSeQC: (https://sourceforge.net/projects/rseqc/files/BED).
 
 The following files need to be downloaded:
 
@@ -134,13 +173,14 @@ In this tab the metadata file is shown and the user can check whether all inform
 By clicking on **Settings overview**, the user will be forwarded to the final [configuration overview](#settings-overview).
  
 #### Settings overview
-The input configurations can be finally checked by the user. If the paramters are correct, the user can start the preprocessing by clicking the **Start preprocessing** button. Otherwise the user can rearrange the settings by going back to the configuration tab
+The input configurations can be finally checked by the user. If the parameters are correct, the user can start the preprocessing by clicking the **Start preprocessing** button. Otherwise the user can rearrange the settings by going back to the configuration tab.
+
 
 #### NanopoReaTA run options
 
-1) Start  [NanopoReaTA's UI](#start-nanoporeata) and select *Run Preprocessing - Yes* at the [Configuration Page](#configuration-page) to start the backend preprocessing pipeline within the app. The user can keep track of the running nextflow pipeline within the index.log and error.log files created in the user-defined output folder by executing `tail -f /path/to/output/dir/index.log` in a terminal window. 
+1) Start  [NanopoReaTA's UI](#start-nanoporeata) and select *Run Preprocessing - Yes* at the [Configuration Page](#configuration-page) to start the backend preprocessing pipeline within the app. Press the "Start" button to initiate the preprocessing. One can keep track of the running nextflow pipeline within the index.log and error.log files created in the user-defined output folder by executing `tail -f /path/to/output/dir/index.log` in a terminal window. 
 
-2) For visualization of NanopoReaTA preprocessed results only, start [NanopoReaTA's UI](#start-nanoporeata), select *Preprocessing - No* and set the respective output folder created by NanopoReaTA at the [Configuration Page](#configuration-page), before pressing the "Start Preprocessing" button. Preprocessing will not be executed.
+2) For visualization of NanopoReaTA preprocessed results only, start [NanopoReaTA's UI](#start-nanoporeata), select *Preprocessing - No* and set the respective output folder created by NanopoReaTA at the [Configuration Page](#configuration-page), before pressing the "Start" button. Preprocessing will not be executed.
 
 ### Run Overview
 The Run Overview tab shows the number of reads and feature counts and visualizes the sample- and group-wise read length distribution and gene expression variability per preprocessing iteration. Additionally, the time each tool needs in each iteration is shown. All information is constantly updating when preprocessing is running.
@@ -149,7 +189,7 @@ The Run Overview tab shows the number of reads and feature counts and visualizes
 The table in this tab shows the number of mapped genes (minimap2), gene counts (featureCounts) and transcriptome (salmon) counts. The counts are provided for each sample, respectively.
 
 #### Read length distribution 
-One can see the read length distributions for respective samples or selected conditions. The read length information is extracted directly from the fastq files (passed_reads).
+One can see the read length distributions for respective samples and conditions. The read length information is extracted directly from the fastq files (passed_reads).
 
 #### Gene expression variability
 
@@ -168,7 +208,7 @@ This plot visualizes the run time for each tool running during the preprocessing
 
 ### Preprocessing stop and go
 
-For the following analytical steps the preprocessing should be temporarily stopped and the completion of the running iteration should be awaited. The stop preprocessing button on the left side causes the pipeline to stop after each completed processing iteration. Subsequently, all the analytical steps of interest can be performed. The resume preprocessing button causes the pipeline to continue once all the analytical steps of interest are performed.  
+For the following analytical steps the preprocessing should be temporarily stopped and the completion of the running iteration should be awaited. The stop preprocessing button on the left side causes the pipeline to stop after each completed preprocessing iteration. Subsequently, all the analytical steps of interest can be performed. The resume preprocessing button causes the pipeline to continue once all the analytical steps of interest are performed.  
 
 
 ### Gene-wise analysis
@@ -267,7 +307,14 @@ A pre-print of this tool is in progress and will be published soon.
 
 
 ### Test data
-Test data will be uploaded soon.
+We provide a dataset of cDNA extracted from 2 samples of HEK293 and 2 samples of HeLa cells. Teh cells have been incubated for ~5 days in 95% humidity with a 5% C02 concentration in. When cells reached 90% confluency the RNA was isolated with Trizol and treated with DNase I. Reverse transcription and library preparation was performed with ONT (Oxford Nanopore Technologies) based direct cDNA kit + native barcoding expansion kit (SQK-DCS109 + EXP-NBD104) 
+
+Test data is available on the ENA (European Nucleotide Archive) with the project number PRJEB61670. (https://www.ebi.ac.uk/ena/browser/view/PRJEB61670)
+Please note that one will have to reconstruct the folder structure of the MinKnow output using barcoded samples.
+
+Experiment_folder/Sample_folder/Identifier/barcodeXY/*.fastq with (barcode01-barcode04). Barcode01 + barcode02 are HEK293 cDNA samples and barcode03-04 are HeLa cDNA samples.  
+
+
 
 ## Contact
 
