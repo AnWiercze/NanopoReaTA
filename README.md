@@ -17,11 +17,10 @@ NanopoReaTA - Nanopore Real Time Analysis Pipeline
 
 # Installation
 ## Requirements
-Hardware |
- :---: 
-RAM: 64GB |
-Threads: > 12 
-
+Hardware | Min. number
+ :---: |  :---:
+RAM | 64GB 
+Threads | 12 
 Biological input | Min. number
  :---: | :---: 
 Total number of samples | 4
