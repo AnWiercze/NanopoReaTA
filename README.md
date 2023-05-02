@@ -70,7 +70,7 @@ With references:
 ```bash
 docker rmi -f stegiopast/nanoporeata:references
 ```
-NOTE: With the docker image tag "references", all human and mouse reference files needed for NanopoReaTA will be automatically downloaded from GENCODE (~36 GB) and saved in root. If the root directory has limited space (< 40 GB), please use the tag "no_reference" as following and download the reference files as described below: 
+
 
 ```bash
 docker rmi -f stegiopast/nanoporeata:no_reference
@@ -88,16 +88,18 @@ Start docker desktop application. In order to use docker applications on windows
 
 Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
 
+Update wsl:
 ```
 wsl --update
 ```
 
-With reference:
+Pull the docker image:
 ```bash
 docker pull stegiopast/nanoporeata:references
 docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata:references
 ```
-Without references:
+NOTE: With the docker image tag "references", all human and mouse reference files needed for NanopoReaTA will be automatically downloaded from GENCODE (~36 GB) and saved in root. If the root directory has limited space (< 40 GB), please use the tag "no_reference" as following and download the reference files as described below: 
+
 ```bash
 docker pull stegiopast/nanoporeata:no_reference
 docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata:no_reference
