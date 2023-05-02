@@ -14,34 +14,19 @@ NanopoReaTA - Nanopore Real Time Analysis Pipeline
 2. [Gene-wise analysis](#gene-wise-analysis) - Gene-wise analysis of expression (gene counts, gene body coverage)
 3. [Differential expression analysis](#differential-expression-analysis) - Differential expression and/or usage analysis of genes (DGE) and transcripts (DTE + DTU)
 
+
+# Installation
 ## Requirements
  Hardware |
  :---: 
 RAM: 64GB |
 Threads: > 12 
 
- Software | 
- :---: 
-Linux based operating system |
-Anaconda | 
-python >= 3.8 |
-R >= 4.1.2 |
-python packages (provided via conda environment) |
-R packages (installation is automatized via R shiny) 
 
-
-
-
-# Installation
-
-
-## Installation via docker
-
-
-#### Installation on Linux based systems
-
+## Installation using docker
 !IMPORTANT NOTE: All path selected by NanopoReaTA should not contain any spaces in their names. Paths should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")!
 
+#### Installation on Linux based systems
 
 Open a bash shell Ctrl + Alt + T. Type the following command to install docker and build a docker image:
 
@@ -89,43 +74,6 @@ You can now navigate to a browser of your choice on your local machine and type 
 http://localhost:8080/
 
 NanopoReaTA should now appear on the browser window. 
- 
-
-
-## Installation via conda 
-
-Paths used by NanopoReaTA should not contain any spaces int their names. Pathways should always be named with underscores "_" instead of spaces " ". (e.g "Linux data" -> "Linux_data")
-
-R can be installed from CRAN (https://cran.r-project.org/). Anaconda can be downloaded with the follwing steps:
-
-```bash
-cd ~
-wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
-bash ~/Anaconda3-2022.05-Linux-x86_64.sh
-source ~/.bashrc
-```
-
-#### Create a conda enviroment and install packages from requirements_NanopoReaTA.yml by following the steps below (~ 6 min):
-```bash
-git clone https://github.com/AnWiercze/NanopoReaTA.git
-conda env create -f /path/to/NanopoReaTA/app/requirements_nanoporeata.yml
-```
-
-#### Activate the conda environment 
-```bash
-conda activate nanoporeata
-```
-
-#### Start NanopoReaTA via conda
-NanopoReaTA will be started executing the following command within the conda environment: 
-
-```bash
-conda activate nanoporeata
-cd /path/to/NanopoReaTA/app
-Rscript app.R
-```
-All R packages that have not been installed yet will be downloaded and installed into your conda environment automatically, when starting NanopoReaTA the first time. This can take up to ~ 30 min. After the installation of packages is finished, **a browser link** will appear. Copy and paste the link shown in your terminal into a browser window, in case the app does not open automatically.  
-
 
 
 ## Usage
