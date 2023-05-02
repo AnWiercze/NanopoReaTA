@@ -14,6 +14,8 @@ NanopoReaTA - Nanopore Real Time Analysis Pipeline
 2. [Gene-wise analysis](#gene-wise-analysis) - Gene-wise analysis of expression (gene counts, gene body coverage)
 3. [Differential expression analysis](#differential-expression-analysis) - Differential expression and/or usage analysis of genes (DGE) and transcripts (DTE + DTU)
 
+<p align="center"><img src="Gifs/nanoporeata_supp2_fig2"  width="85%"></p>
+
 
 # Installation
 ## Requirements
