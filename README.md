@@ -21,8 +21,7 @@ Hardware | Min. number
  :---: |  :---:
 RAM | 64GB 
 Threads | 12 
-Biological input | Min. number
- :---: | :---: 
+**Biological input** | 
 Total number of samples | 4
 Number of conditions | 2
 Min. number of samples per condition | 2
