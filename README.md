@@ -14,7 +14,7 @@ NanopoReaTA - Nanopore Real Time Analysis Pipeline
 2. [Gene-wise analysis](#gene-wise-analysis) - Gene-wise analysis of expression (gene counts, gene body coverage)
 3. [Differential expression analysis](#differential-expression-analysis) - Differential expression and/or usage analysis of genes (DGE) and transcripts (DTE + DTU)
 
-<p align="center"><img src="Gifs/nanoporeata_figure.tif.png"  width="85%"></p>
+<p align="center"><img src="Gifs/nanoporeata_figure.tif.png"  width="100%"></p>
 
 
 # Installation
@@ -195,7 +195,7 @@ The input configurations can be finally checked by the user. If the parameters a
 
 2) For visualization of NanopoReaTA preprocessed results only, start [NanopoReaTA's UI](#start-nanoporeata), select *Preprocessing - No* and set the respective output folder created by NanopoReaTA at the [Configuration Page](#configuration-page), before pressing the "Start" button. Preprocessing will not be executed.
 
-<p align="center"><img src="Gifs/nanoporeata_supp2_fig1.png"  width="85%"></p>
+<p align="center"><img src="Gifs/nanoporeata_supp2_fig1.png"  width="50%"></p>
 
 
 ### Run Overview
@@ -231,7 +231,7 @@ For the following analytical steps the preprocessing should be temporarily stopp
 
 In the Gene-wise anaylsis tab, one is able to explore the expression levels and the gene body coverage of particular genes of interest. Be aware that at least two samples per condition have to be considered in order to use this functionality.  
 
-<p align="center"><img src="Gifs/nanoporeata_supp2_fig2.png"  width="85%"></p>
+<p align="center"><img src="Gifs/nanoporeata_supp2_fig2.png"  width="100%"></p>
 
 
 #### Gene counts
