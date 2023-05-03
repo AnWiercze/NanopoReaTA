@@ -282,10 +282,14 @@ The following visualizations are shown:
 
 
 ## Test data
-We provide a dataset of cDNA extracted from 2 samples of HEK293 and 2 samples of HeLa cells. The cells have been incubated for ~5 days in 95% humidity with a 5% C02 concentration in. When cells reached 90% confluency the RNA was isolated with Trizol and treated with DNase I. Reverse transcription and library preparation was performed with ONT (Oxford Nanopore Technologies) based direct cDNA kit + native barcoding expansion kit (SQK-DCS109 + EXP-NBD104).
+We provide a dataset of cDNA extracted from 2 samples of HEK293 and 2 samples of HeLa cells.
 
-Test data is available on the ENA (European Nucleotide Archive) with the project number PRJEB61670: https://www.ebi.ac.uk/ena/browser/view/PRJEB61670.
-Please note that one will have to reconstruct the folder structure of the MinKnow output using barcoded samples.
+Test data is available in a seafile repository https://seafile.rlp.net/d/7a99b8b210e44eb9b70a/. The output folder structure of MinKnow is kept intact with this plattform, which enables users to directly test he functionality of NanopoReaTA.
+
+Test data is additionally available on the ENA (European Nucleotide Archive) with the project number PRJEB61670: https://www.ebi.ac.uk/ena/browser/view/PRJEB61670.
+Please note that one will have to reconstruct the folder structure of the MinKnow output using barcoded samples when dowloading files from ENA to use NanopoReaTA properly.
+
+
 
 Examples: ***Experiment_folder**/Sample_folder/Identifier/fastq_pass/barcodeXY/run_xyz_999.fastq* with (barcode01-barcode04). Barcode01 + barcode02 are HEK293 cDNA samples and barcode03-04 are HeLa cDNA samples.  
 
