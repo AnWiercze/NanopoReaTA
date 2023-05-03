@@ -195,6 +195,9 @@ The input configurations can be finally checked by the user. If the parameters a
 
 2) For visualization of NanopoReaTA preprocessed results only, start [NanopoReaTA's UI](#start-nanoporeata), select *Preprocessing - No* and set the respective output folder created by NanopoReaTA at the [Configuration Page](#configuration-page), before pressing the "Start" button. Preprocessing will not be executed.
 
+<p align="center"><img src="Gifs/nanoporeata_supp2_fig1.png"  width="85%"></p>
+
+
 ### Run Overview
 The Run Overview tab shows the number of mapped reads and gene counts and visualizes the sample- and group-wise read length distribution and gene expression variability per preprocessing iteration. Additionally, the time each tool needs in each iteration is shown. All information is constantly updating when preprocessing is running.
 
@@ -228,6 +231,8 @@ For the following analytical steps the preprocessing should be temporarily stopp
 
 In the Gene-wise anaylsis tab, one is able to explore the expression levels and the gene body coverage of particular genes of interest. Be aware that at least two samples per condition have to be considered in order to use this functionality.  
 
+<p align="center"><img src="Gifs/nanoporeata_supp2_fig2.png"  width="85%"></p>
+
 
 #### Gene counts
 
@@ -242,6 +247,7 @@ Here, one gene can be selected for gene body coverage analysis each time. The ge
 
 ### Differential Expression Analysis
 In the Differential Expression Analysis tab, the user can run three different analyses: Differential Gene Expression (DGE), Differential Transcript Expression (DTE) and Differential Transcript Usage (DTU) by clicking the respective button. Note that these analyses do not update automatically when processing will be started again and new data is generated. That means that after stopping the preprocessing pipeline again, the analyses buttons need to be pressed to analyse latest input files (like counts files). Once the analysis is completed, the user will be linked to the respective analysis output tab (may take a few minutes). 
+
 
 #### Gene-level analysis (DGE with DESeq2[4])
 Differential gene expression analysis will be performed and the following visualizations are shown:
