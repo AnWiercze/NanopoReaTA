@@ -284,7 +284,7 @@ The following visualizations are shown:
 ## Test data
 We provide a dataset of cDNA extracted from 2 samples of HEK293 and 2 samples of HeLa cells.
 
-Test data is available in a seafile repository https://seafile.rlp.net/d/7a99b8b210e44eb9b70a/. The output folder structure of MinKnow is kept intact with this plattform, which enables users to directly test he functionality of NanopoReaTA.
+Test data is available in a seafile repository https://seafile.rlp.net/d/7a99b8b210e44eb9b70a/. The output folder structure of MinKnow is kept intact with this plattform, which enables users to directly test the functionality of NanopoReaTA.
 
 Test data is additionally available on the ENA (European Nucleotide Archive) with the project number PRJEB61670: https://www.ebi.ac.uk/ena/browser/view/PRJEB61670.
 Please note that one will have to reconstruct the folder structure of the MinKnow output using barcoded samples when dowloading files from ENA to use NanopoReaTA properly.
