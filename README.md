@@ -91,24 +91,27 @@ You will need one of the latest wsl systems on your computer.
 
 1. Download docker desktop: https://www.docker.com/products/docker-desktop/
 
-2. Start docker desktop application. In order to use docker applications on windows, docker desktop has to run in the background.  
+2. Install Docker application. We tested docker windows with hyper-v, which means one should not set the tick for WSL2 when installing docker-desktop.
+   Restart the computer after docker-desktop installation. 
 
-3. Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
+3. Start docker desktop application. In order to use docker applications on windows, docker desktop has to run in the background.  
 
-4. Update wsl:
-```
-wsl --update
-```
+5. When the docker application is opened the user should navigate to the settings of docker-desktop. By clicking on the Ressources tab of the docker-desktop settings window, you can define the RAM, CPU and memory that should be assigned to the docker VM. It is important to change these settings accordingly to reach optimal performance. Click on Apply & Restart when you accept the settings.   
 
-5. Pull the docker image
+6. Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
+
+7. Pull the docker image
 ```bash
 docker pull stegiopast/nanoporeata:references
 ```
 
-6. Start the docker image and mount the local system under a user-specified location; like "c:/". 
+8. Start the docker image and mount the local system under a user-specified location; like "c:/". 
+
 ```
 docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata:references
-```
+```   
+
+
 *NOTE: With the docker image tag "references", all human and mouse reference files needed for NanopoReaTA will be automatically downloaded from GENCODE (~36 GB) and saved in root. If the root directory has limited space (< 40 GB), please use the tag "no_reference" as following and download the reference files as described below:*
 
 ```bash
@@ -116,13 +119,16 @@ docker pull stegiopast/nanoporeata:no_reference
 docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata:no_reference
 ```
 
+*NOTE:
+Be aware that you can manually start the application also via docker-desktop under the images tab. You just have to press the play button on the listed docker image after the pull command mentioned above and type in the required special information. Please choose a port (e.g. 8080), define a volume (e.g. c:/) and mount it on /NanopoReaTA_windows_docker. Only if these steps are executed NanopoReaTA can operate successfully on your local data. Press the start button after insertion of additional data and navigate to the container tab on docker-desktop. You can open the container information by clicking on the three spots at the container bar. By investigating the logs you can observe the running container's processes.       
+
 The docker container setup will be finished when the following line occurs:
 Listening on http://0.0.0.0:8080
 
-6. You can now navigate to a browser of your choice on your local machine and type in the following URL:
+9. You can now navigate to a browser of your choice on your local machine and type in the following URL:
 http://localhost:8080/
 
-7. NanopoReaTA should now appear on the browser window. 
+10. NanopoReaTA should now appear on the browser window. 
 
 ## Reference and annotation files
 
