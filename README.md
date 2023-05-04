@@ -96,16 +96,16 @@ You will need one of the latest wsl systems on your computer.
 
 3. Start docker desktop application. In order to use docker applications on windows, docker desktop has to run in the background.  
 
-5. When the docker application is opened the user should navigate to the settings of docker-desktop. By clicking on the Ressources tab of the docker-desktop settings window, you can define the RAM, CPU and memory that should be assigned to the docker VM. It is important to change these settings accordingly to reach optimal performance. Click on Apply & Restart when you accept the settings.   
+4. When the docker application is opened the user should navigate to the settings of docker-desktop. By clicking on the Ressources tab of the docker-desktop settings window, you can define the RAM, CPU and memory that should be assigned to the docker VM. It is important to change these settings accordingly to reach optimal performance. Click on Apply & Restart when you accept the settings.   
 
-6. Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
+5. Open power shell as administrator via search. (Start -> Search -> right click -> Open as administrator)
 
-7. Pull the docker image
+6. Pull the docker image
 ```bash
 docker pull stegiopast/nanoporeata:references
 ```
 
-8. Start the docker image and mount the local system under a user-specified location; like "c:/". 
+7. Start the docker image and mount the local system under a user-specified location; like "c:/". 
 
 ```
 docker run -it -p 8080:8080 -v c:/:/NanopoReaTA_windows_docker stegiopast/nanoporeata:references
@@ -125,10 +125,10 @@ Be aware that you can manually start the application also via docker-desktop und
 The docker container setup will be finished when the following line occurs:
 Listening on http://0.0.0.0:8080
 
-9. You can now navigate to a browser of your choice on your local machine and type in the following URL:
+8. You can now navigate to a browser of your choice on your local machine and type in the following URL:
 http://localhost:8080/
 
-10. NanopoReaTA should now appear on the browser window. 
+9. NanopoReaTA should now appear on the browser window. 
 
 ## Reference and annotation files
 
