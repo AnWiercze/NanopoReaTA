@@ -1178,7 +1178,7 @@ process move_transcript_files{
         do
             basis=\$(dirname \${i})
             filename=\$(basename \${i})
-            cp \${i} \$basis/full/\$filename
+            cp \${i} \$basis/full/\$filename || echo "File does not exist: \$basis/full/\$filename" > ${params.run_dir}error_logs/copy_full_bam_failed.log
         done
         """
     else
@@ -1286,7 +1286,6 @@ process merge_table_of_all_folders{
             sleep 100
         }
         fc_merging.value = 1
-    
         data_string = ""
         for (i in 0..params.sample_names.size()-1){
 	    data_string = data_string + params.run_dir + params.sample_names.get(i) + "/" + " "
