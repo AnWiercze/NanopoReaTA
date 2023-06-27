@@ -1,4 +1,4 @@
-NanopoReaTA - Nanopore Real Time Analysis Pipeline
+NanopoReaTA - Nanopore Real-Time Transcriptional Analysis Tool
 ==================================================
 
 
