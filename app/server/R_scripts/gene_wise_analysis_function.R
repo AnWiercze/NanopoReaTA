@@ -272,7 +272,7 @@ geneBodyCov.plot <- function(gB_results, geneOfInterest_in, metadata, condi_cols
     ylim(0,max(geneBodyCov$PercVal)) +
     ggtitle(geneOfInterest) +
     scale_color_manual("Samples", values = safe_colorblind_palette[c(1:n_samples)]) +
-    scale_x_continuous(breaks = c(0, 50, 100), labels = c("3'", "mid gene", "5'")) + # change position labels from 0 to 100 to 3' to 5'
+    scale_x_continuous(breaks = c(0, 50, 100), labels = c("5'", "mid gene", "3'")) + # change position labels from 0 to 100 to 5' to 3'
     ylab("Relative Coverage (%)") +
     theme(
     panel.grid.minor.x = element_blank(), # remove minor grid lines from plot
@@ -299,7 +299,7 @@ geneBodyCov.plot <- function(gB_results, geneOfInterest_in, metadata, condi_cols
     ylim(0,max(geneBodyCov$PercVal)) +
     ggtitle(geneOfInterest) +
     scale_color_manual("Condition", values = condi_cols) +
-    scale_x_continuous(breaks = c(0, 50, 100), labels = c("3'", "mid gene", "5'")) + # change position labels from 0 to 100 to 3' to 5'
+    scale_x_continuous(breaks = c(0, 50, 100), labels = c("5'", "mid gene", "3'")) + # change position labels from 0 to 100 to 5' to 3'
     ylab("Relative Coverage (%)") +
     theme(
       panel.grid.minor.x = element_blank(), # remove minor grid lines from plot
