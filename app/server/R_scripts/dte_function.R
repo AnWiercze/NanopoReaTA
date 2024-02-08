@@ -36,6 +36,7 @@ createRES_DTE <- function(dds, first.level, ref.level, pvalue, gtf_file){
   res_df$transcripts = tmp[match(res_df$names, tmp$transcript_id), "transcript_name"]
   #res_df$transcript_ids = tmp[match(res_df$names, tmp$transcript_id), "transcript_id"]
   res_df$transcripts = make.unique(res_df$transcripts)
+  res_df = na.omit(res_df)
   row.names(res_df) = res_df$transcripts
   res_df$names = res_df$transcripts
   res_df$transcripts <- NULL
