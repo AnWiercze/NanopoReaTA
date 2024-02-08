@@ -35,6 +35,7 @@ createRES <- function(dds, first.level, ref.level, pvalue, gtf_file){
   tmp = gtf_file[which(gtf_file$gene_id %in% res_df$names),]
   res_df$genes = tmp[match(res_df$names, tmp$gene_id), "gene_name"]
   res_df$genes = make.unique(res_df$genes)
+  res_df = na.omit(res_df)
   row.names(res_df) = res_df$genes
   res_df$names = res_df$genes
   res_df$genes <- NULL
