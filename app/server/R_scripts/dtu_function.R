@@ -75,11 +75,24 @@ DRIM_seq_prep <- function(table = count.table, run.dir = csv.dir, samps = metada
   d <- dmDSdata(counts=counts, samples=samps)
   n <- length(samps$sample_id)
   n.small <- min(table(samps$condition))
-  d <- dmFilter(d,
-                min_samps_feature_expr=as.integer(n.small), min_feature_expr=5,
-                #              min_samps_feature_prop=int(n.small/1.5), min_feature_prop=0.1,
-                min_samps_gene_expr=(n.small), min_gene_expr=20)
-  
+  out2 <- tryCatch(
+                   {d <- dmFilter(d,
+                        min_samps_feature_expr=as.integer(n.small), min_feature_expr=5,
+                        #            min_samps_feature_prop=int(n.small/1.5), min_feature_prop=0.1,
+                        min_samps_gene_expr=(n.small), min_gene_expr=20)
+                        x = F
+                        },
+                   error = function(e){
+                        x = T
+                   },
+                   finally = {
+                   })
+  if (out2){
+  flog.info("########## DrimSeq Filtering failed ###########")
+  flog.info("Either only one splicing variant for every gene in dataset or it must be sequenced deeper")
+  return(NULL)
+  }
+
   table(table(counts(d)$gene_id))
   input_design <- DRIMSeq::samples(d)
   input_design$condition <- factor(input_design$condition,levels = c(first.level,ref.level))
