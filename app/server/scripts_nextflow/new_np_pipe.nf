@@ -604,7 +604,7 @@ process data_alignment_prep{
         }
         println "Data to process: ${data_to_process_list.size()}"
         x_seen = []
-        for(k in 0..Math.min(params.batchsize,data_to_process_list.size()-2)){
+        for(k in 0..Math.min(params.batchsize,data_to_process_list.size()-1)){
             if (data_to_process_list.size() > 1){
                 x = Math.abs(new Random().nextInt() % (data_to_process_list.size()-1))
                 //While loop is integrated to avoid double insertion of one file 
