@@ -67,4 +67,7 @@ scales	1.2.1
 data.table	1.14.2
 openxlsx	4.2.5.1
 gridExtra	2.3
+quantreg        5.98
+pbkrtest        0.5.3
+car     3.1-2
 BiocManager	1.30.19
