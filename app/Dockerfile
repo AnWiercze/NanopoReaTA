@@ -94,11 +94,12 @@ WORKDIR ./NanopoReaTA-master/app/
 
 RUN conda env create -f ./requirements_nanoporeata.yml
 
-RUN conda init bash
-RUN source /root/.bashrc
+#RUN conda init bash
+#RUN source /root/.bashrc
 #RUN conda run -n nanoporeata Rscript install.R
+RUN apt-get install -y liblapack-dev libblas-dev
 SHELL ["conda", "run", "--no-capture-output", "-n", "nanoporeata", "Rscript", "install.R"]
-
+RUN conda init bash
 
 ENV PORT=8080
 
