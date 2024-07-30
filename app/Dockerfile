@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 
 # Install base utilities
@@ -94,10 +94,11 @@ WORKDIR ./NanopoReaTA-master/app/
 
 RUN conda env create -f ./requirements_nanoporeata.yml
 
-# RUN conda run -n nanoporeata Rscript install.R
+RUN conda init bash
+RUN source /root/.bashrc
+#RUN conda run -n nanoporeata Rscript install.R
 SHELL ["conda", "run", "--no-capture-output", "-n", "nanoporeata", "Rscript", "install.R"]
 
-RUN conda init bash
 
 ENV PORT=8080
 
